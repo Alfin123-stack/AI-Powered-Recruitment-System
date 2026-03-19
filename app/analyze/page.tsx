@@ -8,32 +8,35 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronRight,
-  ThumbsUp,
-  ThumbsDown,
   Eye,
   Zap,
   FileText,
   TrendingUp,
   Star,
+  X,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type Candidate = {
-  name: string;
-  role: string;
-  score: number;
-  match: number;
-  status: string;
-  skills: string[];
-  avatar: string;
-  color: string;
+type AnalysisData = {
+  resumeScore: number;
+  matchingScore: number;
+  atsScore: number;
+  overallScore: number;
+  skills: { name: string; level: number }[];
+  categories: { label: string; score: number }[];
+  strengths: string[];
+  improvements: string[];
+  fileName?: string;
 };
 
-// ── Data ──────────────────────────────────────────────────────────────────────
-const analysis = {
+// ── Static Demo Data ──────────────────────────────────────────────────────────
+const demoAnalysis: AnalysisData = {
   resumeScore: 84,
   matchingScore: 78,
+  atsScore: 74,
+  overallScore: 81,
   skills: [
     { name: "React", level: 92 },
     { name: "Next.js", level: 88 },
@@ -63,62 +66,9 @@ const analysis = {
   ],
 };
 
-const candidates: Candidate[] = [
-  {
-    name: "Andi Pratama",
-    role: "Frontend Developer",
-    score: 86,
-    match: 82,
-    status: "shortlist",
-    skills: ["React", "Next.js", "Tailwind"],
-    avatar: "AP",
-    color: "#10b981",
-  },
-  {
-    name: "Siti Rahma",
-    role: "Frontend Developer",
-    score: 78,
-    match: 74,
-    status: "review",
-    skills: ["Vue", "JavaScript", "CSS"],
-    avatar: "SR",
-    color: "#06b6d4",
-  },
-  {
-    name: "Budi Santoso",
-    role: "Frontend Developer",
-    score: 91,
-    match: 88,
-    status: "shortlist",
-    skills: ["React", "TypeScript", "Node.js"],
-    avatar: "BS",
-    color: "#8b5cf6",
-  },
-  {
-    name: "Dewi Lestari",
-    role: "Frontend Developer",
-    score: 65,
-    match: 58,
-    status: "reject",
-    skills: ["HTML", "CSS", "jQuery"],
-    avatar: "DL",
-    color: "#f59e0b",
-  },
-];
-
-const statusColor: Record<string, string> = {
-  shortlist: "#10b981",
-  review: "#f59e0b",
-  reject: "#ef4444",
-};
-const statusLabel: Record<string, string> = {
-  shortlist: "Shortlist",
-  review: "Perlu Review",
-  reject: "Ditolak",
-};
 const catColors = ["#10b981", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444"];
 
-// ── Counter (animated number) ─────────────────────────────────────────────────
+// ── Counter ───────────────────────────────────────────────────────────────────
 function Counter({
   to,
   suffix = "",
@@ -265,34 +215,148 @@ function CardTitle({
   );
 }
 
-// ── Candidate Mode ────────────────────────────────────────────────────────────
-function CandidateMode() {
+// ── Upload Zone ───────────────────────────────────────────────────────────────
+function UploadZone({
+  onFileSelect,
+  isLoading,
+}: {
+  onFileSelect: (file: File) => void;
+  isLoading: boolean;
+}) {
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (
+      file &&
+      (file.type === "application/pdf" || file.name.endsWith(".docx"))
+    ) {
+      onFileSelect(file);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) onFileSelect(file);
+  };
+
+  return (
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragging(true);
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={handleDrop}
+      onClick={() => !isLoading && inputRef.current?.click()}
+      className={`border-2 border-dashed rounded-[14px] p-10 text-center cursor-pointer transition-all duration-300
+        ${
+          dragging
+            ? "border-emerald-500/60 bg-emerald-500/[0.06]"
+            : "border-emerald-500/15 hover:border-emerald-500/35 hover:bg-emerald-500/[0.03]"
+        }
+        ${isLoading ? "pointer-events-none opacity-60" : ""}
+      `}>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,.docx"
+        className="hidden"
+        onChange={handleChange}
+      />
+      <div className="w-[52px] h-[52px] rounded-[14px] bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mx-auto mb-[14px]">
+        {isLoading ? (
+          <Loader2 size={22} className="animate-spin" />
+        ) : (
+          <Upload size={22} />
+        )}
+      </div>
+      <div className="font-syne font-bold text-[1.05rem] mb-[6px]">
+        {isLoading ? "Menganalisis CV..." : "Upload CV Kamu"}
+      </div>
+      <p className="text-[#7a9585] text-[0.85rem]">
+        {isLoading
+          ? "AI sedang memproses dokumen kamu, mohon tunggu sebentar"
+          : "Drag & drop file PDF atau DOCX, atau klik untuk memilih file"}
+      </p>
+      {!isLoading && (
+        <>
+          <p className="text-[#7a9585] text-[0.75rem] mt-[6px]">
+            Maks. 5MB · PDF, DOCX
+          </p>
+          <Button className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.9rem] px-7 py-3 rounded-[10px] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] hover:-translate-y-[1px] inline-flex items-center gap-2">
+            <Upload size={15} /> Pilih File CV
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Analysis Result ───────────────────────────────────────────────────────────
+function AnalysisResult({
+  data,
+  onReset,
+}: {
+  data: AnalysisData;
+  onReset: () => void;
+}) {
   const scoreCards = [
     {
       label: "Resume Quality Score",
-      score: analysis.resumeScore,
+      score: data.resumeScore,
       color: "#10b981",
       Icon: FileText,
     },
     {
       label: "Job Matching Score",
-      score: analysis.matchingScore,
+      score: data.matchingScore,
       color: "#06b6d4",
       Icon: TrendingUp,
     },
-    { label: "ATS Compatibility", score: 74, color: "#8b5cf6", Icon: Zap },
-    { label: "Overall Rating", score: 81, color: "#f59e0b", Icon: Star },
+    {
+      label: "ATS Compatibility",
+      score: data.atsScore,
+      color: "#8b5cf6",
+      Icon: Zap,
+    },
+    {
+      label: "Overall Rating",
+      score: data.overallScore,
+      color: "#f59e0b",
+      Icon: Star,
+    },
   ];
 
   return (
     <motion.div
-      key="candidate"
+      key="result"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}>
       <section className="py-12 pb-20">
         <div className="max-w-[1100px] mx-auto px-6">
+          {/* File badge + reset */}
+          {data.fileName && (
+            <FadeIn>
+              <div className="flex items-center justify-between mb-5">
+                <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-[6px] text-[0.75rem] text-emerald-400 font-medium">
+                  <FileText size={13} />
+                  {data.fileName}
+                </div>
+                <button
+                  onClick={onReset}
+                  className="inline-flex items-center gap-[6px] text-[0.78rem] text-[#7a9585] hover:text-red-400 transition-colors border border-emerald-500/15 hover:border-red-500/30 rounded-full px-3 py-[5px]">
+                  <X size={12} /> Analisis Ulang
+                </button>
+              </div>
+            </FadeIn>
+          )}
+
           {/* Score rings */}
           <FadeIn>
             <div
@@ -323,7 +387,7 @@ function CandidateMode() {
             <FadeIn delay={0.05}>
               <Card>
                 <CardTitle>Skill Proficiency</CardTitle>
-                {analysis.skills.map((s, i) => (
+                {data.skills.map((s, i) => (
                   <div key={i} className="mb-[14px]">
                     <div className="flex justify-between items-center mb-[6px]">
                       <span className="text-[0.85rem] font-medium">
@@ -350,7 +414,7 @@ function CandidateMode() {
             <FadeIn delay={0.1}>
               <Card>
                 <CardTitle>Score Breakdown</CardTitle>
-                {analysis.categories.map((c, i) => (
+                {data.categories.map((c, i) => (
                   <div key={i} className="flex items-center gap-3 mb-3">
                     <span className="text-[0.8rem] text-[#7a9585] w-[160px] flex-shrink-0">
                       {c.label}
@@ -377,14 +441,14 @@ function CandidateMode() {
 
           {/* Strengths + Improvements */}
           <FadeIn delay={0.15}>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-4">
               <Card>
                 <CardTitle color="#10b981">
                   <CheckCircle2 size={16} className="text-emerald-400" />{" "}
                   Kekuatan CV
                 </CardTitle>
                 <div className="flex flex-col gap-2">
-                  {analysis.strengths.map((s, i) => (
+                  {data.strengths.map((s, i) => (
                     <div
                       key={i}
                       className="flex items-start gap-[10px] bg-emerald-500/[0.06] border border-emerald-500/15 rounded-[10px] p-3">
@@ -406,7 +470,7 @@ function CandidateMode() {
                   Perbaikan
                 </CardTitle>
                 <div className="flex flex-col gap-2">
-                  {analysis.improvements.map((s, i) => (
+                  {data.improvements.map((s, i) => (
                     <div
                       key={i}
                       className="flex items-start gap-[10px] bg-amber-500/[0.06] border border-amber-500/15 rounded-[10px] p-3">
@@ -423,189 +487,77 @@ function CandidateMode() {
               </Card>
             </div>
           </FadeIn>
-
-          {/* Upload zone */}
-          <FadeIn delay={0.2}>
-            <div className="border-2 border-dashed border-emerald-500/15 rounded-[14px] p-10 text-center cursor-pointer transition-all hover:border-emerald-500/35 hover:bg-emerald-500/[0.03]">
-              <div className="w-[52px] h-[52px] rounded-[14px] bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mx-auto mb-[14px]">
-                <Upload size={22} />
-              </div>
-              <div className="font-syne font-bold text-[1.05rem] mb-[6px]">
-                Upload CV Baru
-              </div>
-              <p className="text-[#7a9585] text-[0.85rem]">
-                Drag & drop file PDF atau DOCX, atau klik untuk memilih file
-              </p>
-              <p className="text-[#7a9585] text-[0.75rem] mt-[6px]">
-                Maks. 5MB · PDF, DOCX
-              </p>
-              <Button className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.9rem] px-7 py-3 rounded-[10px] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] hover:-translate-y-[1px] inline-flex items-center gap-2">
-                <Upload size={15} /> Pilih File CV
-              </Button>
-            </div>
-          </FadeIn>
         </div>
       </section>
     </motion.div>
   );
 }
 
-// ── HR Mode ───────────────────────────────────────────────────────────────────
-function HRMode() {
-  const [statuses, setStatuses] = useState<Record<string, string>>(
-    Object.fromEntries(candidates.map((c) => [c.name, c.status])),
-  );
-  const setStatus = (name: string, status: string) =>
-    setStatuses((p) => ({ ...p, [name]: status }));
-
-  const shortlistCount = candidates.filter(
-    (c) => statuses[c.name] === "shortlist",
-  ).length;
-  const avgScore = Math.round(
-    candidates.reduce((a, c) => a + c.score, 0) / candidates.length,
-  );
-  const avgMatch = Math.round(
-    candidates.reduce((a, c) => a + c.match, 0) / candidates.length,
-  );
-
+// ── Empty State (Upload Prompt) ───────────────────────────────────────────────
+function EmptyState({
+  onFileSelect,
+  isLoading,
+}: {
+  onFileSelect: (file: File) => void;
+  isLoading: boolean;
+}) {
   return (
     <motion.div
-      key="hr"
+      key="empty"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}>
       <section className="py-12 pb-20">
         <div className="max-w-[1100px] mx-auto px-6">
-          {/* Summary bar */}
-          <FadeIn>
-            <div className="grid grid-cols-4 gap-3 mb-7">
-              {[
-                { num: candidates.length, label: "Total Pelamar", suf: "" },
-                { num: shortlistCount, label: "Shortlisted", suf: "" },
-                { num: avgScore, label: "Avg. Score", suf: "" },
-                { num: avgMatch, label: "Avg. Match", suf: "%" },
-              ].map((s, i) => (
-                <div
-                  key={i}
-                  className="bg-[#0f1612] border border-emerald-500/15 rounded-[12px] p-4 text-center">
-                  <div className="font-syne text-[1.8rem] font-extrabold text-emerald-400 leading-none mb-1">
-                    <Counter to={s.num} suffix={s.suf} />
+          {/* How it works */}
+          {!isLoading && (
+            <FadeIn>
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                {[
+                  {
+                    step: "01",
+                    title: "Upload CV",
+                    desc: "Upload file PDF atau DOCX CV kamu",
+                    color: "#10b981",
+                  },
+                  {
+                    step: "02",
+                    title: "AI Parsing",
+                    desc: "Teks diekstrak dan dikirim ke backend AI untuk analisis mendalam",
+                    color: "#06b6d4",
+                  },
+                  {
+                    step: "03",
+                    title: "Hasil Instan",
+                    desc: "Dapatkan score, insights, dan rekomendasi personal dalam detik",
+                    color: "#8b5cf6",
+                  },
+                ].map((s, i) => (
+                  <div
+                    key={i}
+                    className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] p-6">
+                    <div
+                      className="font-syne font-extrabold text-[2rem] leading-none mb-3 opacity-20"
+                      style={{ color: s.color }}>
+                      {s.step}
+                    </div>
+                    <div className="font-syne font-bold text-[0.95rem] mb-2">
+                      {s.title}
+                    </div>
+                    <p className="text-[0.8rem] text-[#7a9585] leading-[1.6]">
+                      {s.desc}
+                    </p>
                   </div>
-                  <div className="text-[0.72rem] text-[#7a9585]">{s.label}</div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </FadeIn>
+          )}
+
+          {/* Upload zone */}
+          <FadeIn delay={0.1}>
+            <UploadZone onFileSelect={onFileSelect} isLoading={isLoading} />
           </FadeIn>
-
-          {/* Candidate grid */}
-          <div
-            className="grid gap-4"
-            style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            }}>
-            {candidates.map((c, i) => {
-              const st = statuses[c.name];
-              return (
-                <FadeIn key={i} delay={i * 0.08}>
-                  <div className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] p-[22px] flex flex-col gap-[14px] transition-all duration-300 hover:border-emerald-500/35 hover:-translate-y-[2px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
-                    {/* Top */}
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-11 h-11 rounded-[12px] flex items-center justify-center font-syne font-extrabold text-[0.85rem] flex-shrink-0"
-                        style={{ background: `${c.color}18`, color: c.color }}>
-                        {c.avatar}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-syne font-bold text-[0.95rem]">
-                          {c.name}
-                        </div>
-                        <div className="text-[0.75rem] text-[#7a9585]">
-                          {c.role}
-                        </div>
-                      </div>
-                      <span
-                        className="inline-flex items-center gap-[5px] px-[10px] py-1 rounded-full text-[0.68rem] font-bold tracking-[0.05em] uppercase flex-shrink-0"
-                        style={{
-                          background: `${statusColor[st]}15`,
-                          color: statusColor[st],
-                          border: `1px solid ${statusColor[st]}30`,
-                        }}>
-                        {statusLabel[st]}
-                      </span>
-                    </div>
-
-                    {/* Score chips */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-[#141f19] border border-emerald-500/15 rounded-[8px] p-[9px] text-center">
-                        <div className="font-syne text-[1.3rem] font-extrabold leading-none text-emerald-400">
-                          {c.score}
-                        </div>
-                        <div className="text-[0.68rem] text-[#7a9585] mt-[2px]">
-                          Resume Score
-                        </div>
-                      </div>
-                      <div className="bg-[#141f19] border border-emerald-500/15 rounded-[8px] p-[9px] text-center">
-                        <div className="font-syne text-[1.3rem] font-extrabold leading-none text-cyan-400">
-                          {c.match}%
-                        </div>
-                        <div className="text-[0.68rem] text-[#7a9585] mt-[2px]">
-                          Job Match
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Match bar */}
-                    <div>
-                      <div className="flex justify-between text-[0.7rem] text-[#7a9585] mb-[5px]">
-                        <span>Kecocokan dengan posisi</span>
-                        <span className="font-bold" style={{ color: c.color }}>
-                          {c.match}%
-                        </span>
-                      </div>
-                      <div className="h-[5px] rounded-full bg-white/[0.05] overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-[1s]"
-                          style={{
-                            width: `${c.match}%`,
-                            background: `linear-gradient(90deg, ${c.color}, #06b6d4)`,
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Skills */}
-                    <div className="flex flex-wrap gap-[5px]">
-                      {c.skills.map((s) => (
-                        <span
-                          key={s}
-                          className="bg-white/[0.04] border border-white/[0.08] px-[9px] py-[3px] rounded-[5px] text-[0.72rem] font-mono text-[#e8f0ec]">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-[7px]">
-                      <button
-                        onClick={() => setStatus(c.name, "shortlist")}
-                        className="flex-1 flex items-center justify-center gap-[5px] py-[9px] rounded-[8px] bg-emerald-500 hover:bg-emerald-400 text-black text-[0.78rem] font-bold border-0 cursor-pointer transition-all hover:shadow-[0_4px_12px_rgba(16,185,129,0.3)]">
-                        <ThumbsUp size={13} /> Shortlist
-                      </button>
-                      <button
-                        onClick={() => setStatus(c.name, "reject")}
-                        className="flex-1 flex items-center justify-center gap-[5px] py-[9px] rounded-[8px] bg-transparent border border-emerald-500/15 text-[#7a9585] text-[0.78rem] font-medium cursor-pointer transition-all hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/[0.05]">
-                        <ThumbsDown size={13} /> Tolak
-                      </button>
-                      <button className="w-9 h-9 rounded-[8px] bg-[#141f19] border border-emerald-500/15 text-[#7a9585] flex items-center justify-center cursor-pointer transition-all hover:border-emerald-500/35 hover:text-[#e8f0ec] flex-shrink-0">
-                        <Eye size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </FadeIn>
-              );
-            })}
-          </div>
         </div>
       </section>
     </motion.div>
@@ -614,38 +566,80 @@ function HRMode() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function AnalyzePage() {
-  const [mode, setMode] = useState("candidate");
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  /**
+   * FLOW:
+   * 1. User upload PDF
+   * 2. Frontend parse PDF pakai pdfjs-dist → ekstrak plain text di browser
+   * 3. POST { text } ke Express backend (http://localhost:5000/api/analyze)
+   * 4. Express kirim teks ke Gemini/OpenAI → return JSON hasil analisis
+   * 5. Frontend render hasil
+   *
+   * Install: npm install pdfjs-dist
+   */
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    // Dynamic import agar tidak ngebreak SSR Next.js
+    const pdfjsLib = await import("pdfjs-dist");
+
+    // Wajib set workerSrc agar pdfjs bisa jalan di browser
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+      "pdfjs-dist/build/pdf.worker.mjs",
+      import.meta.url,
+    ).toString();
+
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    let fullText = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items
+        .map((item: any) => ("str" in item ? item.str : ""))
+        .join(" ");
+      fullText += pageText + "\n";
+    }
+
+    return fullText.trim();
+  };
+
+  const handleFileSelect = async (file: File) => {
+    setIsLoading(true);
+
+    try {
+      // ── Step 1: Ekstrak teks dari PDF di browser ───────────────
+      const extractedText = await extractTextFromPDF(file);
+
+      // ── Step 2: Kirim teks ke Express backend ──────────────────
+      const res = await fetch("http://localhost:5000/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: extractedText }),
+      });
+
+      if (!res.ok) throw new Error("Analisis gagal");
+      const result: AnalysisData = await res.json();
+      setAnalysisData({ ...result, fileName: file.name });
+
+      // ── DEMO: comment blok di atas, uncomment ini ──────────────
+      // await new Promise((r) => setTimeout(r, 2200));
+      // setAnalysisData({ ...demoAnalysis, fileName: file.name });
+      // ──────────────────────────────────────────────────────────
+    } catch (err) {
+      console.error(err);
+      // TODO: tampilkan toast error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReset = () => setAnalysisData(null);
 
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[rgba(10,15,13,0.85)] backdrop-blur-[16px] border-b border-emerald-500/15">
-        <div className="max-w-[1180px] mx-auto px-6 flex items-center justify-between h-16">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-syne font-extrabold text-[1.1rem] text-[#e8f0ec] no-underline">
-            <span className="text-emerald-400">✦</span> RecruitAI
-          </Link>
-          <div className="flex items-center gap-7">
-            {[
-              { label: "Jobs", href: "/jobs", active: false },
-              { label: "Analyze", href: "#", active: true },
-              { label: "Dashboard", href: "#", active: false },
-            ].map(({ label, href, active }) => (
-              <Link
-                key={label}
-                href={href}
-                className={`text-[0.88rem] font-medium no-underline transition-colors
-                  ${active ? "text-emerald-400" : "text-[#7a9585] hover:text-emerald-400"}`}>
-                {label}
-              </Link>
-            ))}
-            <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[0.82rem] px-[18px] py-2 rounded-[8px]">
-              Masuk →
-            </Button>
-          </div>
-        </div>
-      </nav>
 
       <main className="pt-16 bg-[#0a0f0d] min-h-screen">
         {/* HERO */}
@@ -686,34 +680,47 @@ export default function AnalyzePage() {
               personal berbasis AI — dalam hitungan detik.
             </p>
 
-            {/* Role toggle */}
-            <div className="inline-flex bg-[#0f1612] border border-emerald-500/15 rounded-[12px] p-1 gap-1">
-              {[
-                { k: "candidate", l: "👤 Candidate" },
-                { k: "hr", l: "🏢 HR Mode" },
-              ].map(({ k, l }) => (
-                <button
-                  key={k}
-                  onClick={() => setMode(k)}
-                  className={`px-[22px] py-[9px] rounded-[9px] border-0 text-[0.85rem] font-semibold cursor-pointer transition-all duration-200
-                    ${
-                      mode === k
-                        ? "bg-emerald-500 text-black shadow-[0_4px_14px_rgba(16,185,129,0.3)]"
-                        : "bg-transparent text-[#7a9585] hover:text-[#e8f0ec]"
-                    }`}>
-                  {l}
-                </button>
-              ))}
+            {/* Status indicator */}
+            <div className="inline-flex items-center gap-[6px] bg-[#0f1612] border border-emerald-500/15 rounded-full px-4 py-[7px] text-[0.75rem] text-[#7a9585]">
+              {isLoading ? (
+                <>
+                  <Loader2
+                    size={12}
+                    className="text-emerald-400 animate-spin"
+                  />
+                  <span>Menganalisis dokumen...</span>
+                </>
+              ) : analysisData ? (
+                <>
+                  <CheckCircle2 size={12} className="text-emerald-400" />
+                  <span className="text-emerald-400">Analisis selesai</span>
+                  <span>·</span>
+                  <span>{analysisData.fileName}</span>
+                </>
+              ) : (
+                <>
+                  <Eye size={12} className="text-emerald-400" />
+                  <span>Upload CV untuk memulai analisis</span>
+                </>
+              )}
             </div>
           </motion.div>
         </section>
 
         {/* CONTENT */}
         <AnimatePresence mode="wait">
-          {mode === "candidate" ? (
-            <CandidateMode key="candidate" />
+          {analysisData ? (
+            <AnalysisResult
+              key="result"
+              data={analysisData}
+              onReset={handleReset}
+            />
           ) : (
-            <HRMode key="hr" />
+            <EmptyState
+              key="empty"
+              onFileSelect={handleFileSelect}
+              isLoading={isLoading}
+            />
           )}
         </AnimatePresence>
 

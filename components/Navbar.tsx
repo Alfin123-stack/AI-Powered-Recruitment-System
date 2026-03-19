@@ -1,10 +1,19 @@
 // components/Navbar.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Menu,
+  X,
+  ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  User,
+  ChevronDown,
+} from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const navLinks = [
   { label: "Jobs", href: "/jobs" },
@@ -15,21 +24,81 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  console.log(user?.identities[0]?.identity_data?.role);
+
+  const roleUser = user?.identities[0]?.identity_data?.role || null;
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // ✅ fix react warning
   useEffect(() => {
-    setMenuOpen(false);
+    if (menuOpen || userMenuOpen) {
+      startTransition(() => {
+        setMenuOpen(false);
+        setUserMenuOpen(false);
+      });
+    }
   }, [pathname]);
+
+  // ✅ supabase auth
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+    };
+
+    getUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Tutup user dropdown saat klik di luar
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-user-menu]")) setUserMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [userMenuOpen]);
 
   const isActive = (href: string) =>
     pathname === href || pathname?.startsWith(href + "/");
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUserMenuOpen(false);
+    router.replace("/");
+  };
+
+  const name =
+    user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+  const avatar = user?.user_metadata?.avatar_url;
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
 
   return (
     <>
@@ -87,31 +156,130 @@ export default function Navbar() {
 
           {/* ── ACTIONS ── */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Login */}
-            <Link
-              href="/login"
-              className="hidden sm:block px-[14px] py-2 rounded-[9px] text-[0.85rem] font-medium text-[#7a9585] no-underline transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.05]">
-              Login
-            </Link>
+            {user ? (
+              /* ── LOGGED IN STATE ── */
+              <>
+                {/* Dashboard button */}
+                <Link
+                  href={
+                    roleUser === "hr" ? "/hr/dashboard" : "/candidate/dashboard"
+                  }
+                  className="hidden sm:flex items-center gap-[6px] px-[14px] py-2 rounded-[9px] text-[0.85rem] font-medium text-[#7a9585] no-underline transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.05]">
+                  <LayoutDashboard size={14} />
+                  Dashboard
+                </Link>
 
-            {/* Spinning border CTA */}
-            <Link
-              href="/register"
-              className="relative inline-flex h-9 rounded-[9px] overflow-hidden p-[1.5px] no-underline flex-shrink-0 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(16,185,129,0.4)]">
-              {/* Spinning conic gradient */}
-              <span
-                className="absolute inset-[-1000%]"
-                style={{
-                  background:
-                    "conic-gradient(from 0deg,#10b981,#06b6d4,#8b5cf6,#10b981)",
-                  animation: "ctaSpin 5s linear infinite",
-                }}
-              />
-              {/* Inner */}
-              <span className="relative z-10 inline-flex items-center gap-[6px] h-full px-4 rounded-[7.5px] bg-[#0a0f0d] text-[0.84rem] font-bold text-emerald-400 whitespace-nowrap transition-all duration-200 hover:text-[#e8f0ec] hover:bg-emerald-500/[0.12]">
-                Coba Gratis <span className="text-[0.75rem]">→</span>
-              </span>
-            </Link>
+                {/* User avatar dropdown */}
+                <div className="relative" data-user-menu>
+                  <button
+                    onClick={() => setUserMenuOpen((v) => !v)}
+                    className="flex items-center gap-[6px] h-9 pl-1 pr-3 rounded-[9px] border border-[rgba(16,185,129,0.15)] bg-[rgba(16,185,129,0.04)] hover:border-[rgba(16,185,129,0.35)] hover:bg-[rgba(16,185,129,0.08)] transition-all duration-200 cursor-pointer">
+                    {/* Avatar */}
+                    {avatar ? (
+                      <img
+                        src={avatar}
+                        alt={name}
+                        className="w-7 h-7 rounded-[7px] object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[0.7rem] font-bold text-black"
+                        style={{
+                          background: "linear-gradient(135deg,#10b981,#06b6d4)",
+                        }}>
+                        {getInitials(name)}
+                      </div>
+                    )}
+                    <span className="hidden sm:block text-[0.82rem] font-medium text-[#c5d8cc] max-w-[90px] truncate">
+                      {name.split(" ")[0]}
+                    </span>
+                    <ChevronDown
+                      size={13}
+                      className={`text-[#7a9585] transition-transform duration-200 ${
+                        userMenuOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown menu */}
+                  {userMenuOpen && (
+                    <div
+                      className="absolute right-0 top-[calc(100%+8px)] w-[200px] rounded-[12px] border border-[rgba(16,185,129,0.15)] overflow-hidden"
+                      style={{
+                        background: "rgba(10,15,13,0.98)",
+                        backdropFilter: "blur(24px)",
+                        boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
+                      }}>
+                      {/* User info header */}
+                      <div className="px-4 py-3 border-b border-[rgba(16,185,129,0.1)]">
+                        <p className="text-[0.82rem] font-semibold text-[#e8f0ec] truncate">
+                          {name}
+                        </p>
+                        <p className="text-[0.75rem] text-[#4d6b5a] truncate mt-0.5">
+                          {user.email}
+                        </p>
+                      </div>
+
+                      {/* Menu items */}
+                      <div className="py-1.5">
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-[10px] px-4 py-2.5 text-[0.84rem] text-[#7a9585] no-underline hover:text-[#e8f0ec] hover:bg-white/[0.04] transition-colors duration-150">
+                          <LayoutDashboard size={14} />
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-[10px] px-4 py-2.5 text-[0.84rem] text-[#7a9585] no-underline hover:text-[#e8f0ec] hover:bg-white/[0.04] transition-colors duration-150">
+                          <User size={14} />
+                          Profile
+                        </Link>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="h-px bg-[rgba(16,185,129,0.08)] mx-2" />
+
+                      {/* Logout */}
+                      <div className="py-1.5">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-[10px] px-4 py-2.5 text-[0.84rem] text-[#7a9585] hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer">
+                          <LogOut size={14} />
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              /* ── GUEST STATE ── */
+              <>
+                {/* Login */}
+                <Link
+                  href="/login"
+                  className="hidden sm:block px-[14px] py-2 rounded-[9px] text-[0.85rem] font-medium text-[#7a9585] no-underline transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.05]">
+                  Login
+                </Link>
+
+                {/* Spinning border CTA */}
+                <Link
+                  href="/register"
+                  className="relative inline-flex h-9 rounded-[9px] overflow-hidden p-[1.5px] no-underline flex-shrink-0 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(16,185,129,0.4)]">
+                  <span
+                    className="absolute inset-[-1000%]"
+                    style={{
+                      background:
+                        "conic-gradient(from 0deg,#10b981,#06b6d4,#8b5cf6,#10b981)",
+                      animation: "ctaSpin 5s linear infinite",
+                    }}
+                  />
+                  <span className="relative z-10 inline-flex items-center gap-[6px] h-full px-4 rounded-[7.5px] bg-[#0a0f0d] text-[0.84rem] font-bold text-emerald-400 whitespace-nowrap transition-all duration-200 hover:text-[#e8f0ec] hover:bg-emerald-500/[0.12]">
+                    Coba Gratis <span className="text-[0.75rem]">→</span>
+                  </span>
+                </Link>
+              </>
+            )}
 
             {/* Hamburger */}
             <button
@@ -156,24 +324,85 @@ export default function Navbar() {
         {/* Divider */}
         <div className="h-px bg-[rgba(16,185,129,0.1)] my-3" />
 
-        {/* Mobile login */}
-        <Link
-          href="/login"
-          className="flex items-center justify-between px-[14px] py-3 rounded-[10px] mb-2 text-[0.9rem] font-medium text-[#7a9585] no-underline border border-transparent transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.04]">
-          Login
-          <ChevronRight size={14} className="opacity-40" />
-        </Link>
+        {user ? (
+          /* ── MOBILE LOGGED IN ── */
+          <>
+            {/* User info card */}
+            <div className="flex items-center gap-3 px-[14px] py-3 mb-1 rounded-[10px] bg-[rgba(16,185,129,0.04)] border border-[rgba(16,185,129,0.1)]">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt={name}
+                  className="w-9 h-9 rounded-[8px] object-cover flex-shrink-0"
+                />
+              ) : (
+                <div
+                  className="w-9 h-9 rounded-[8px] flex items-center justify-center text-[0.75rem] font-bold text-black flex-shrink-0"
+                  style={{
+                    background: "linear-gradient(135deg,#10b981,#06b6d4)",
+                  }}>
+                  {getInitials(name)}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-[0.88rem] font-semibold text-[#e8f0ec] truncate">
+                  {name}
+                </p>
+                <p className="text-[0.76rem] text-[#4d6b5a] truncate">
+                  {user.email}
+                </p>
+              </div>
+            </div>
 
-        {/* Mobile CTA */}
-        <Link
-          href="/register"
-          className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-emerald-500 hover:bg-emerald-400 hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] rounded-[10px] text-[0.9rem] font-bold text-black no-underline transition-all duration-200">
-          ✦ Coba Gratis →
-        </Link>
+            <Link
+              href="/dashboard"
+              className="flex items-center justify-between px-[14px] py-3 rounded-[10px] mb-1 text-[0.9rem] font-medium text-[#7a9585] no-underline border border-transparent transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.04]">
+              <span className="flex items-center gap-2">
+                <LayoutDashboard size={15} />
+                Dashboard
+              </span>
+              <ChevronRight size={14} className="opacity-40" />
+            </Link>
+
+            <Link
+              href="/profile"
+              className="flex items-center justify-between px-[14px] py-3 rounded-[10px] mb-2 text-[0.9rem] font-medium text-[#7a9585] no-underline border border-transparent transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.04]">
+              <span className="flex items-center gap-2">
+                <User size={15} />
+                Profile
+              </span>
+              <ChevronRight size={14} className="opacity-40" />
+            </Link>
+
+            {/* Mobile Logout */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-[10px] text-[0.9rem] font-bold text-red-400 border border-red-500/20 bg-red-500/[0.06] hover:bg-red-500/[0.12] transition-all duration-200 cursor-pointer">
+              <LogOut size={15} />
+              Logout
+            </button>
+          </>
+        ) : (
+          /* ── MOBILE GUEST ── */
+          <>
+            <Link
+              href="/login"
+              className="flex items-center justify-between px-[14px] py-3 rounded-[10px] mb-2 text-[0.9rem] font-medium text-[#7a9585] no-underline border border-transparent transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.04]">
+              Login
+              <ChevronRight size={14} className="opacity-40" />
+            </Link>
+
+            {/* Mobile CTA */}
+            <Link
+              href="/register"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-emerald-500 hover:bg-emerald-400 hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] rounded-[10px] text-[0.9rem] font-bold text-black no-underline transition-all duration-200">
+              ✦ Coba Gratis →
+            </Link>
+          </>
+        )}
       </div>
 
-      {/* Keyframe untuk spinning CTA — taruh di globals.css */}
-      {/* @keyframes ctaSpin { to { transform: rotate(360deg); } } */}
+      {/* @keyframes ctaSpin { to { transform: rotate(360deg); } } — taruh di globals.css */}
     </>
   );
 }

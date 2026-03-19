@@ -1,17 +1,64 @@
 // app/login/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/lib/supabase";
+
+import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const router = useRouter();
+
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+      setLoading(false);
+      return;
+    }
+
+    // 🔥 ambil token
+    const token = data.session?.access_token;
+
+    // simpan token
+    localStorage.setItem("token", token!);
+
+    // redirect
+    router.push("/dashboard");
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+
+      if (data.session) {
+        router.replace("/");
+      }
+    };
+
+    checkSession();
+  }, [router]);
   return (
     <div
       className="relative min-h-screen overflow-hidden flex items-center justify-center p-6"
@@ -73,7 +120,7 @@ export default function LoginPage() {
         </p>
 
         {/* Form */}
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-[18px]">
+        <form onSubmit={handleLogin} className="space-y-[18px]">
           {/* Email */}
           <div className="space-y-2">
             <Label
@@ -89,6 +136,8 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@company.com"
                 className="pl-[42px] bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] placeholder:text-[rgba(122,149,133,0.5)] rounded-[10px] focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 focus:bg-emerald-500/[0.04]"
               />
@@ -117,6 +166,8 @@ export default function LoginPage() {
               />
               <Input
                 id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 type={showPass ? "text" : "password"}
                 placeholder="••••••••"
                 className="pl-[42px] pr-[42px] bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] placeholder:text-[rgba(122,149,133,0.5)] rounded-[10px] focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 focus:bg-emerald-500/[0.04]"
@@ -133,8 +184,16 @@ export default function LoginPage() {
 
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[10px] py-[13px] hover:shadow-[0_6px_24px_rgba(16,185,129,0.35)] hover:-translate-y-[1px] active:translate-y-0 transition-all">
-            Masuk →
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <Spinner className="animate-spin mr-2" />
+                Logging in...
+              </span>
+            ) : (
+              "Masuk →"
+            )}
           </Button>
         </form>
 
@@ -150,7 +209,7 @@ export default function LoginPage() {
         {/* Google */}
         <Button
           variant="outline"
-          className="w-full bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] rounded-[10px] hover:border-emerald-500/35 hover:bg-emerald-500/[0.04] hover:-translate-y-[1px] transition-all">
+          className="w-full bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] rounded-[10px]">
           <svg
             width="18"
             height="18"
