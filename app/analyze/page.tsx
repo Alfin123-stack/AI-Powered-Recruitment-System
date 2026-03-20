@@ -613,7 +613,7 @@ export default function AnalyzePage() {
       const extractedText = await extractTextFromPDF(file);
 
       // ── Step 2: Kirim teks ke Express backend ──────────────────
-      const res = await fetch("http://localhost:5000/api/analyze", {
+      const res = await fetch("http://localhost:5000/api/ai/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: extractedText }),

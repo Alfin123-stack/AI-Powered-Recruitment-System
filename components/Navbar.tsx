@@ -162,7 +162,7 @@ export default function Navbar() {
                 {/* Dashboard button */}
                 <Link
                   href={
-                    roleUser === "hr" ? "/hr/dashboard" : "/candidate/dashboard"
+                    roleUser === "hr" ? "/dashboard/hr" : "/dashboard/candidate"
                   }
                   className="hidden sm:flex items-center gap-[6px] px-[14px] py-2 rounded-[9px] text-[0.85rem] font-medium text-[#7a9585] no-underline transition-all duration-200 hover:text-[#e8f0ec] hover:bg-white/[0.05]">
                   <LayoutDashboard size={14} />
