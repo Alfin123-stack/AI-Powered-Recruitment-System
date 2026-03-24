@@ -244,7 +244,7 @@ export default function RegisterPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden mt-10"
       style={{
         background: `
           radial-gradient(ellipse 60% 50% at 20% 20%, rgba(16,185,129,0.07) 0%, transparent 60%),

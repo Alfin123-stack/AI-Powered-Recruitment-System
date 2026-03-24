@@ -1,13 +1,12 @@
-// app/jobs/[id]/page.tsx
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
 import {
   MapPin,
-  Users,
   Clock,
   Briefcase,
   ChevronLeft,
@@ -16,112 +15,111 @@ import {
   Share2,
   Bookmark,
   Upload,
+  Loader2,
+  X,
+  AlertCircle,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-const jobsData = [
-  {
-    id: "0",
-    title: "Frontend Developer",
-    company: "PT Teknologi Indonesia",
-    companyDesc:
-      "Perusahaan teknologi terkemuka yang fokus pada pengembangan produk digital untuk pasar Indonesia dan Asia Tenggara.",
-    companySize: "200–500 karyawan",
-    location: "Jakarta / Remote",
-    type: "Full-time",
-    salary: "Rp 8–15 jt/bln",
-    posted: "2 hari lalu",
-    deadline: "30 April 2025",
-    applicants: 12,
-    color: "#10b981",
-    skills: ["React", "Next.js", "Tailwind", "TypeScript", "Git"],
-    description:
-      "Kami mencari Frontend Developer berpengalaman untuk membangun user interface modern yang cepat, responsif, dan accessible. Anda akan bekerja langsung bersama tim product dan desainer untuk mewujudkan pengalaman pengguna terbaik.",
-    responsibilities: [
-      "Membangun dan memelihara UI komponen menggunakan React dan Next.js",
-      "Mengoptimalkan performa web (Core Web Vitals, lazy loading, caching)",
-      "Berkolaborasi dengan tim backend untuk integrasi API",
-      "Mengimplementasikan desain dari Figma menjadi kode yang pixel-perfect",
-      "Menulis unit test dan melakukan code review",
-      "Berkontribusi pada dokumentasi teknis tim engineering",
-    ],
-    requirements: [
-      "Minimal 2 tahun pengalaman profesional dengan React.js",
-      "Menguasai HTML5, CSS3, dan JavaScript (ES6+)",
-      "Pengalaman dengan TypeScript dan state management (Redux/Zustand)",
-      "Familiar dengan Tailwind CSS dan component library",
-      "Pengalaman menggunakan Git dan workflow CI/CD",
-      "Mampu bekerja secara mandiri maupun dalam tim lintas fungsi",
-    ],
-    benefits: [
-      "Gaji kompetitif + bonus performa",
-      "Remote-friendly culture",
-      "Budget pelatihan & sertifikasi",
-      "Asuransi kesehatan & gigi",
-      "Laptop MacBook Pro disediakan",
-    ],
-  },
-  {
-    id: "1",
-    title: "Fullstack Developer",
-    company: "Startup Digital Nusantara",
-    companyDesc:
-      "Startup SaaS B2B yang membangun platform manajemen bisnis untuk UKM Indonesia.",
-    companySize: "50–100 karyawan",
-    location: "Remote",
-    type: "Full-time",
-    salary: "Rp 12–20 jt/bln",
-    posted: "5 hari lalu",
-    deadline: "15 Mei 2025",
-    applicants: 8,
-    color: "#06b6d4",
-    skills: ["Node.js", "React", "PostgreSQL", "Docker"],
-    description:
-      "Bergabunglah sebagai Fullstack Developer dan bangun fitur-fitur baru pada platform SaaS kami yang digunakan ribuan UKM Indonesia.",
-    responsibilities: [
-      "Mengembangkan fitur frontend dan backend end-to-end",
-      "Merancang dan mengelola skema database PostgreSQL",
-      "Membangun RESTful API dan GraphQL endpoint",
-      "Mengoptimalkan query database dan performa server",
-    ],
-    requirements: [
-      "Minimal 3 tahun pengalaman fullstack development",
-      "Menguasai Node.js dan React",
-      "Berpengalaman dengan PostgreSQL dan query optimization",
-      "Familiar dengan Docker dan deployment workflow",
-    ],
-    benefits: [
-      "Equity / ESOP program",
-      "100% Remote",
-      "Jam kerja fleksibel",
-      "Allowance internet & co-working space",
-    ],
-  },
-];
-// ── Types ─────────────────────────────────────────────────────────────────────
+
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+);
+
 type Job = {
   id: string;
   title: string;
-  company: string;
-  companyDesc: string;
-  companySize: string;
+  description: string;
+  requirements: string;
+  salary: string;
   location: string;
   type: string;
-  salary: string;
-  posted: string;
-  deadline: string;
-  applicants: number;
-  color: string;
-  match: number;
   skills: string[];
-  description: string;
-  responsibilities: string[];
-  requirements: string[];
   benefits: string[];
+  deadline: string | null;
+  created_at: string;
+  is_active: boolean;
+  companies: {
+    id: string;
+    name: string;
+    description: string;
+    company_size: string;
+    logo_url: string | null;
+  };
 };
 
-// ── FadeIn helper ─────────────────────────────────────────────────────────────
+const COLORS = [
+  "#10b981",
+  "#06b6d4",
+  "#8b5cf6",
+  "#f59e0b",
+  "#ef4444",
+  "#ec4899",
+];
+const getColor = (str: string) => COLORS[str.charCodeAt(0) % COLORS.length];
+
+const timeAgo = (dateStr: string) => {
+  const days = Math.floor(
+    (Date.now() - new Date(dateStr).getTime()) / 86400000,
+  );
+  if (days === 0) return "Hari ini";
+  if (days === 1) return "1 hari lalu";
+  if (days < 7) return `${days} hari lalu`;
+  if (days < 30) return `${Math.floor(days / 7)} minggu lalu`;
+  return `${Math.floor(days / 30)} bulan lalu`;
+};
+
+const formatDeadline = (d: string | null) =>
+  d
+    ? new Date(d).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "—";
+
+const parseRequirements = (raw: string) =>
+  raw
+    ? raw
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+
+// Status badge config
+const statusConfig: Record<
+  string,
+  { text: string; color: string; bg: string; border: string }
+> = {
+  applied: {
+    text: "Lamaran Terkirim",
+    color: "#f59e0b",
+    bg: "rgba(245,158,11,0.08)",
+    border: "rgba(245,158,11,0.25)",
+  },
+  review: {
+    text: "Sedang Direview",
+    color: "#06b6d4",
+    bg: "rgba(6,182,212,0.08)",
+    border: "rgba(6,182,212,0.25)",
+  },
+  shortlisted: {
+    text: "Kamu Shortlisted!",
+    color: "#10b981",
+    bg: "rgba(16,185,129,0.08)",
+    border: "rgba(16,185,129,0.25)",
+  },
+  rejected: {
+    text: "Tidak Lolos",
+    color: "#ef4444",
+    bg: "rgba(239,68,68,0.08)",
+    border: "rgba(239,68,68,0.25)",
+  },
+};
+
 function FadeIn({
   children,
   delay = 0,
@@ -139,7 +137,6 @@ function FadeIn({
   );
 }
 
-// ── Card ──────────────────────────────────────────────────────────────────────
 function Card({
   children,
   className = "",
@@ -154,6 +151,7 @@ function Card({
     </div>
   );
 }
+
 function CardTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 mb-[18px] font-syne text-[1.05rem] font-bold">
@@ -163,15 +161,420 @@ function CardTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ── Apply Modal ───────────────────────────────────────────────────────────────
+function ApplyModal({
+  job,
+  token,
+  userId,
+  onClose,
+  onSuccess,
+}: {
+  job: Job;
+  token: string;
+  userId: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [step, setStep] = useState<"upload" | "analyzing" | "done" | "error">(
+    "upload",
+  );
+  const [errorMsg, setErrorMsg] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (f: File) => {
+    if (f.type !== "application/pdf" && !f.name.endsWith(".pdf")) {
+      setErrorMsg("Hanya file PDF yang didukung");
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) {
+      setErrorMsg("Ukuran file maksimal 5MB");
+      return;
+    }
+    setErrorMsg("");
+    setFile(f);
+  };
+
+  const extractTextFromPDF = async (f: File): Promise<string> => {
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+      "pdfjs-dist/build/pdf.worker.mjs",
+      import.meta.url,
+    ).toString();
+    const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() })
+      .promise;
+    let text = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text +=
+        content.items
+          .map((item: any) => ("str" in item ? item.str : ""))
+          .join(" ") + "\n";
+    }
+    return text.trim();
+  };
+
+  const handleSubmit = async () => {
+    if (!file) return setErrorMsg("Pilih file CV terlebih dahulu");
+    setStep("analyzing");
+    setErrorMsg("");
+
+    try {
+      // 1. Upload CV ke Supabase Storage
+      const filePath = `${userId}/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("cv_candidate")
+        .upload(filePath, file);
+      if (uploadError)
+        throw new Error("Gagal upload CV: " + uploadError.message);
+
+      // 2. Ekstrak teks dari PDF
+      const cvText = await extractTextFromPDF(file);
+
+      // 3. Analisis CV vs job description pakai AI
+      const aiRes = await fetch(`${API}/api/ai/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: cvText,
+          jobDescription: `${job.title}\n${job.description}\n${job.requirements}`,
+        }),
+      });
+      if (!aiRes.ok) throw new Error("Gagal analisis CV");
+      const analysis = await aiRes.json();
+
+      // 4. Submit application + hasil AI ke backend
+      const applyRes = await fetch(`${API}/api/applications/apply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ job_id: job.id, cv_url: filePath, analysis }),
+      });
+      if (!applyRes.ok) {
+        const err = await applyRes.json();
+        throw new Error(err.error || "Gagal melamar");
+      }
+
+      setStep("done");
+      onSuccess(); // update state applied di parent
+    } catch (err: any) {
+      setErrorMsg(err.message);
+      setStep("error");
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="bg-[#0f1612] border border-emerald-500/20 rounded-[20px] w-full max-w-[480px]">
+        {/* Header */}
+        <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-emerald-500/15">
+          <div>
+            <h2 className="font-syne font-extrabold text-[1.1rem]">
+              Apply Lowongan
+            </h2>
+            <p className="text-[#7a9585] text-[0.78rem] mt-[3px]">
+              {job.title} · {job.companies.name}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-[8px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center text-[#7a9585] hover:text-[#e8f0ec] cursor-pointer transition-colors">
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="px-7 py-6">
+          <AnimatePresence mode="wait">
+            {/* Step: Upload */}
+            {(step === "upload" || step === "error") && (
+              <motion.div
+                key="upload"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}>
+                <p className="text-[#7a9585] text-[0.82rem] mb-4 leading-relaxed">
+                  Upload CV kamu (PDF). AI akan menganalisis kecocokan CV dengan
+                  posisi ini sebelum lamaran dikirim.
+                </p>
+
+                {/* Drop zone */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragging(true);
+                  }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragging(false);
+                    const f = e.dataTransfer.files[0];
+                    if (f) handleFile(f);
+                  }}
+                  onClick={() => inputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-[12px] p-7 text-center cursor-pointer transition-all duration-200 mb-4
+                    ${file ? "border-emerald-500/40 bg-emerald-500/[0.04]" : dragging ? "border-emerald-500/60 bg-emerald-500/[0.06]" : "border-emerald-500/15 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02]"}`}>
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleFile(f);
+                    }}
+                  />
+                  {file ? (
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="w-10 h-10 rounded-[9px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <FileText size={18} />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-[0.85rem] font-semibold text-emerald-400">
+                          {file.name}
+                        </div>
+                        <div className="text-[0.72rem] text-[#7a9585]">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFile(null);
+                        }}
+                        className="ml-auto text-[#7a9585] hover:text-red-400 transition-colors">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 rounded-[10px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto mb-3">
+                        <Upload size={18} />
+                      </div>
+                      <div className="text-[0.85rem] font-semibold mb-1">
+                        Upload CV kamu
+                      </div>
+                      <div className="text-[#7a9585] text-[0.75rem]">
+                        Drag & drop atau klik · PDF · Maks 5MB
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {errorMsg && (
+                  <div className="flex items-center gap-2 text-red-400 text-[0.8rem] bg-red-500/10 border border-red-500/20 rounded-[8px] px-3 py-2 mb-4">
+                    <AlertCircle size={13} /> {errorMsg}
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={onClose}
+                    variant="outline"
+                    className="flex-1 border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec] bg-transparent rounded-[10px]">
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!file}
+                    className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[10px]">
+                    Kirim Lamaran →
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step: Analyzing */}
+            {step === "analyzing" && (
+              <motion.div
+                key="analyzing"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center py-6">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                  <Loader2
+                    size={28}
+                    className="text-emerald-400 animate-spin"
+                  />
+                </div>
+                <div className="font-syne font-bold text-[1rem] mb-2">
+                  Menganalisis CV...
+                </div>
+                <p className="text-[#7a9585] text-[0.82rem] leading-relaxed">
+                  AI sedang mengevaluasi kecocokan CV kamu dengan posisi{" "}
+                  {job.title}. Mohon tunggu sebentar.
+                </p>
+              </motion.div>
+            )}
+
+            {/* Step: Done */}
+            {step === "done" && (
+              <motion.div
+                key="done"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-6">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 size={28} className="text-emerald-400" />
+                </div>
+                <div className="font-syne font-bold text-[1rem] mb-2">
+                  Lamaran Terkirim! 🎉
+                </div>
+                <p className="text-[#7a9585] text-[0.82rem] leading-relaxed mb-6">
+                  CV kamu sudah dianalisis AI dan lamaran telah dikirim ke{" "}
+                  {job.companies.name}. Pantau status di dashboard kamu.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={onClose}
+                    variant="outline"
+                    className="flex-1 border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec] bg-transparent rounded-[10px]">
+                    Tutup
+                  </Button>
+                  <Link
+                    href="/dashboard/candidate/applications"
+                    className="flex-1 flex items-center justify-center bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[10px] py-[10px] text-[0.88rem] no-underline transition-all">
+                    Lihat Lamaran →
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function JobDetailPage() {
   const { id } = useParams();
-  const job = jobsData.find((j) => j.id === String(id)) ?? jobsData[0];
+  const router = useRouter();
+  const [job, setJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [saved, setSaved] = useState(false);
   const [applied, setApplied] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState<string | null>(
+    null,
+  );
+  const [checkingApplied, setCheckingApplied] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      // 1. Fetch job detail
+      try {
+        const res = await fetch(`${API}/api/jobs/${id}`);
+        if (res.status === 404) return setNotFound(true);
+        if (!res.ok) throw new Error("Gagal fetch");
+        setJob(await res.json());
+      } catch {
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+
+      // 2. Cek session user
+      const {
+        data: { session: s },
+      } = await supabase.auth.getSession();
+      setSession(s);
+
+      // 3. Kalau sudah login, cek apakah sudah apply ke job ini via backend
+      if (s?.access_token && id) {
+        setCheckingApplied(true);
+        try {
+          const res = await fetch(`${API}/api/applications/check/${id}`, {
+            headers: { Authorization: `Bearer ${s.access_token}` },
+          });
+          const { applied: isApplied, status } = await res.json();
+          if (isApplied) {
+            setApplied(true);
+            setApplicationStatus(status);
+          }
+        } catch (err) {
+          console.error("Gagal cek status lamaran:", err);
+        } finally {
+          setCheckingApplied(false);
+        }
+      }
+    };
+
+    init();
+  }, [id]);
+
+  const handleApplyClick = () => {
+    if (!session) {
+      router.push(`/login?redirect=/jobs/${id}`);
+      return;
+    }
+    setShowApplyModal(true);
+  };
+
+  const handleApplySuccess = () => {
+    setApplied(true);
+    setApplicationStatus("applied");
+    setShowApplyModal(false);
+  };
+
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#0a0f0d] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={28} className="text-emerald-400 animate-spin" />
+          <span className="text-[#7a9585] text-[0.85rem]">
+            Memuat detail lowongan...
+          </span>
+        </div>
+      </div>
+    );
+
+  if (notFound || !job)
+    return (
+      <div className="min-h-screen bg-[#0a0f0d] flex items-center justify-center text-center px-6">
+        <div>
+          <div className="text-5xl mb-4 opacity-40">🔍</div>
+          <div className="font-syne font-bold text-[1.2rem] mb-2">
+            Lowongan tidak ditemukan
+          </div>
+          <p className="text-[#7a9585] text-[0.85rem] mb-6">
+            Mungkin sudah ditutup atau tidak tersedia.
+          </p>
+          <Link
+            href="/jobs"
+            className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-6 py-3 rounded-[10px] no-underline text-[0.88rem]">
+            ← Kembali ke Jobs
+          </Link>
+        </div>
+      </div>
+    );
+
+  const color = getColor(job.id);
+  const requirements = parseRequirements(job.requirements);
+  const st = applicationStatus ? statusConfig[applicationStatus] : null;
 
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
+      {/* Apply Modal */}
+      {showApplyModal && session && (
+        <ApplyModal
+          job={job}
+          token={session.access_token}
+          userId={session.user.id}
+          onClose={() => setShowApplyModal(false)}
+          onSuccess={handleApplySuccess}
+        />
+      )}
+
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[rgba(10,15,13,0.85)] backdrop-blur-[16px] border-b border-emerald-500/15">
         <div className="max-w-[1100px] mx-auto px-6 flex items-center justify-between h-16">
@@ -183,7 +586,8 @@ export default function JobDetailPage() {
           <Link
             href="/"
             className="flex items-center gap-2 font-syne font-extrabold text-[1.1rem] text-[#e8f0ec] no-underline">
-            <span className="text-emerald-400">✦</span> RecruitAI
+            <span className="text-emerald-400">✦</span> Recruit
+            <em className="not-italic text-emerald-400">AI</em>
           </Link>
           <div className="flex items-center gap-[10px]">
             <button className="w-9 h-9 rounded-[8px] bg-[#0f1612] border border-emerald-500/15 flex items-center justify-center text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec] transition-all cursor-pointer">
@@ -192,11 +596,7 @@ export default function JobDetailPage() {
             <button
               onClick={() => setSaved(!saved)}
               className={`w-9 h-9 rounded-[8px] flex items-center justify-center cursor-pointer border transition-all
-                ${
-                  saved
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                    : "bg-[#0f1612] border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec]"
-                }`}>
+                ${saved ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-[#0f1612] border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec]"}`}>
               <Bookmark size={15} fill={saved ? "currentColor" : "none"} />
             </button>
           </div>
@@ -227,8 +627,16 @@ export default function JobDetailPage() {
               <div className="flex items-start gap-5 mb-6">
                 <div
                   className="w-16 h-16 rounded-[14px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
-                  style={{ background: `${job.color}18`, color: job.color }}>
-                  <Building2 size={28} />
+                  style={{ background: `${color}18`, color }}>
+                  {job.companies?.logo_url ? (
+                    <img
+                      src={job.companies.logo_url}
+                      alt={job.companies.name}
+                      className="w-full h-full object-cover rounded-[14px]"
+                    />
+                  ) : (
+                    <Building2 size={28} />
+                  )}
                 </div>
                 <div>
                   <h1
@@ -237,29 +645,35 @@ export default function JobDetailPage() {
                     {job.title}
                   </h1>
                   <div className="text-[#7a9585] text-[0.95rem] mb-4">
-                    {job.company} · {job.location}
+                    {job.companies?.name} · {job.location}
                   </div>
                   <div className="flex flex-wrap gap-[14px] mb-5">
                     {[
                       { Icon: MapPin, text: job.location },
                       { Icon: Briefcase, text: job.type },
-                      { Icon: Clock, text: `Diposting ${job.posted}` },
-                      { Icon: Users, text: `${job.applicants} pelamar` },
-                    ].map(({ Icon, text }) => (
+                      {
+                        Icon: Clock,
+                        text: `Diposting ${timeAgo(job.created_at)}`,
+                      },
+                    ]
+                      .filter((m) => m.text)
+                      .map(({ Icon, text }) => (
+                        <span
+                          key={text}
+                          className="flex items-center gap-[6px] text-[#7a9585] text-[0.82rem]">
+                          <Icon size={13} /> {text}
+                        </span>
+                      ))}
+                    {job.salary && (
                       <span
-                        key={text}
-                        className="flex items-center gap-[6px] text-[#7a9585] text-[0.82rem]">
-                        <Icon size={13} /> {text}
+                        className="flex items-center gap-[6px] text-[0.82rem] font-semibold"
+                        style={{ color }}>
+                        💰 {job.salary}
                       </span>
-                    ))}
-                    <span
-                      className="flex items-center gap-[6px] text-[0.82rem] font-semibold"
-                      style={{ color: job.color }}>
-                      💰 {job.salary}
-                    </span>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-[7px]">
-                    {job.skills.map((s) => (
+                    {(job.skills || []).map((s) => (
                       <span
                         key={s}
                         className="bg-white/[0.04] border border-white/[0.09] text-[#e8f0ec] px-3 py-[5px] rounded-[7px] text-[0.78rem] font-medium font-mono hover:border-emerald-500/35 hover:text-emerald-400 transition-all cursor-default">
@@ -282,103 +696,120 @@ export default function JobDetailPage() {
             <FadeIn delay={0.05}>
               <Card>
                 <CardTitle>Deskripsi Pekerjaan</CardTitle>
-                <p className="text-[#7a9585] text-[0.9rem] leading-[1.75]">
+                <p className="text-[#7a9585] text-[0.9rem] leading-[1.75] whitespace-pre-line">
                   {job.description}
                 </p>
               </Card>
             </FadeIn>
 
-            <FadeIn delay={0.1}>
-              <Card>
-                <CardTitle>Tanggung Jawab</CardTitle>
-                <div className="flex flex-col gap-[10px]">
-                  {job.responsibilities.map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-[10px] text-[#7a9585] text-[0.88rem] leading-[1.55]">
-                      <CheckCircle2
-                        size={16}
-                        className="flex-shrink-0 mt-[1px]"
-                        style={{ color: job.color }}
-                      />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </FadeIn>
-
-            <FadeIn delay={0.15}>
-              <Card>
-                <CardTitle>Kualifikasi & Persyaratan</CardTitle>
-                <div className="flex flex-col gap-[10px]">
-                  {job.requirements.map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-[10px] text-[#7a9585] text-[0.88rem] leading-[1.55]">
-                      <CheckCircle2
-                        size={16}
-                        className="flex-shrink-0 mt-[1px] text-cyan-400"
-                      />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </FadeIn>
-
-            <FadeIn delay={0.2}>
-              <Card>
-                <CardTitle>Benefit & Fasilitas</CardTitle>
-                <div className="grid grid-cols-2 gap-2">
-                  {job.benefits.map((b, i) => (
-                    <div
-                      key={i}
-                      className="bg-emerald-500/[0.06] border border-emerald-500/15 rounded-[9px] px-[14px] py-[10px] text-[0.8rem] text-[#e8f0ec] flex items-center gap-[7px]">
-                      <span className="text-emerald-400">✦</span> {b}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </FadeIn>
-
-            <FadeIn delay={0.25}>
-              <Card>
-                <CardTitle>Tentang Perusahaan</CardTitle>
-                <div className="flex gap-[14px] items-start mb-[14px]">
-                  <div
-                    className="w-12 h-12 rounded-[11px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
-                    style={{ background: `${job.color}18`, color: job.color }}>
-                    <Building2 size={20} />
+            {requirements.length > 0 && (
+              <FadeIn delay={0.1}>
+                <Card>
+                  <CardTitle>Kualifikasi & Persyaratan</CardTitle>
+                  <div className="flex flex-col gap-[10px]">
+                    {requirements.map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-[10px] text-[#7a9585] text-[0.88rem] leading-[1.55]">
+                        <CheckCircle2
+                          size={16}
+                          className="flex-shrink-0 mt-[1px] text-cyan-400"
+                        />
+                        <span>{item}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div>
-                    <div className="font-syne font-bold mb-1">
-                      {job.company}
+                </Card>
+              </FadeIn>
+            )}
+
+            {(job.benefits || []).length > 0 && (
+              <FadeIn delay={0.15}>
+                <Card>
+                  <CardTitle>Benefit & Fasilitas</CardTitle>
+                  <div className="grid grid-cols-2 gap-2">
+                    {job.benefits.map((b, i) => (
+                      <div
+                        key={i}
+                        className="bg-emerald-500/[0.06] border border-emerald-500/15 rounded-[9px] px-[14px] py-[10px] text-[0.8rem] text-[#e8f0ec] flex items-center gap-[7px]">
+                        <span className="text-emerald-400">✦</span> {b}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </FadeIn>
+            )}
+
+            {job.companies && (
+              <FadeIn delay={0.2}>
+                <Card>
+                  <CardTitle>Tentang Perusahaan</CardTitle>
+                  <div className="flex gap-[14px] items-start mb-[14px]">
+                    <div
+                      className="w-12 h-12 rounded-[11px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
+                      style={{ background: `${color}18`, color }}>
+                      <Building2 size={20} />
                     </div>
-                    <div className="text-[0.78rem] text-[#7a9585]">
-                      👥 {job.companySize}
+                    <div>
+                      <div className="font-syne font-bold mb-1">
+                        {job.companies.name}
+                      </div>
+                      {job.companies.company_size && (
+                        <div className="text-[0.78rem] text-[#7a9585]">
+                          👥 {job.companies.company_size}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-                <p className="text-[#7a9585] text-[0.9rem] leading-[1.75]">
-                  {job.companyDesc}
-                </p>
-              </Card>
-            </FadeIn>
+                  {job.companies.description && (
+                    <p className="text-[#7a9585] text-[0.9rem] leading-[1.75]">
+                      {job.companies.description}
+                    </p>
+                  )}
+                </Card>
+              </FadeIn>
+            )}
           </div>
 
           {/* SIDEBAR */}
           <FadeIn delay={0.1}>
             <div className="sticky top-20">
               <div className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] p-6 mb-4">
-                {/* Apply */}
-                {applied ? (
-                  <Button className="w-full py-[14px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-[11px] font-bold text-[0.95rem] cursor-default mb-[10px]">
-                    <CheckCircle2 size={16} /> Sudah Dilamar
-                  </Button>
+                {/* ── Apply Button Area ── */}
+                {checkingApplied ? (
+                  // Loading saat cek status lamaran
+                  <div className="w-full py-[14px] rounded-[11px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center gap-2 mb-[10px]">
+                    <Loader2
+                      size={14}
+                      className="text-emerald-400 animate-spin"
+                    />
+                    <span className="text-[#7a9585] text-[0.85rem]">
+                      Mengecek status...
+                    </span>
+                  </div>
+                ) : applied && st ? (
+                  // Sudah apply — tampilkan status dengan warna sesuai
+                  <div className="mb-[10px]">
+                    <div
+                      className="w-full py-[13px] rounded-[11px] border flex items-center justify-center gap-2 mb-2"
+                      style={{ background: st.bg, borderColor: st.border }}>
+                      <CheckCircle2 size={15} style={{ color: st.color }} />
+                      <span
+                        className="font-bold text-[0.9rem]"
+                        style={{ color: st.color }}>
+                        {st.text}
+                      </span>
+                    </div>
+                    <Link
+                      href="/dashboard/candidate/applications"
+                      className="flex items-center justify-center gap-1 text-[0.75rem] text-emerald-400 hover:text-emerald-300 no-underline transition-colors">
+                      Lihat detail lamaran →
+                    </Link>
+                  </div>
                 ) : (
+                  // Belum apply
                   <Button
-                    onClick={() => setApplied(true)}
+                    onClick={handleApplyClick}
                     className="w-full py-[14px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[11px] text-[0.95rem] hover:shadow-[0_6px_24px_rgba(16,185,129,0.3)] hover:-translate-y-[1px] mb-[10px]">
                     <Upload size={15} /> Apply Sekarang
                   </Button>
@@ -388,28 +819,19 @@ export default function JobDetailPage() {
                   variant="outline"
                   onClick={() => setSaved(!saved)}
                   className={`w-full py-3 rounded-[11px] text-[0.88rem] border transition-all
-                    ${
-                      saved
-                        ? "bg-emerald-500/[0.07] text-emerald-400 border-emerald-500/30"
-                        : "bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] hover:border-emerald-500/35 hover:bg-emerald-500/[0.04]"
-                    }`}>
+                    ${saved ? "bg-emerald-500/[0.07] text-emerald-400 border-emerald-500/30" : "bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] hover:border-emerald-500/35 hover:bg-emerald-500/[0.04]"}`}>
                   <Bookmark size={14} fill={saved ? "currentColor" : "none"} />
                   {saved ? "Tersimpan" : "Simpan Lowongan"}
                 </Button>
 
                 <Separator className="my-5 bg-emerald-500/15" />
 
-                {/* Info rows */}
                 <div className="mb-5">
                   {[
                     { label: "Tipe Pekerjaan", value: job.type },
-                    { label: "Gaji", value: job.salary },
+                    { label: "Gaji", value: job.salary || "—" },
                     { label: "Lokasi", value: job.location },
-                    { label: "Deadline", value: job.deadline },
-                    {
-                      label: "Total Pelamar",
-                      value: `${job.applicants} orang`,
-                    },
+                    { label: "Deadline", value: formatDeadline(job.deadline) },
                   ].map((row, i, arr) => (
                     <div
                       key={i}
@@ -424,7 +846,6 @@ export default function JobDetailPage() {
                   ))}
                 </div>
 
-                {/* AI Match */}
                 <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-[12px] p-4">
                   <div className="text-[0.75rem] font-bold text-emerald-400 tracking-[0.07em] uppercase mb-2">
                     ✦ AI Match Score
@@ -433,25 +854,14 @@ export default function JobDetailPage() {
                     Upload CV Anda untuk mengetahui tingkat kecocokan dengan
                     posisi ini.
                   </p>
-                  <div className="h-[6px] rounded-full bg-white/[0.06] overflow-hidden mb-1">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${job.match}%`,
-                        background: "linear-gradient(90deg,#10b981,#06b6d4)",
-                      }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-[0.72rem] text-[#7a9585]">
-                    <span>Estimasi match</span>
-                    <span className="text-emerald-400 font-bold">
-                      {job.match}%
-                    </span>
-                  </div>
+                  <Link
+                    href="/analyze"
+                    className="flex items-center justify-center gap-2 w-full py-[9px] rounded-[9px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[0.8rem] font-bold no-underline hover:bg-emerald-500/20 transition-all">
+                    Analisis CV Saya →
+                  </Link>
                 </div>
               </div>
 
-              {/* Share */}
               <div className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] px-[22px] py-[18px]">
                 <div className="text-[0.78rem] text-[#7a9585] mb-3">
                   Bagikan lowongan ini
@@ -470,7 +880,6 @@ export default function JobDetailPage() {
           </FadeIn>
         </div>
 
-        {/* FOOTER */}
         <footer className="bg-[#0f1612] border-t border-emerald-500/15 py-9 px-6 text-center">
           <div className="flex items-center justify-center gap-[6px] font-syne font-extrabold text-base mb-[6px]">
             <span className="text-emerald-400">✦</span> RecruitAI
