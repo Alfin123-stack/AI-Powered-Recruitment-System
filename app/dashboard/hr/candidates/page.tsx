@@ -17,6 +17,7 @@ import {
   FileText,
   Star,
   Clock,
+  ExternalLink,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -163,6 +164,18 @@ function CandidateDetailModal({
             </div>
           </div>
 
+          {/* CV Link */}
+          {candidate.cv_url && (
+            <a
+              href={candidate.cv_url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-[10px] rounded-[10px] bg-[#141f19] border border-emerald-500/15 text-emerald-400 text-[0.82rem] font-semibold no-underline hover:border-emerald-500/30 hover:bg-emerald-500/[0.04] transition-all p-4 mb-5">
+              <FileText size={14} /> Lihat CV Kandidat
+              <ExternalLink size={12} className="ml-auto" />
+            </a>
+          )}
+
           {/* Actions */}
           <div className="flex gap-3">
             <button
@@ -235,6 +248,7 @@ export default function CandidatesPage() {
             month: "short",
           }),
           color: getColor(i),
+          cv_url: a.cv_url || null,
         }));
         setCandidates(mapped);
       })

@@ -230,10 +230,16 @@ function ApplyModal({
       if (uploadError)
         throw new Error("Gagal upload CV: " + uploadError.message);
 
-      // 2. Ekstrak teks dari PDF
+      // 2. Ambil public URL dari storage (bucket public)
+      const { data: urlData } = supabase.storage
+        .from("cv_candidate")
+        .getPublicUrl(filePath);
+      const cv_url = urlData.publicUrl;
+
+      // 3. Ekstrak teks dari PDF
       const cvText = await extractTextFromPDF(file);
 
-      // 3. Analisis CV vs job description pakai AI
+      // 4. Analisis CV vs job description pakai AI
       const aiRes = await fetch(`${API}/api/ai/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -245,14 +251,14 @@ function ApplyModal({
       if (!aiRes.ok) throw new Error("Gagal analisis CV");
       const analysis = await aiRes.json();
 
-      // 4. Submit application + hasil AI ke backend
+      // 5. Submit application + public URL + hasil AI ke backend
       const applyRes = await fetch(`${API}/api/applications/apply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ job_id: job.id, cv_url: filePath, analysis }),
+        body: JSON.stringify({ job_id: job.id, cv_url, analysis }),
       });
       if (!applyRes.ok) {
         const err = await applyRes.json();
@@ -260,7 +266,7 @@ function ApplyModal({
       }
 
       setStep("done");
-      onSuccess(); // update state applied di parent
+      onSuccess();
     } catch (err: any) {
       setErrorMsg(err.message);
       setStep("error");
@@ -330,6 +336,7 @@ function ApplyModal({
                       if (f) handleFile(f);
                     }}
                   />
+
                   {file ? (
                     <div className="flex items-center justify-center gap-3">
                       <div className="w-10 h-10 rounded-[9px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">

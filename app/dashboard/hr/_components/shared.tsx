@@ -53,6 +53,7 @@ export type Candidate = {
   status: string;
   appliedDate: string;
   color: string;
+  cv_url: string | null;
 };
 
 export type JobSummary = {

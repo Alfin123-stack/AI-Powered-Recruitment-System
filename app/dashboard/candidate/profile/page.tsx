@@ -27,11 +27,12 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-[560px]">
+    <div className="flex justify-center w-full">
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        style={{ width: "100%", maxWidth: "500px" }}>
         {/* Avatar card */}
         <div className="flex items-center gap-5 mb-6 p-5 bg-[#0f1612] border border-emerald-500/15 rounded-[14px]">
           <div className="w-[64px] h-[64px] rounded-[14px] bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center font-syne font-extrabold text-[1.4rem] text-emerald-400">

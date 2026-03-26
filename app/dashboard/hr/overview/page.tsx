@@ -15,6 +15,10 @@ import {
   Eye,
   Settings,
   Building2,
+  X,
+  FileText,
+  Clock,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,12 +35,200 @@ import {
 } from "../_components/shared";
 import { useDashboard } from "../layout";
 
+// ── Candidate Detail Modal ────────────────────────────────────────────────────
+function CandidateDetailModal({
+  candidate,
+  onClose,
+  onStatusChange,
+}: {
+  candidate: Candidate;
+  onClose: () => void;
+  onStatusChange: (id: string, status: string) => void;
+}) {
+  const st = statusMap[candidate.status] ?? {
+    label: candidate.status,
+    color: "#7a9585",
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-[#0f1612] border border-emerald-500/20 rounded-[20px] w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-emerald-500/15">
+          <div className="flex items-center gap-4">
+            <div
+              className="w-12 h-12 rounded-[12px] flex items-center justify-center font-extrabold text-[1rem] flex-shrink-0"
+              style={{
+                background: `${candidate.color}18`,
+                color: candidate.color,
+              }}>
+              {candidate.avatar}
+            </div>
+            <div>
+              <div className="font-syne font-bold text-[1rem]">
+                {candidate.name}
+              </div>
+              <div className="text-[0.75rem] text-[#7a9585]">
+                {candidate.job}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className="px-[10px] py-[4px] rounded-full text-[0.67rem] font-bold"
+              style={{
+                background: `${st.color}15`,
+                color: st.color,
+                border: `1px solid ${st.color}30`,
+              }}>
+              {st.label}
+            </span>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-[8px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center text-[#7a9585] hover:text-[#e8f0ec] cursor-pointer transition-colors">
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className="px-7 py-6">
+          {/* Score cards */}
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="bg-[#141f19] border border-emerald-500/15 rounded-[12px] p-4">
+              <div className="text-[0.68rem] font-bold text-[#7a9585] tracking-[0.08em] uppercase mb-2">
+                Resume Score
+              </div>
+              <div className="flex items-end gap-2 mb-2">
+                <span className="font-extrabold text-[2rem] leading-none text-emerald-400">
+                  {candidate.resumeScore || "—"}
+                </span>
+                <span className="text-[#7a9585] text-[0.75rem] mb-1">/100</span>
+              </div>
+              <div className="h-[5px] rounded-full bg-white/[0.05] overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-[1.2s]"
+                  style={{
+                    width: `${candidate.resumeScore}%`,
+                    background: "linear-gradient(90deg,#10b981,#06b6d4)",
+                  }}
+                />
+              </div>
+            </div>
+            <div className="bg-[#141f19] border border-emerald-500/15 rounded-[12px] p-4">
+              <div className="text-[0.68rem] font-bold text-[#7a9585] tracking-[0.08em] uppercase mb-2">
+                Match Score
+              </div>
+              <div className="flex items-end gap-2 mb-2">
+                <span className="font-extrabold text-[2rem] leading-none text-violet-400">
+                  {candidate.matchScore ? `${candidate.matchScore}%` : "—"}
+                </span>
+              </div>
+              <div className="h-[5px] rounded-full bg-white/[0.05] overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-[1.2s]"
+                  style={{
+                    width: `${candidate.matchScore}%`,
+                    background: "linear-gradient(90deg,#8b5cf6,#06b6d4)",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Skills */}
+          {candidate.skills.length > 0 && (
+            <div className="mb-5">
+              <div className="text-[0.72rem] font-bold text-[#7a9585] tracking-[0.08em] uppercase mb-3">
+                Skills Terdeteksi
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {candidate.skills.map((s, i) => (
+                  <span
+                    key={i}
+                    className="bg-white/[0.04] border border-white/[0.08] px-[10px] py-[5px] rounded-[6px] text-[0.78rem] font-mono text-[#e8f0ec]">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Info */}
+          <div className="bg-[#141f19] border border-emerald-500/15 rounded-[12px] p-4 mb-4">
+            <div className="flex items-center gap-[6px] text-[0.72rem] text-[#7a9585] mb-[6px]">
+              <Building2 size={12} /> {candidate.job}
+            </div>
+            <div className="flex items-center gap-[6px] text-[0.72rem] text-[#7a9585]">
+              <Clock size={12} /> Dilamar {candidate.appliedDate}
+            </div>
+          </div>
+
+          {/* Lihat CV */}
+          {candidate.cv_url ? (
+            <a
+              href={candidate.cv_url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-[10px] rounded-[10px] bg-[#141f19] border border-emerald-500/20 text-emerald-400 text-[0.82rem] font-semibold no-underline hover:border-emerald-500/35 hover:bg-emerald-500/[0.04] transition-all p-4 mb-4">
+              <FileText size={14} /> Lihat CV Kandidat
+              <ExternalLink size={12} className="ml-auto" />
+            </a>
+          ) : (
+            <div className="flex items-center justify-center gap-2 w-full py-[10px] rounded-[10px] bg-[#141f19] border border-white/[0.05] text-[#7a9585] text-[0.82rem] mb-4">
+              <FileText size={14} /> CV tidak tersedia
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                onStatusChange(candidate.id, "shortlisted");
+                onClose();
+              }}
+              disabled={candidate.status === "shortlisted"}
+              className="flex-1 flex items-center justify-center gap-2 py-[11px] rounded-[10px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-bold text-[0.85rem] cursor-pointer hover:bg-emerald-500/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+              <ThumbsUp size={14} /> Shortlist
+            </button>
+            <button
+              onClick={() => {
+                onStatusChange(candidate.id, "review");
+                onClose();
+              }}
+              disabled={candidate.status === "review"}
+              className="flex-1 flex items-center justify-center gap-2 py-[11px] rounded-[10px] bg-cyan-500/[0.07] border border-cyan-500/20 text-cyan-400 font-bold text-[0.85rem] cursor-pointer hover:bg-cyan-500/15 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+              <FileText size={14} /> Review
+            </button>
+            <button
+              onClick={() => {
+                onStatusChange(candidate.id, "rejected");
+                onClose();
+              }}
+              disabled={candidate.status === "rejected"}
+              className="flex-1 flex items-center justify-center gap-2 py-[11px] rounded-[10px] bg-red-500/[0.07] border border-red-500/20 text-red-400 font-bold text-[0.85rem] cursor-pointer hover:bg-red-500/15 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+              <ThumbsDown size={14} /> Tolak
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function OverviewPage() {
   const { token, company } = useDashboard();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [jobSummaries, setJobSummaries] = useState<JobSummary[]>([]);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilter] = useState("all");
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -60,6 +252,7 @@ export default function OverviewPage() {
             month: "short",
           }),
           color: getColor(i),
+          cv_url: a.cv_url || null,
         }));
         setCandidates(mapped);
 
@@ -94,9 +287,7 @@ export default function OverviewPage() {
         method: "PUT",
         body: JSON.stringify({ status }),
       });
-    } catch {
-      // rollback handled by re-fetch if needed
-    }
+    } catch {}
   };
 
   const totalApplicants = candidates.length;
@@ -157,6 +348,20 @@ export default function OverviewPage() {
 
   return (
     <div>
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {selectedCandidate && (
+          <CandidateDetailModal
+            candidate={selectedCandidate}
+            onClose={() => setSelectedCandidate(null)}
+            onStatusChange={(id, status) => {
+              updateStatus(id, status);
+              setSelectedCandidate(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Stats */}
       <FadeIn>
         <div className="grid grid-cols-4 gap-[14px] mb-6">
@@ -478,7 +683,11 @@ export default function OverviewPage() {
                               className="flex items-center gap-1 px-3 py-[7px] rounded-[7px] bg-red-500/[0.07] border border-red-500/20 text-red-400 text-[0.75rem] font-bold cursor-pointer hover:bg-red-500/15 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
                               <ThumbsDown size={11} /> Tolak
                             </button>
-                            <button className="w-[30px] h-[30px] rounded-[7px] bg-[#141f19] border border-emerald-500/15 text-[#7a9585] flex items-center justify-center cursor-pointer transition-all hover:border-emerald-500/35 hover:text-[#e8f0ec]">
+                            {/* Tombol mata → buka modal detail + CV */}
+                            <button
+                              onClick={() => setSelectedCandidate(c)}
+                              title="Lihat detail & CV kandidat"
+                              className="w-[30px] h-[30px] rounded-[7px] bg-[#141f19] border border-emerald-500/15 text-[#7a9585] flex items-center justify-center cursor-pointer transition-all hover:border-emerald-500/35 hover:text-emerald-400">
                               <Eye size={12} />
                             </button>
                           </div>
