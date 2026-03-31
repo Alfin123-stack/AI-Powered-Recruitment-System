@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,8 +12,13 @@ import {
   Settings,
   Calendar,
   Building2,
+  X,
+  CheckCheck,
+  Star,
+  Clock,
 } from "lucide-react";
-import { Company, getInitials } from "./shared";
+import { Company, getInitials, apiFetch } from "./shared";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { href: "/dashboard/hr/overview", Icon: BarChart3, label: "Dashboard" },
@@ -22,93 +28,340 @@ const navItems = [
   { href: "/dashboard/hr/interviews", Icon: Calendar, label: "Interviews" },
 ];
 
+// ── Types ─────────────────────────────────────────────────────────────────────
+type Notif = {
+  id: string;
+  type: "new_application" | "interview" | "shortlisted" | "general";
+  title: string;
+  message: string;
+  time: string;
+  read: boolean;
+};
+
+const timeAgo = (dateStr: string) => {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60) return "Baru saja";
+  if (diff < 3600) return `${Math.floor(diff / 60)} menit lalu`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`;
+  return `${Math.floor(diff / 86400)} hari lalu`;
+};
+
+const buildNotifications = (apps: any[], interviews: any[]): Notif[] => {
+  const notifs: Notif[] = [];
+
+  // Lamaran baru dalam 7 hari
+  apps
+    .filter((a) => {
+      const days = (Date.now() - new Date(a.created_at).getTime()) / 86400000;
+      return days <= 7 && a.status === "applied";
+    })
+    .slice(0, 5)
+    .forEach((a) => {
+      notifs.push({
+        id: `app-${a.id}`,
+        type: "new_application",
+        title: "Lamaran Baru Masuk",
+        message: `${a.candidate_name || "Kandidat"} melamar posisi ${a.job_title || "—"}`,
+        time: a.created_at,
+        read: false,
+      });
+    });
+
+  // Interview hari ini
+  interviews
+    .filter((iv) => {
+      const d = new Date(iv.scheduled_at);
+      return (
+        d.toDateString() === new Date().toDateString() &&
+        iv.status === "scheduled"
+      );
+    })
+    .forEach((iv) => {
+      notifs.push({
+        id: `iv-${iv.id}`,
+        type: "interview",
+        title: "Interview Hari Ini",
+        message: `${iv.candidate_name} — pukul ${new Date(iv.scheduled_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} WIB`,
+        time: iv.scheduled_at,
+        read: false,
+      });
+    });
+
+  return notifs.sort(
+    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
+  );
+};
+
+const notifConfig: Record<
+  string,
+  { color: string; bg: string; emoji: string }
+> = {
+  new_application: {
+    color: "#10b981",
+    bg: "rgba(16,185,129,0.12)",
+    emoji: "📄",
+  },
+  interview: { color: "#06b6d4", bg: "rgba(6,182,212,0.12)", emoji: "📅" },
+  shortlisted: { color: "#f59e0b", bg: "rgba(245,158,11,0.12)", emoji: "⭐" },
+  general: { color: "#8b5cf6", bg: "rgba(139,92,246,0.12)", emoji: "🔔" },
+};
+
+// ── Notification Modal ────────────────────────────────────────────────────────
+function NotificationModal({
+  notifs,
+  onClose,
+  onMarkAllRead,
+}: {
+  notifs: Notif[];
+  onClose: () => void;
+  onMarkAllRead: () => void;
+}) {
+  const unread = notifs.filter((n) => !n.read).length;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8, scale: 0.97 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: -8, scale: 0.97 }}
+      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed left-[248px] top-[80px] z-[200] w-[360px] bg-[#0f1612] border border-emerald-500/20 rounded-[16px] shadow-[0_24px_64px_rgba(0,0,0,0.55)] overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-emerald-500/15">
+        <div className="flex items-center gap-2">
+          <span className="font-syne font-bold text-[0.95rem]">Notifikasi</span>
+          {unread > 0 && (
+            <span className="bg-emerald-500 text-black rounded-full px-[7px] py-[1px] text-[0.65rem] font-extrabold">
+              {unread}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {unread > 0 && (
+            <button
+              onClick={onMarkAllRead}
+              className="flex items-center gap-1 text-[0.72rem] text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer">
+              <CheckCheck size={12} /> Tandai semua dibaca
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="w-7 h-7 rounded-[6px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center text-[#7a9585] hover:text-[#e8f0ec] cursor-pointer transition-colors">
+            <X size={13} />
+          </button>
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="max-h-[420px] overflow-y-auto">
+        {notifs.length === 0 ? (
+          <div className="text-center py-14 text-[#7a9585]">
+            <div className="text-[2.5rem] mb-3 opacity-20">🔔</div>
+            <div className="text-[0.85rem] font-semibold mb-1">
+              Tidak ada notifikasi
+            </div>
+            <p className="text-[0.75rem] max-w-[200px] mx-auto leading-relaxed">
+              Notifikasi muncul saat ada lamaran baru atau jadwal interview.
+            </p>
+          </div>
+        ) : (
+          notifs.map((n, i) => {
+            const cfg = notifConfig[n.type] ?? notifConfig.general;
+            return (
+              <div
+                key={n.id}
+                className={`flex gap-3 px-5 py-4 transition-colors hover:bg-white/[0.02] cursor-default
+                ${i < notifs.length - 1 ? "border-b border-emerald-500/[0.08]" : ""}
+                ${!n.read ? "bg-emerald-500/[0.025]" : ""}`}>
+                {/* Icon */}
+                <div
+                  className="w-9 h-9 rounded-[9px] flex items-center justify-center flex-shrink-0 mt-[2px] text-[1rem]"
+                  style={{ background: cfg.bg }}>
+                  {cfg.emoji}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="font-semibold text-[0.82rem]">
+                      {n.title}
+                    </div>
+                    {!n.read && (
+                      <div className="w-[7px] h-[7px] rounded-full bg-emerald-400 flex-shrink-0 mt-[4px]" />
+                    )}
+                  </div>
+                  <div className="text-[0.78rem] text-[#7a9585] mt-[3px] leading-[1.45]">
+                    {n.message}
+                  </div>
+                  <div className="flex items-center gap-1 text-[0.67rem] text-[#7a9585]/50 mt-[5px]">
+                    <Clock size={9} /> {timeAgo(n.time)}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer */}
+      {notifs.length > 0 && (
+        <div className="px-5 py-3 border-t border-emerald-500/15 flex justify-between items-center">
+          <span className="text-[0.72rem] text-[#7a9585]">
+            {notifs.length} notifikasi
+          </span>
+          <Link
+            href="/dashboard/hr/candidates"
+            className="text-[0.75rem] text-emerald-400 hover:text-emerald-300 no-underline transition-colors">
+            Lihat kandidat →
+          </Link>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
 export default function Sidebar({
   user,
   company,
+  token,
 }: {
   user: any;
   company: Company | null;
+  token?: string;
 }) {
   const pathname = usePathname();
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifs, setNotifs] = useState<Notif[]>([]);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!token) return;
+    const fetch = async () => {
+      try {
+        const [apps, interviews] = await Promise.all([
+          apiFetch("/api/applications/hr", token),
+          apiFetch("/api/interviews", token).catch(() => []),
+        ]);
+        setNotifs(
+          buildNotifications(
+            Array.isArray(apps) ? apps : [],
+            Array.isArray(interviews) ? interviews : [],
+          ),
+        );
+      } catch {}
+    };
+    fetch();
+  }, [token]);
+
+  // Tutup kalau klik di luar
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setShowNotif(false);
+      }
+    };
+    if (showNotif) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showNotif]);
+
+  const unreadCount = notifs.filter((n) => !n.read).length;
 
   return (
-    <aside className="w-[240px] flex-shrink-0 bg-[#0f1612] border-r border-emerald-500/15 flex flex-col fixed top-0 left-0 bottom-0 z-50">
-      {/* Logo */}
-      <Link
-        href="/"
-        className="px-5 py-[22px] pb-[18px] border-b border-emerald-500/15 font-extrabold text-[1.1rem] flex items-center gap-2 text-[#e8f0ec] no-underline">
-        <span className="text-emerald-400">✦</span> Recruit
-        <em className="not-italic text-emerald-400">AI</em>
-      </Link>
+    <div ref={wrapperRef}>
+      <aside className="w-[240px] flex-shrink-0 bg-[#0f1612] border-r border-emerald-500/15 flex flex-col fixed top-0 left-0 bottom-0 z-50">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="px-5 py-[22px] pb-[18px] border-b border-emerald-500/15 font-extrabold text-[1.1rem] flex items-center gap-2 text-[#e8f0ec] no-underline">
+          <span className="text-emerald-400">✦</span> Recruit
+          <em className="not-italic text-emerald-400">AI</em>
+        </Link>
 
-      {/* Nav */}
-      <div className="flex-1 overflow-y-auto pt-2">
-        <div className="px-3 pt-4 pb-2 text-[0.67rem] font-bold text-[#7a9585] tracking-[0.12em] uppercase">
-          Menu
-        </div>
-        {navItems.map(({ href, Icon, label }) => {
-          const active = pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium border no-underline transition-all duration-200
-                ${
-                  active
-                    ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20"
-                    : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"
-                }`}>
-              <Icon size={15} /> {label}
-            </Link>
-          );
-        })}
+        {/* Nav */}
+        <div className="flex-1 overflow-y-auto pt-2">
+          <div className="px-3 pt-4 pb-2 text-[0.67rem] font-bold text-[#7a9585] tracking-[0.12em] uppercase">
+            Menu
+          </div>
+          {navItems.map(({ href, Icon, label }) => {
+            const active = pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium border no-underline transition-all duration-200
+                  ${active ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
+                <Icon size={15} /> {label}
+              </Link>
+            );
+          })}
 
-        <div className="px-3 pt-4 pb-2 text-[0.67rem] font-bold text-[#7a9585] tracking-[0.12em] uppercase">
-          Sistem
-        </div>
-        {[
-          { Icon: Bell, label: "Notifikasi", badge: "3" },
-          { Icon: Settings, label: "Pengaturan" },
-        ].map(({ Icon, label, badge }, i) => (
+          <div className="px-3 pt-4 pb-2 text-[0.67rem] font-bold text-[#7a9585] tracking-[0.12em] uppercase">
+            Sistem
+          </div>
+
+          {/* Notifikasi button */}
           <button
-            key={i}
-            className="flex items-center justify-between px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium text-[#7a9585] cursor-pointer border border-transparent bg-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04] w-[calc(100%-16px)] transition-all duration-200">
+            onClick={() => setShowNotif((v) => !v)}
+            className={`flex items-center justify-between px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium cursor-pointer border w-[calc(100%-16px)] transition-all duration-200
+              ${showNotif ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
             <span className="flex items-center gap-[10px]">
-              <Icon size={15} /> {label}
+              <Bell size={15} /> Notifikasi
             </span>
-            {badge && (
+            {unreadCount > 0 && (
               <span className="bg-emerald-500 text-black rounded-[4px] px-[6px] py-[1px] text-[0.65rem] font-extrabold">
-                {badge}
+                {unreadCount}
               </span>
             )}
           </button>
-        ))}
-      </div>
 
-      {/* User + Company */}
-      <div className="border-t border-emerald-500/15 px-3 py-4">
-        {company && (
-          <div className="flex items-center gap-[6px] px-2 py-[6px] mb-1">
-            <Building2 size={12} className="text-emerald-400 flex-shrink-0" />
-            <span className="text-[0.72rem] text-emerald-400 font-semibold truncate">
-              {company.name}
-            </span>
-          </div>
-        )}
-        <div className="flex items-center gap-[10px] px-2 py-[10px] rounded-[10px]">
-          <div className="w-[34px] h-[34px] rounded-[9px] bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center font-extrabold text-[0.75rem] text-emerald-400 flex-shrink-0">
-            {user
-              ? getInitials(user.user_metadata?.full_name || user.email || "HR")
-              : "HR"}
-          </div>
-          <div>
-            <div className="text-[0.82rem] font-semibold truncate max-w-[140px]">
-              {user?.user_metadata?.full_name || "HR User"}
+          <button className="flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium text-[#7a9585] cursor-pointer border border-transparent bg-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04] w-[calc(100%-16px)] transition-all duration-200">
+            <Settings size={15} /> Pengaturan
+          </button>
+        </div>
+
+        {/* User + Company */}
+        <div className="border-t border-emerald-500/15 px-3 py-4">
+          {company && (
+            <div className="flex items-center gap-[6px] px-2 py-[6px] mb-1">
+              <Building2 size={12} className="text-emerald-400 flex-shrink-0" />
+              <span className="text-[0.72rem] text-emerald-400 font-semibold truncate">
+                {company.name}
+              </span>
             </div>
-            <div className="text-[0.7rem] text-[#7a9585]">HR Manager</div>
+          )}
+          <div className="flex items-center gap-[10px] px-2 py-[10px] rounded-[10px]">
+            <div className="w-[34px] h-[34px] rounded-[9px] bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center font-extrabold text-[0.75rem] text-emerald-400 flex-shrink-0">
+              {user
+                ? getInitials(
+                    user.user_metadata?.full_name || user.email || "HR",
+                  )
+                : "HR"}
+            </div>
+            <div>
+              <div className="text-[0.82rem] font-semibold truncate max-w-[140px]">
+                {user?.user_metadata?.full_name || "HR User"}
+              </div>
+              <div className="text-[0.7rem] text-[#7a9585]">HR Manager</div>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      {/* Notification dropdown */}
+      <AnimatePresence>
+        {showNotif && (
+          <NotificationModal
+            notifs={notifs}
+            onClose={() => setShowNotif(false)}
+            onMarkAllRead={() =>
+              setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))
+            }
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
