@@ -317,9 +317,12 @@ export default function Sidebar({
             )}
           </button>
 
-          <button className="flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium text-[#7a9585] cursor-pointer border border-transparent bg-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04] w-[calc(100%-16px)] transition-all duration-200">
+          <Link
+            href="/dashboard/hr/settings"
+            className={`flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium border no-underline transition-all duration-200
+              ${pathname === "/dashboard/hr/settings" ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
             <Settings size={15} /> Pengaturan
-          </button>
+          </Link>
         </div>
 
         {/* User + Company */}
