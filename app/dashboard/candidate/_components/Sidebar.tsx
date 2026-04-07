@@ -13,7 +13,7 @@ import {
   X,
   CheckCheck,
   Clock,
-  Calendar,
+  Bookmark,
 } from "lucide-react";
 import { CandidateUser, getInitials } from "./shared";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +25,7 @@ const navItems = [
     Icon: Briefcase,
     label: "Lamaranku",
   },
+  { href: "/dashboard/candidate/saved", Icon: Bookmark, label: "Tersimpan" },
   { href: "/dashboard/candidate/matches", Icon: Target, label: "Job Matches" },
   { href: "/dashboard/candidate/profile", Icon: User, label: "Profil" },
 ];

@@ -10,7 +10,7 @@ export const supabase = createClient(
 
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-export const apiFetch = async (
+export const  apiFetch = async (
   path: string,
   token: string,
   options: RequestInit = {},
