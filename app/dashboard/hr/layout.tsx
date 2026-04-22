@@ -86,7 +86,7 @@ export default function DashboardLayout({
           />
         )}
 
-        <Sidebar user={user} company={company} />
+        <Sidebar user={user} company={company} token={token} />
 
         <div className="ml-[240px] flex-1 min-h-screen">
           <Topbar company={company} />

@@ -34,6 +34,7 @@ import {
   JobSummary,
 } from "../_components/shared";
 import { useDashboard } from "../layout";
+import Link from "next/link";
 
 // ── Candidate Detail Modal ────────────────────────────────────────────────────
 function CandidateDetailModal({
@@ -466,9 +467,12 @@ export default function OverviewPage() {
                     </p>
                   )}
                 </div>
-                <button className="flex items-center gap-[6px] text-[0.75rem] text-emerald-400 hover:text-emerald-300 transition-colors mt-1">
-                  <Settings size={12} /> Edit profil perusahaan
-                </button>
+                <Link href="/dashboard/hr/settings">
+                  {" "}
+                  <button className="flex items-center gap-[6px] cursor-pointer text-[0.75rem] text-emerald-400 hover:text-emerald-300 transition-colors mt-1">
+                    <Settings size={12} /> Edit profil perusahaan
+                  </button>
+                </Link>
               </div>
             ) : (
               <div className="text-[#7a9585] text-[0.82rem]">

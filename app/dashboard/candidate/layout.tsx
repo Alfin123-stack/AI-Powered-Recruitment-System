@@ -89,7 +89,7 @@ export default function CandidateLayout({
   return (
     <CandidateContext.Provider value={{ user, token }}>
       <div className="flex min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
-        <CandidateSidebar user={user} />
+        <CandidateSidebar user={user} token={token} />
 
         <div className="ml-[240px] flex-1">
           {/* Topbar — semua inline, tidak import komponen dari shared */}

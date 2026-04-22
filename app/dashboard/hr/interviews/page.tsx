@@ -13,16 +13,15 @@ import {
   X,
   Loader2,
   AlertCircle,
-  ChevronDown,
   CheckCircle2,
   XCircle,
   CalendarClock,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDashboard } from "../layout";
 import { apiFetch, FadeIn, getColor, getInitials } from "../_components/shared";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 type Interview = {
   id: string;
   application_id: string;
@@ -43,8 +42,13 @@ type ShortlistedCandidate = {
   job_title: string;
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-const statusConfig = {
+type AnyInputEvent = React.ChangeEvent<
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+>;
+
+const statusConfig: {
+  [key: string]: { label: string; color: string; bg: string; Icon: any };
+} = {
   scheduled: {
     label: "Terjadwal",
     color: "#06b6d4",
@@ -79,17 +83,13 @@ const formatTime = (d: string) =>
     minute: "2-digit",
   });
 
-const isToday = (d: string) => {
-  const date = new Date(d);
-  const today = new Date();
-  return date.toDateString() === today.toDateString();
-};
+const isToday = (d: string) =>
+  new Date(d).toDateString() === new Date().toDateString();
 
 const isTomorrow = (d: string) => {
-  const date = new Date(d);
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  return date.toDateString() === tomorrow.toDateString();
+  const t = new Date();
+  t.setDate(t.getDate() + 1);
+  return new Date(d).toDateString() === t.toDateString();
 };
 
 const getDayLabel = (d: string) => {
@@ -98,7 +98,291 @@ const getDayLabel = (d: string) => {
   return formatDate(d);
 };
 
-// ── Schedule Modal ────────────────────────────────────────────────────────────
+// ── Confirm Modal ─────────────────────────────────────────────────────────────
+function ConfirmModal({
+  type,
+  candidateName,
+  onConfirm,
+  onCancel,
+  loading,
+}: {
+  type: "done" | "cancelled";
+  candidateName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading: boolean;
+}) {
+  const isDone = type === "done";
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-[#0f1612] border border-emerald-500/20 rounded-[18px] w-full max-w-[380px] p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
+            style={{
+              background: isDone
+                ? "rgba(16,185,129,0.12)"
+                : "rgba(239,68,68,0.12)",
+              color: isDone ? "#10b981" : "#ef4444",
+            }}>
+            {isDone ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
+          </div>
+          <div>
+            <div className="font-syne font-bold text-[0.95rem]">
+              {isDone ? "Tandai Interview Selesai?" : "Batalkan Interview?"}
+            </div>
+            <div className="text-[0.75rem] text-[#7a9585] mt-[2px]">
+              {candidateName}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-[0.82rem] text-[#7a9585] leading-[1.6] mb-5">
+          {isDone
+            ? "Interview akan ditandai sebagai selesai. Aksi ini tidak dapat dibatalkan."
+            : "Interview akan dibatalkan. Kamu masih bisa menjadwalkan ulang setelahnya."}
+        </p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 py-[10px] rounded-[10px] bg-[#141f19] border border-emerald-500/15 text-[#7a9585] text-[0.85rem] font-medium cursor-pointer hover:text-[#e8f0ec] hover:border-emerald-500/30 transition-all disabled:opacity-40">
+            Batal
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="flex-1 py-[10px] rounded-[10px] text-[0.85rem] font-bold cursor-pointer transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+            style={{
+              background: isDone
+                ? "rgba(16,185,129,0.15)"
+                : "rgba(239,68,68,0.15)",
+              border: `1px solid ${isDone ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.3)"}`,
+              color: isDone ? "#10b981" : "#ef4444",
+            }}>
+            {loading && <Loader2 size={13} className="animate-spin" />}
+            {isDone ? "Ya, Selesai" : "Ya, Batalkan"}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Reschedule Modal ──────────────────────────────────────────────────────────
+function RescheduleModal({
+  interview,
+  token,
+  onDone,
+  onClose,
+}: {
+  interview: Interview;
+  token: string;
+  onDone: () => void;
+  onClose: () => void;
+}) {
+  const existing = new Date(interview.scheduled_at);
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  const [form, setForm] = useState({
+    date: `${existing.getFullYear()}-${pad(existing.getMonth() + 1)}-${pad(existing.getDate())}`,
+    time: `${pad(existing.getHours())}:${pad(existing.getMinutes())}`,
+    type: interview.type,
+    location: interview.location || "",
+    notes: interview.notes || "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const set = (key: string) => (e: AnyInputEvent) =>
+    setForm((p) => ({ ...p, [key]: e.target.value }));
+
+  const handleSubmit = async () => {
+    if (!form.date || !form.time)
+      return setError("Tanggal dan jam wajib diisi");
+    setLoading(true);
+    setError("");
+    try {
+      const scheduled_at = new Date(
+        `${form.date}T${form.time}:00`,
+      ).toISOString();
+      await apiFetch(`/api/interviews/${interview.id}`, token, {
+        method: "PUT",
+        body: JSON.stringify({
+          status: "scheduled",
+          scheduled_at,
+          type: form.type,
+          location: form.location || null,
+          notes: form.notes || null,
+        }),
+      });
+      onDone();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputCls =
+    "w-full bg-[#141f19] border border-emerald-500/15 rounded-[10px] px-4 py-[10px] text-[0.88rem] text-[#e8f0ec] placeholder:text-[#7a9585] outline-none focus:border-emerald-500/40 transition-colors";
+
+  const Field = ({
+    label,
+    children,
+  }: {
+    label: string;
+    children: React.ReactNode;
+  }) => (
+    <div>
+      <label className="text-[0.72rem] font-semibold text-[#7a9585] mb-[6px] block tracking-[0.06em] uppercase">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-[#0f1612] border border-emerald-500/20 rounded-[20px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-emerald-500/15">
+          <div>
+            <div className="flex items-center gap-2">
+              <RefreshCw size={15} className="text-cyan-400" />
+              <h2 className="font-syne font-extrabold text-[1.05rem]">
+                Jadwalkan Ulang
+              </h2>
+            </div>
+            <p className="text-[#7a9585] text-[0.78rem] mt-[3px]">
+              {interview.candidate_name} · {interview.job_title}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-[8px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center text-[#7a9585] hover:text-[#e8f0ec] cursor-pointer transition-colors">
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="px-7 py-6 flex flex-col gap-4">
+          {/* Info jadwal lama */}
+          <div className="bg-red-500/[0.05] border border-red-500/15 rounded-[10px] px-4 py-3">
+            <div className="text-[0.7rem] font-bold text-red-400/70 tracking-[0.08em] uppercase mb-1">
+              Jadwal Dibatalkan
+            </div>
+            <div className="text-[0.82rem] text-[#7a9585]">
+              {formatDate(interview.scheduled_at)} ·{" "}
+              {formatTime(interview.scheduled_at)} WIB
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Tanggal Baru *">
+              <input
+                type="date"
+                value={form.date}
+                onChange={set("date")}
+                min={new Date().toISOString().split("T")[0]}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Jam Baru *">
+              <input
+                type="time"
+                value={form.time}
+                onChange={set("time")}
+                className={inputCls}
+              />
+            </Field>
+          </div>
+
+          <Field label="Tipe Interview">
+            <div className="flex gap-3">
+              {[
+                { val: "online", label: "Online", Icon: Video },
+                { val: "onsite", label: "Onsite", Icon: Building2 },
+              ].map(({ val, label, Icon }) => (
+                <button
+                  key={val}
+                  onClick={() =>
+                    setForm((p) => ({ ...p, type: val as "online" | "onsite" }))
+                  }
+                  className={`flex-1 flex items-center justify-center gap-2 py-[10px] rounded-[10px] border text-[0.85rem] font-medium cursor-pointer transition-all ${
+                    form.type === val
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                      : "bg-[#141f19] border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/25 hover:text-[#e8f0ec]"
+                  }`}>
+                  <Icon size={14} /> {label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          <Field
+            label={
+              form.type === "online"
+                ? "Link Meeting (Zoom/Gmeet)"
+                : "Alamat / Ruangan"
+            }>
+            <input
+              value={form.location}
+              onChange={set("location")}
+              placeholder={
+                form.type === "online"
+                  ? "https://meet.google.com/..."
+                  : "Ruang Rapat Lt. 3"
+              }
+              className={inputCls}
+            />
+          </Field>
+
+          <Field label="Catatan (opsional)">
+            <textarea
+              value={form.notes}
+              onChange={set("notes")}
+              rows={3}
+              placeholder="Catatan untuk interview baru..."
+              className={`${inputCls} resize-none`}
+            />
+          </Field>
+
+          {error && (
+            <div className="flex items-center gap-2 text-red-400 text-[0.82rem] bg-red-500/10 border border-red-500/20 rounded-[8px] px-3 py-2">
+              <AlertCircle size={13} /> {error}
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-1">
+            <Button
+              onClick={onClose}
+              variant="outline"
+              className="flex-1 border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec] bg-transparent rounded-[10px]">
+              Batal
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-[10px]">
+              {loading && <Loader2 size={14} className="animate-spin mr-2" />}
+              {loading ? "Menyimpan..." : "Jadwalkan Ulang"}
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Schedule Modal (buat baru) ────────────────────────────────────────────────
 function ScheduleModal({
   token,
   candidates,
@@ -121,20 +405,13 @@ function ScheduleModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const set =
-    (key: string) =>
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >,
-    ) =>
-      setForm((p) => ({ ...p, [key]: e.target.value }));
+  const set = (key: string) => (e: AnyInputEvent) =>
+    setForm((p) => ({ ...p, [key]: e.target.value }));
 
   const handleSubmit = async () => {
     if (!form.application_id) return setError("Pilih kandidat terlebih dahulu");
     if (!form.date || !form.time)
       return setError("Tanggal dan jam wajib diisi");
-
     setLoading(true);
     setError("");
     try {
@@ -183,14 +460,15 @@ function ScheduleModal({
         initial={{ opacity: 0, scale: 0.95, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="bg-[#0f1612] border border-emerald-500/20 rounded-[20px] w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-emerald-500/15">
           <div>
             <h2 className="font-syne font-extrabold text-[1.1rem]">
               Jadwalkan Interview
             </h2>
             <p className="text-[#7a9585] text-[0.78rem] mt-[3px]">
-              Buat jadwal interview untuk kandidat shortlisted
+              {candidates.length > 0
+                ? `${candidates.length} kandidat tersedia`
+                : "Semua kandidat sudah terjadwal"}
             </p>
           </div>
           <button
@@ -201,7 +479,6 @@ function ScheduleModal({
         </div>
 
         <div className="px-7 py-6 flex flex-col gap-4">
-          {/* Pilih kandidat */}
           <Field label="Kandidat *">
             <select
               value={form.application_id}
@@ -216,7 +493,6 @@ function ScheduleModal({
             </select>
           </Field>
 
-          {/* Tanggal & Jam */}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Tanggal *">
               <input
@@ -237,7 +513,6 @@ function ScheduleModal({
             </Field>
           </div>
 
-          {/* Tipe interview */}
           <Field label="Tipe Interview">
             <div className="flex gap-3">
               {[
@@ -247,15 +522,17 @@ function ScheduleModal({
                 <button
                   key={val}
                   onClick={() => setForm((p) => ({ ...p, type: val }))}
-                  className={`flex-1 flex items-center justify-center gap-2 py-[10px] rounded-[10px] border text-[0.85rem] font-medium cursor-pointer transition-all
-                    ${form.type === val ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-[#141f19] border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/25 hover:text-[#e8f0ec]"}`}>
+                  className={`flex-1 flex items-center justify-center gap-2 py-[10px] rounded-[10px] border text-[0.85rem] font-medium cursor-pointer transition-all ${
+                    form.type === val
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                      : "bg-[#141f19] border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/25 hover:text-[#e8f0ec]"
+                  }`}>
                   <Icon size={14} /> {label}
                 </button>
               ))}
             </div>
           </Field>
 
-          {/* Lokasi / Link */}
           <Field
             label={
               form.type === "online"
@@ -274,7 +551,6 @@ function ScheduleModal({
             />
           </Field>
 
-          {/* Catatan */}
           <Field label="Catatan (opsional)">
             <textarea
               value={form.notes}
@@ -300,8 +576,8 @@ function ScheduleModal({
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={loading}
-              className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[10px]">
+              disabled={loading || candidates.length === 0}
+              className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[10px] disabled:opacity-50">
               {loading && <Loader2 size={14} className="animate-spin mr-2" />}
               {loading ? "Menyimpan..." : "Jadwalkan Interview"}
             </Button>
@@ -324,12 +600,14 @@ function InterviewCard({
   onUpdate: () => void;
   index: number;
 }) {
-  const [updating, setUpdating] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<"done" | "cancelled" | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
   const st = statusConfig[interview.status];
   const color = getColor(index);
 
-  const updateStatus = async (status: string) => {
-    setUpdating(status);
+  const updateStatus = async (status: "done" | "cancelled") => {
+    setConfirmLoading(true);
     try {
       await apiFetch(`/api/interviews/${interview.id}`, token, {
         method: "PUT",
@@ -339,121 +617,149 @@ function InterviewCard({
     } catch (err) {
       console.error(err);
     } finally {
-      setUpdating(null);
+      setConfirmLoading(false);
+      setConfirm(null);
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      className={`bg-[#0f1612] border rounded-[14px] p-5 transition-all
-        ${interview.status === "cancelled" ? "border-white/[0.05] opacity-60" : "border-emerald-500/15 hover:border-emerald-500/25"}`}>
-      <div className="flex items-start gap-4">
-        {/* Avatar */}
-        <div
-          className="w-11 h-11 rounded-[10px] flex items-center justify-center font-extrabold text-[0.82rem] flex-shrink-0"
-          style={{ background: `${color}18`, color }}>
-          {getInitials(interview.candidate_name)}
-        </div>
+    <>
+      <AnimatePresence>
+        {confirm && (
+          <ConfirmModal
+            type={confirm}
+            candidateName={interview.candidate_name}
+            onConfirm={() => updateStatus(confirm)}
+            onCancel={() => setConfirm(null)}
+            loading={confirmLoading}
+          />
+        )}
+        {showReschedule && (
+          <RescheduleModal
+            interview={interview}
+            token={token}
+            onDone={() => {
+              setShowReschedule(false);
+              onUpdate();
+            }}
+            onClose={() => setShowReschedule(false)}
+          />
+        )}
+      </AnimatePresence>
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className="font-syne font-bold text-[0.95rem]">
-              {interview.candidate_name}
-            </span>
-            <span
-              className="px-[8px] py-[2px] rounded-full text-[0.65rem] font-bold"
-              style={{
-                background: st.bg,
-                color: st.color,
-                border: `1px solid ${st.color}30`,
-              }}>
-              {st.label}
-            </span>
-            {isToday(interview.scheduled_at) &&
-              interview.status === "scheduled" && (
-                <span className="px-[8px] py-[2px] rounded-full text-[0.65rem] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25 animate-pulse">
-                  Hari ini!
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+        className={`bg-[#0f1612] border rounded-[14px] p-5 transition-all ${
+          interview.status === "cancelled"
+            ? "border-red-500/10"
+            : interview.status === "done"
+              ? "border-emerald-500/10"
+              : "border-emerald-500/15 hover:border-emerald-500/25"
+        }`}>
+        <div className="flex items-start gap-4">
+          <div
+            className="w-11 h-11 rounded-[10px] flex items-center justify-center font-extrabold text-[0.82rem] flex-shrink-0"
+            style={{ background: `${color}18`, color }}>
+            {getInitials(interview.candidate_name)}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="font-syne font-bold text-[0.95rem]">
+                {interview.candidate_name}
+              </span>
+              <span
+                className="px-[8px] py-[2px] rounded-full text-[0.65rem] font-bold"
+                style={{
+                  background: st.bg,
+                  color: st.color,
+                  border: `1px solid ${st.color}30`,
+                }}>
+                {st.label}
+              </span>
+              {isToday(interview.scheduled_at) &&
+                interview.status === "scheduled" && (
+                  <span className="px-[8px] py-[2px] rounded-full text-[0.65rem] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25 animate-pulse">
+                    Hari ini!
+                  </span>
+                )}
+            </div>
+
+            <div className="text-[0.75rem] text-[#7a9585] mb-3">
+              {interview.job_title}
+            </div>
+
+            <div className="flex flex-wrap gap-3 text-[0.75rem] text-[#7a9585]">
+              <span className="flex items-center gap-[5px]">
+                <Calendar size={12} /> {getDayLabel(interview.scheduled_at)}
+              </span>
+              <span className="flex items-center gap-[5px]">
+                <Clock size={12} /> {formatTime(interview.scheduled_at)} WIB
+              </span>
+              <span className="flex items-center gap-[5px]">
+                {interview.type === "online" ? (
+                  <Video size={12} />
+                ) : (
+                  <Building2 size={12} />
+                )}
+                {interview.type === "online" ? "Online" : "Onsite"}
+              </span>
+              {interview.location && (
+                <span className="flex items-center gap-[5px]">
+                  <MapPin size={12} />
+                  {interview.type === "online" ? (
+                    <a
+                      href={interview.location}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-emerald-400 hover:text-emerald-300 transition-colors no-underline">
+                      Buka Link
+                    </a>
+                  ) : (
+                    interview.location
+                  )}
                 </span>
               )}
-          </div>
+            </div>
 
-          <div className="text-[0.75rem] text-[#7a9585] mb-3">
-            {interview.job_title}
-          </div>
+            {interview.notes && (
+              <div className="mt-2 bg-[#141f19] border border-emerald-500/10 rounded-[8px] px-3 py-2 text-[0.75rem] text-[#7a9585]">
+                📝 {interview.notes}
+              </div>
+            )}
 
-          <div className="flex flex-wrap gap-3 text-[0.75rem] text-[#7a9585]">
-            <span className="flex items-center gap-[5px]">
-              <Calendar size={12} /> {getDayLabel(interview.scheduled_at)}
-            </span>
-            <span className="flex items-center gap-[5px]">
-              <Clock size={12} /> {formatTime(interview.scheduled_at)} WIB
-            </span>
-            <span className="flex items-center gap-[5px]">
-              {interview.type === "online" ? (
-                <Video size={12} />
-              ) : (
-                <Building2 size={12} />
-              )}
-              {interview.type === "online" ? "Online" : "Onsite"}
-            </span>
-            {interview.location && (
-              <span className="flex items-center gap-[5px]">
-                <MapPin size={12} />
-                {interview.type === "online" ? (
-                  <a
-                    href={interview.location}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-emerald-400 hover:text-emerald-300 transition-colors no-underline">
-                    Buka Link
-                  </a>
-                ) : (
-                  interview.location
-                )}
-              </span>
+            {/* Tombol Jadwalkan Ulang — hanya muncul di cancelled */}
+            {interview.status === "cancelled" && (
+              <button
+                onClick={() => setShowReschedule(true)}
+                className="mt-3 flex items-center gap-[6px] px-3 py-[7px] rounded-[8px] bg-cyan-500/[0.08] border border-cyan-500/20 text-cyan-400 text-[0.78rem] font-semibold cursor-pointer hover:bg-cyan-500/15 hover:border-cyan-500/35 transition-all">
+                <RefreshCw size={12} /> Jadwalkan Ulang
+              </button>
             )}
           </div>
 
-          {interview.notes && (
-            <div className="mt-2 bg-[#141f19] border border-emerald-500/10 rounded-[8px] px-3 py-2 text-[0.75rem] text-[#7a9585]">
-              📝 {interview.notes}
+          {/* Action buttons — hanya scheduled */}
+          {interview.status === "scheduled" && (
+            <div className="flex flex-col gap-2 flex-shrink-0">
+              <button
+                onClick={() => setConfirm("done")}
+                title="Tandai selesai"
+                className="w-8 h-8 rounded-[7px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center justify-center cursor-pointer hover:bg-emerald-500/20 transition-all">
+                <Check size={13} />
+              </button>
+              <button
+                onClick={() => setConfirm("cancelled")}
+                title="Batalkan interview"
+                className="w-8 h-8 rounded-[7px] bg-red-500/[0.07] border border-red-500/20 text-red-400 flex items-center justify-center cursor-pointer hover:bg-red-500/15 transition-all">
+                <X size={13} />
+              </button>
             </div>
           )}
         </div>
-
-        {/* Actions */}
-        {interview.status === "scheduled" && (
-          <div className="flex gap-2 flex-shrink-0">
-            <button
-              onClick={() => updateStatus("done")}
-              disabled={!!updating}
-              title="Tandai selesai"
-              className="w-8 h-8 rounded-[7px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center justify-center cursor-pointer hover:bg-emerald-500/20 transition-all disabled:opacity-40">
-              {updating === "done" ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <Check size={13} />
-              )}
-            </button>
-            <button
-              onClick={() => updateStatus("cancelled")}
-              disabled={!!updating}
-              title="Batalkan"
-              className="w-8 h-8 rounded-[7px] bg-red-500/[0.07] border border-red-500/20 text-red-400 flex items-center justify-center cursor-pointer hover:bg-red-500/15 transition-all disabled:opacity-40">
-              {updating === "cancelled" ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <X size={13} />
-              )}
-            </button>
-          </div>
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }
 
@@ -492,7 +798,6 @@ export default function InterviewsPage() {
     (iv) => filter === "all" || iv.status === filter,
   );
 
-  // Group by date
   const grouped = filtered.reduce(
     (acc, iv) => {
       const key = getDayLabel(iv.scheduled_at);
@@ -503,7 +808,6 @@ export default function InterviewsPage() {
     {} as Record<string, Interview[]>,
   );
 
-  // Stats
   const scheduled = interviews.filter((iv) => iv.status === "scheduled").length;
   const done = interviews.filter((iv) => iv.status === "done").length;
   const todayCount = interviews.filter(
@@ -537,7 +841,6 @@ export default function InterviewsPage() {
       )}
 
       <div>
-        {/* Stats */}
         <FadeIn>
           <div className="grid grid-cols-4 gap-[14px] mb-6">
             {[
@@ -585,27 +888,28 @@ export default function InterviewsPage() {
           </div>
         </FadeIn>
 
-        {/* Header + actions */}
         <FadeIn delay={0.05}>
           <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
             <div>
               <div className="font-bold text-[1rem]">Jadwal Interview</div>
               <div className="text-[0.75rem] text-[#7a9585] mt-[3px]">
                 {shortlisted.length > 0
-                  ? `${shortlisted.length} kandidat shortlisted menunggu dijadwalkan`
-                  : "Semua kandidat shortlisted sudah dijadwalkan"}
+                  ? `${shortlisted.length} kandidat tersedia untuk dijadwalkan`
+                  : "Tidak ada kandidat yang bisa dijadwalkan saat ini"}
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {/* Filter tabs */}
               <div className="flex gap-1 bg-[#0f1612] border border-emerald-500/15 rounded-[10px] p-1">
                 {(["all", "scheduled", "done", "cancelled"] as const).map(
                   (f) => (
                     <button
                       key={f}
                       onClick={() => setFilter(f)}
-                      className={`px-3 py-[6px] rounded-[7px] text-[0.78rem] font-medium cursor-pointer transition-all whitespace-nowrap
-                      ${filter === f ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25" : "bg-transparent text-[#7a9585] hover:text-[#e8f0ec]"}`}>
+                      className={`px-3 py-[6px] rounded-[7px] text-[0.78rem] font-medium cursor-pointer transition-all whitespace-nowrap ${
+                        filter === f
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+                          : "bg-transparent text-[#7a9585] hover:text-[#e8f0ec]"
+                      }`}>
                       {f === "all"
                         ? "Semua"
                         : f === "scheduled"
@@ -617,7 +921,6 @@ export default function InterviewsPage() {
                   ),
                 )}
               </div>
-
               <Button
                 onClick={() => setShowModal(true)}
                 disabled={shortlisted.length === 0}
@@ -628,14 +931,13 @@ export default function InterviewsPage() {
           </div>
         </FadeIn>
 
-        {/* Shortlisted waiting */}
         {shortlisted.length > 0 && filter === "all" && (
           <FadeIn delay={0.07}>
             <div className="bg-amber-500/[0.06] border border-amber-500/20 rounded-[14px] p-4 mb-5">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                 <span className="text-[0.82rem] font-semibold text-amber-400">
-                  {shortlisted.length} kandidat shortlisted belum dijadwalkan
+                  {shortlisted.length} kandidat siap dijadwalkan
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -666,7 +968,6 @@ export default function InterviewsPage() {
           </FadeIn>
         )}
 
-        {/* Interview list grouped by date */}
         {filtered.length === 0 ? (
           <FadeIn delay={0.1}>
             <div className="text-center py-20 text-[#7a9585]">
@@ -676,11 +977,11 @@ export default function InterviewsPage() {
                   ? "Belum ada jadwal interview"
                   : `Tidak ada interview ${filter === "scheduled" ? "terjadwal" : filter === "done" ? "selesai" : "dibatalkan"}`}
               </div>
-              <p className="text-[0.82rem] mb-5">
-                {filter === "all" && shortlisted.length > 0
-                  ? "Klik tombol di atas untuk menjadwalkan interview."
-                  : ""}
-              </p>
+              {filter === "all" && shortlisted.length > 0 && (
+                <p className="text-[0.82rem]">
+                  Klik tombol di atas untuk menjadwalkan interview.
+                </p>
+              )}
             </div>
           </FadeIn>
         ) : (
@@ -688,11 +989,9 @@ export default function InterviewsPage() {
             {Object.entries(grouped).map(([dateLabel, items]) => (
               <FadeIn key={dateLabel} delay={0.1}>
                 <div>
-                  {/* Date group header */}
                   <div className="flex items-center gap-3 mb-3">
                     <div
-                      className={`px-3 py-[5px] rounded-[7px] text-[0.75rem] font-bold
-                      ${
+                      className={`px-3 py-[5px] rounded-[7px] text-[0.75rem] font-bold ${
                         dateLabel === "Hari Ini"
                           ? "bg-amber-500/10 text-amber-400 border border-amber-500/25"
                           : dateLabel === "Besok"
@@ -706,8 +1005,6 @@ export default function InterviewsPage() {
                       {items.length} interview
                     </span>
                   </div>
-
-                  {/* Cards */}
                   <div className="flex flex-col gap-3">
                     <AnimatePresence>
                       {items.map((iv, i) => (

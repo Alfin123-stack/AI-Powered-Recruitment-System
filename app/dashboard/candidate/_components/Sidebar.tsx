@@ -30,7 +30,6 @@ const navItems = [
   { href: "/dashboard/candidate/profile", Icon: User, label: "Profil" },
 ];
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 type Notif = {
   id: string;
   type: "status_update" | "interview" | "general";
@@ -48,59 +47,92 @@ const timeAgo = (dateStr: string) => {
   return `${Math.floor(diff / 86400)} hari lalu`;
 };
 
-const notifConfig: Record<
-  string,
-  { color: string; bg: string; emoji: string }
-> = {
+const notifConfig: {
+  [key: string]: { color: string; bg: string; emoji: string };
+} = {
   status_update: { color: "#10b981", bg: "rgba(16,185,129,0.12)", emoji: "📋" },
   interview: { color: "#06b6d4", bg: "rgba(6,182,212,0.12)", emoji: "📅" },
   general: { color: "#8b5cf6", bg: "rgba(139,92,246,0.12)", emoji: "🔔" },
 };
 
-// Bangun notifikasi dari data lamaran kandidat
-const buildNotifications = (apps: any[]): Notif[] => {
+const buildNotifications = (apps: any[], interviews: any[] = []): Notif[] => {
   const notifs: Notif[] = [];
 
   apps.forEach((a) => {
-    // Notif kalau status berubah dari applied
     if (a.status === "shortlisted") {
       notifs.push({
         id: `sl-${a.id}`,
         type: "status_update",
         title: "Kamu Shortlisted! 🎉",
         message: `Selamat! Lamaranmu untuk ${a.job_title || "posisi ini"} di ${a.company_name || "perusahaan"} lolos ke tahap berikutnya.`,
-        time: a.created_at,
+        time: a.updated_at || a.created_at,
         read: false,
       });
     }
+
     if (a.status === "review") {
       notifs.push({
         id: `rv-${a.id}`,
         type: "status_update",
         title: "Lamaran Sedang Direview",
         message: `Lamaranmu untuk ${a.job_title || "posisi ini"} sedang ditinjau oleh tim HR.`,
-        time: a.created_at,
+        time: a.updated_at || a.created_at,
         read: false,
       });
     }
+
     if (a.status === "rejected") {
       notifs.push({
         id: `rj-${a.id}`,
         type: "general",
         title: "Update Status Lamaran",
         message: `Lamaranmu untuk ${a.job_title || "posisi ini"} tidak dilanjutkan. Jangan menyerah, terus coba!`,
-        time: a.created_at,
-        read: true, // rejected langsung read supaya tidak terlalu menyedihkan
+        time: a.updated_at || a.created_at,
+        read: false,
+      });
+    }
+  });
+
+  interviews.forEach((iv) => {
+    if (iv.status === "cancelled") return;
+
+    const tanggal = new Date(iv.scheduled_at).toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+    const jam = new Date(iv.scheduled_at).toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const tipe = iv.type === "online" ? "Online" : "Onsite";
+
+    notifs.push({
+      id: `iv-${iv.id}`,
+      type: "interview",
+      title: "Interview Dijadwalkan 📅",
+      message: `Interview ${tipe} untuk ${iv.job_title || "posisi ini"} di ${iv.company_name || "perusahaan"} pada ${tanggal} pukul ${jam} WIB.`,
+      time: iv.created_at,
+      read: false,
+    });
+
+    if (iv.status === "done") {
+      notifs.push({
+        id: `iv-done-${iv.id}`,
+        type: "status_update",
+        title: "Interview Selesai ✅",
+        message: `Interview untuk ${iv.job_title || "posisi ini"} telah selesai. Semoga hasilnya memuaskan!`,
+        time: iv.updated_at || iv.created_at,
+        read: false,
       });
     }
   });
 
   return notifs
     .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-    .slice(0, 10);
+    .slice(0, 15);
 };
 
-// ── Notification Modal ────────────────────────────────────────────────────────
 function NotificationModal({
   notifs,
   onClose,
@@ -119,7 +151,6 @@ function NotificationModal({
       exit={{ opacity: 0, x: -8, scale: 0.97 }}
       transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       className="fixed left-[248px] top-[80px] z-[200] w-[360px] bg-[#0f1612] border border-emerald-500/20 rounded-[16px] shadow-[0_24px_64px_rgba(0,0,0,0.55)] overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-emerald-500/15">
         <div className="flex items-center gap-2">
           <span className="font-syne font-bold text-[0.95rem]">Notifikasi</span>
@@ -145,7 +176,6 @@ function NotificationModal({
         </div>
       </div>
 
-      {/* List */}
       <div className="max-h-[420px] overflow-y-auto">
         {notifs.length === 0 ? (
           <div className="text-center py-14 text-[#7a9585]">
@@ -154,7 +184,8 @@ function NotificationModal({
               Tidak ada notifikasi
             </div>
             <p className="text-[0.75rem] max-w-[200px] mx-auto leading-relaxed">
-              Notifikasi muncul saat status lamaranmu berubah.
+              Notifikasi muncul saat status lamaranmu berubah atau ada jadwal
+              interview baru.
             </p>
           </div>
         ) : (
@@ -193,7 +224,6 @@ function NotificationModal({
         )}
       </div>
 
-      {/* Footer */}
       {notifs.length > 0 && (
         <div className="px-5 py-3 border-t border-emerald-500/15 flex justify-between items-center">
           <span className="text-[0.72rem] text-[#7a9585]">
@@ -210,7 +240,6 @@ function NotificationModal({
   );
 }
 
-// ── Sidebar ───────────────────────────────────────────────────────────────────
 export default function CandidateSidebar({
   user,
   token,
@@ -221,24 +250,58 @@ export default function CandidateSidebar({
   const pathname = usePathname();
   const [showNotif, setShowNotif] = useState(false);
   const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [loading, setLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  const fetchNotifs = async () => {
+    if (!token) {
+      console.warn("[Sidebar] token kosong, skip fetch");
+      return;
+    }
+
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const headers: HeadersInit = { Authorization: `Bearer ${token}` };
+
+    setLoading(true);
+    try {
+      const [appsRes, ivsRes] = await Promise.allSettled([
+        fetch(`${base}/api/applications/my`, { headers }),
+        fetch(`${base}/api/interviews/my`, { headers }),
+      ]);
+
+      let apps: any[] = [];
+      let ivs: any[] = [];
+
+      if (appsRes.status === "fulfilled") {
+        const json = await appsRes.value.json();
+        console.log("[Sidebar] apps raw:", json);
+        apps = Array.isArray(json) ? json : [];
+      } else {
+        console.error("[Sidebar] gagal fetch apps:", appsRes.reason);
+      }
+
+      if (ivsRes.status === "fulfilled") {
+        const json = await ivsRes.value.json();
+        console.log("[Sidebar] interviews raw:", json);
+        ivs = Array.isArray(json) ? json : [];
+      } else {
+        console.error("[Sidebar] gagal fetch interviews:", ivsRes.reason);
+      }
+
+      const built = buildNotifications(apps, ivs);
+      console.log("[Sidebar] notifs built:", built);
+      setNotifs(built);
+    } catch (err) {
+      console.error("[Sidebar] unexpected error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!token) return;
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/applications/my`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    )
-      .then((r) => r.json())
-      .then((data) =>
-        setNotifs(buildNotifications(Array.isArray(data) ? data : [])),
-      )
-      .catch(() => {});
+    fetchNotifs();
   }, [token]);
 
-  // Tutup kalau klik di luar
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -275,7 +338,11 @@ export default function CandidateSidebar({
                 key={href}
                 href={href}
                 className={`flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium border no-underline transition-all duration-200
-                  ${active ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
+                  ${
+                    active
+                      ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20"
+                      : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"
+                  }`}>
                 <Icon size={15} /> {label}
               </Link>
             );
@@ -295,13 +362,24 @@ export default function CandidateSidebar({
             <FileText size={15} /> Analisis CV
           </Link>
 
-          {/* Notifikasi */}
           <button
-            onClick={() => setShowNotif((v) => !v)}
+            onClick={() => {
+              setShowNotif((v) => !v);
+              // refresh notif setiap kali buka panel
+              if (!showNotif) fetchNotifs();
+            }}
             className={`flex items-center justify-between px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium cursor-pointer border w-[calc(100%-16px)] transition-all duration-200
-              ${showNotif ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
+              ${
+                showNotif
+                  ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20"
+                  : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"
+              }`}>
             <span className="flex items-center gap-[10px]">
-              <Bell size={15} /> Notifikasi
+              <Bell size={15} />
+              Notifikasi
+              {loading && (
+                <span className="w-[6px] h-[6px] rounded-full bg-emerald-400/50 animate-pulse" />
+              )}
             </span>
             {unreadCount > 0 && (
               <span className="bg-emerald-500 text-black rounded-[4px] px-[6px] py-[1px] text-[0.65rem] font-extrabold">
@@ -311,7 +389,6 @@ export default function CandidateSidebar({
           </button>
         </div>
 
-        {/* User */}
         <div className="border-t border-emerald-500/15 px-3 py-4">
           <div className="flex items-center gap-[10px] px-2 py-[10px] rounded-[10px]">
             <div className="w-[34px] h-[34px] rounded-[9px] bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center font-extrabold text-[0.78rem] text-emerald-400 flex-shrink-0">
@@ -329,7 +406,6 @@ export default function CandidateSidebar({
         </div>
       </aside>
 
-      {/* Modal */}
       <AnimatePresence>
         {showNotif && (
           <NotificationModal
