@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { CandidateUser, getInitials } from "./shared";
 import { motion, AnimatePresence } from "framer-motion";
-
+const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const navItems = [
   { href: "/dashboard/candidate", Icon: LayoutDashboard, label: "Dashboard" },
   {
@@ -35,7 +35,7 @@ type Notif = {
   type: "status_update" | "interview" | "general";
   title: string;
   message: string;
-  time: string;
+  created_at: string;
   read: boolean;
 };
 
@@ -55,83 +55,83 @@ const notifConfig: {
   general: { color: "#8b5cf6", bg: "rgba(139,92,246,0.12)", emoji: "🔔" },
 };
 
-const buildNotifications = (apps: any[], interviews: any[] = []): Notif[] => {
-  const notifs: Notif[] = [];
+// const buildNotifications = (apps: any[], interviews: any[] = []): Notif[] => {
+//   const notifs: Notif[] = [];
 
-  apps.forEach((a) => {
-    if (a.status === "shortlisted") {
-      notifs.push({
-        id: `sl-${a.id}`,
-        type: "status_update",
-        title: "Kamu Shortlisted! 🎉",
-        message: `Selamat! Lamaranmu untuk ${a.job_title || "posisi ini"} di ${a.company_name || "perusahaan"} lolos ke tahap berikutnya.`,
-        time: a.updated_at || a.created_at,
-        read: false,
-      });
-    }
+//   apps.forEach((a) => {
+//     if (a.status === "shortlisted") {
+//       notifs.push({
+//         id: `sl-${a.id}`,
+//         type: "status_update",
+//         title: "Kamu Shortlisted! 🎉",
+//         message: `Selamat! Lamaranmu untuk ${a.job_title || "posisi ini"} di ${a.company_name || "perusahaan"} lolos ke tahap berikutnya.`,
+//         time: a.updated_at || a.created_at,
+//         read: false,
+//       });
+//     }
 
-    if (a.status === "review") {
-      notifs.push({
-        id: `rv-${a.id}`,
-        type: "status_update",
-        title: "Lamaran Sedang Direview",
-        message: `Lamaranmu untuk ${a.job_title || "posisi ini"} sedang ditinjau oleh tim HR.`,
-        time: a.updated_at || a.created_at,
-        read: false,
-      });
-    }
+//     if (a.status === "review") {
+//       notifs.push({
+//         id: `rv-${a.id}`,
+//         type: "status_update",
+//         title: "Lamaran Sedang Direview",
+//         message: `Lamaranmu untuk ${a.job_title || "posisi ini"} sedang ditinjau oleh tim HR.`,
+//         time: a.updated_at || a.created_at,
+//         read: false,
+//       });
+//     }
 
-    if (a.status === "rejected") {
-      notifs.push({
-        id: `rj-${a.id}`,
-        type: "general",
-        title: "Update Status Lamaran",
-        message: `Lamaranmu untuk ${a.job_title || "posisi ini"} tidak dilanjutkan. Jangan menyerah, terus coba!`,
-        time: a.updated_at || a.created_at,
-        read: false,
-      });
-    }
-  });
+//     if (a.status === "rejected") {
+//       notifs.push({
+//         id: `rj-${a.id}`,
+//         type: "general",
+//         title: "Update Status Lamaran",
+//         message: `Lamaranmu untuk ${a.job_title || "posisi ini"} tidak dilanjutkan. Jangan menyerah, terus coba!`,
+//         time: a.updated_at || a.created_at,
+//         read: false,
+//       });
+//     }
+//   });
 
-  interviews.forEach((iv) => {
-    if (iv.status === "cancelled") return;
+//   interviews.forEach((iv) => {
+//     if (iv.status === "cancelled") return;
 
-    const tanggal = new Date(iv.scheduled_at).toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    });
-    const jam = new Date(iv.scheduled_at).toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const tipe = iv.type === "online" ? "Online" : "Onsite";
+//     const tanggal = new Date(iv.scheduled_at).toLocaleDateString("id-ID", {
+//       weekday: "long",
+//       day: "numeric",
+//       month: "long",
+//     });
+//     const jam = new Date(iv.scheduled_at).toLocaleTimeString("id-ID", {
+//       hour: "2-digit",
+//       minute: "2-digit",
+//     });
+//     const tipe = iv.type === "online" ? "Online" : "Onsite";
 
-    notifs.push({
-      id: `iv-${iv.id}`,
-      type: "interview",
-      title: "Interview Dijadwalkan 📅",
-      message: `Interview ${tipe} untuk ${iv.job_title || "posisi ini"} di ${iv.company_name || "perusahaan"} pada ${tanggal} pukul ${jam} WIB.`,
-      time: iv.created_at,
-      read: false,
-    });
+//     notifs.push({
+//       id: `iv-${iv.id}`,
+//       type: "interview",
+//       title: "Interview Dijadwalkan 📅",
+//       message: `Interview ${tipe} untuk ${iv.job_title || "posisi ini"} di ${iv.company_name || "perusahaan"} pada ${tanggal} pukul ${jam} WIB.`,
+//       time: iv.created_at,
+//       read: false,
+//     });
 
-    if (iv.status === "done") {
-      notifs.push({
-        id: `iv-done-${iv.id}`,
-        type: "status_update",
-        title: "Interview Selesai ✅",
-        message: `Interview untuk ${iv.job_title || "posisi ini"} telah selesai. Semoga hasilnya memuaskan!`,
-        time: iv.updated_at || iv.created_at,
-        read: false,
-      });
-    }
-  });
+//     if (iv.status === "done") {
+//       notifs.push({
+//         id: `iv-done-${iv.id}`,
+//         type: "status_update",
+//         title: "Interview Selesai ✅",
+//         message: `Interview untuk ${iv.job_title || "posisi ini"} telah selesai. Semoga hasilnya memuaskan!`,
+//         time: iv.updated_at || iv.created_at,
+//         read: false,
+//       });
+//     }
+//   });
 
-  return notifs
-    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-    .slice(0, 15);
-};
+//   return notifs
+//     .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+//     .slice(0, 15);
+// };
 
 function NotificationModal({
   notifs,
@@ -215,7 +215,7 @@ function NotificationModal({
                     {n.message}
                   </div>
                   <div className="flex items-center gap-1 text-[0.67rem] text-[#7a9585]/50 mt-[5px]">
-                    <Clock size={9} /> {timeAgo(n.time)}
+                    <Clock size={9} /> {timeAgo(n.created_at)}
                   </div>
                 </div>
               </div>
@@ -254,47 +254,32 @@ export default function CandidateSidebar({
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifs = async () => {
-    if (!token) {
-      console.warn("[Sidebar] token kosong, skip fetch");
-      return;
-    }
-
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    const headers: HeadersInit = { Authorization: `Bearer ${token}` };
+    if (!token) return;
 
     setLoading(true);
     try {
-      const [appsRes, ivsRes] = await Promise.allSettled([
-        fetch(`${base}/api/applications/my`, { headers }),
-        fetch(`${base}/api/interviews/my`, { headers }),
-      ]);
-
-      let apps: any[] = [];
-      let ivs: any[] = [];
-
-      if (appsRes.status === "fulfilled") {
-        const json = await appsRes.value.json();
-        console.log("[Sidebar] apps raw:", json);
-        apps = Array.isArray(json) ? json : [];
-      } else {
-        console.error("[Sidebar] gagal fetch apps:", appsRes.reason);
-      }
-
-      if (ivsRes.status === "fulfilled") {
-        const json = await ivsRes.value.json();
-        console.log("[Sidebar] interviews raw:", json);
-        ivs = Array.isArray(json) ? json : [];
-      } else {
-        console.error("[Sidebar] gagal fetch interviews:", ivsRes.reason);
-      }
-
-      const built = buildNotifications(apps, ivs);
-      console.log("[Sidebar] notifs built:", built);
-      setNotifs(built);
+      const res = await fetch(`${base}/api/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setNotifs(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("[Sidebar] unexpected error:", err);
+      console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Mark all read — sekarang simpan ke DB
+  const handleMarkAllRead = async () => {
+    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      await fetch(`${base}/api/notifications/read-all`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -411,9 +396,7 @@ export default function CandidateSidebar({
           <NotificationModal
             notifs={notifs}
             onClose={() => setShowNotif(false)}
-            onMarkAllRead={() =>
-              setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))
-            }
+            onMarkAllRead={handleMarkAllRead}
           />
         )}
       </AnimatePresence>

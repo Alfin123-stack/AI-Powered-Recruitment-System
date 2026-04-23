@@ -14,11 +14,12 @@ import {
   Building2,
   X,
   CheckCheck,
-  Star,
   Clock,
 } from "lucide-react";
 import { Company, getInitials, apiFetch } from "./shared";
 import { motion, AnimatePresence } from "framer-motion";
+
+const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const navItems = [
   { href: "/dashboard/hr/overview", Icon: BarChart3, label: "Dashboard" },
@@ -28,14 +29,19 @@ const navItems = [
   { href: "/dashboard/hr/interviews", Icon: Calendar, label: "Interviews" },
 ];
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 type Notif = {
   id: string;
-  type: "new_application" | "interview" | "shortlisted" | "general";
+  type: "status_update" | "interview" | "general";
   title: string;
   message: string;
   time: string;
   read: boolean;
+};
+
+const notifConfig: Record<string, { bg: string; emoji: string }> = {
+  status_update: { bg: "rgba(16,185,129,0.12)", emoji: "📋" },
+  interview: { bg: "rgba(6,182,212,0.12)", emoji: "📅" },
+  general: { bg: "rgba(139,92,246,0.12)", emoji: "🔔" },
 };
 
 const timeAgo = (dateStr: string) => {
@@ -46,67 +52,7 @@ const timeAgo = (dateStr: string) => {
   return `${Math.floor(diff / 86400)} hari lalu`;
 };
 
-const buildNotifications = (apps: any[], interviews: any[]): Notif[] => {
-  const notifs: Notif[] = [];
-
-  // Lamaran baru dalam 7 hari
-  apps
-    .filter((a) => {
-      const days = (Date.now() - new Date(a.created_at).getTime()) / 86400000;
-      return days <= 7 && a.status === "applied";
-    })
-    .slice(0, 5)
-    .forEach((a) => {
-      notifs.push({
-        id: `app-${a.id}`,
-        type: "new_application",
-        title: "Lamaran Baru Masuk",
-        message: `${a.candidate_name || "Kandidat"} melamar posisi ${a.job_title || "—"}`,
-        time: a.created_at,
-        read: false,
-      });
-    });
-
-  // Interview hari ini
-  interviews
-    .filter((iv) => {
-      const d = new Date(iv.scheduled_at);
-      return (
-        d.toDateString() === new Date().toDateString() &&
-        iv.status === "scheduled"
-      );
-    })
-    .forEach((iv) => {
-      notifs.push({
-        id: `iv-${iv.id}`,
-        type: "interview",
-        title: "Interview Hari Ini",
-        message: `${iv.candidate_name} — pukul ${new Date(iv.scheduled_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} WIB`,
-        time: iv.scheduled_at,
-        read: false,
-      });
-    });
-
-  return notifs.sort(
-    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
-  );
-};
-
-const notifConfig: Record<
-  string,
-  { color: string; bg: string; emoji: string }
-> = {
-  new_application: {
-    color: "#10b981",
-    bg: "rgba(16,185,129,0.12)",
-    emoji: "📄",
-  },
-  interview: { color: "#06b6d4", bg: "rgba(6,182,212,0.12)", emoji: "📅" },
-  shortlisted: { color: "#f59e0b", bg: "rgba(245,158,11,0.12)", emoji: "⭐" },
-  general: { color: "#8b5cf6", bg: "rgba(139,92,246,0.12)", emoji: "🔔" },
-};
-
-// ── Notification Modal ────────────────────────────────────────────────────────
+// ── Notification Modal ─────────────────────────────────────
 function NotificationModal({
   notifs,
   onClose,
@@ -170,16 +116,13 @@ function NotificationModal({
               <div
                 key={n.id}
                 className={`flex gap-3 px-5 py-4 transition-colors hover:bg-white/[0.02] cursor-default
-                ${i < notifs.length - 1 ? "border-b border-emerald-500/[0.08]" : ""}
-                ${!n.read ? "bg-emerald-500/[0.025]" : ""}`}>
-                {/* Icon */}
+                  ${i < notifs.length - 1 ? "border-b border-emerald-500/[0.08]" : ""}
+                  ${!n.read ? "bg-emerald-500/[0.025]" : ""}`}>
                 <div
                   className="w-9 h-9 rounded-[9px] flex items-center justify-center flex-shrink-0 mt-[2px] text-[1rem]"
                   style={{ background: cfg.bg }}>
                   {cfg.emoji}
                 </div>
-
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div className="font-semibold text-[0.82rem]">
@@ -219,7 +162,7 @@ function NotificationModal({
   );
 }
 
-// ── Sidebar ───────────────────────────────────────────────────────────────────
+// ── Sidebar ────────────────────────────────────────────────
 export default function Sidebar({
   user,
   company,
@@ -232,26 +175,83 @@ export default function Sidebar({
   const pathname = usePathname();
   const [showNotif, setShowNotif] = useState(false);
   const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [loading, setLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleMarkAllRead = async () => {
+    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    await fetch(`${base}/api/notifications/read-all`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(console.error);
+  };
+
+  // Di luar komponen — tidak menyebabkan masalah karena tidak pakai hooks
+  const fetchNotifications = async (token: string) => {
+    const res = await fetch(`${base}/api/notifications`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+
+    return (Array.isArray(data) ? data : []).map((n: any) => ({
+      id: n.id,
+      type: n.type,
+      title: n.title,
+      message: n.message,
+      time: n.created_at,
+      read: n.read,
+    }));
+  };
+
+  // Di dalam komponen
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      try {
+        const notifs = await fetchNotifications(token);
+        if (!cancelled) setNotifs(notifs);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   useEffect(() => {
     if (!token) return;
-    const fetch = async () => {
+    const interval = setInterval(async () => {
       try {
-        const [apps, interviews] = await Promise.all([
-          apiFetch("/api/applications/hr", token),
-          apiFetch("/api/interviews", token).catch(() => []),
-        ]);
-        setNotifs(
-          buildNotifications(
-            Array.isArray(apps) ? apps : [],
-            Array.isArray(interviews) ? interviews : [],
-          ),
-        );
-      } catch {}
-    };
-    fetch();
+        const notifs = await fetchNotifications(token);
+        setNotifs(notifs);
+      } catch (e) {
+        console.error(e);
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [token]);
+
+  // handleToggleNotif juga pakai helper yang sama
+  const handleToggleNotif = async () => {
+    setShowNotif((v) => !v);
+    if (!showNotif && token) {
+      try {
+        const notifs = await fetchNotifications(token);
+        setNotifs(notifs);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   // Tutup kalau klik di luar
   useEffect(() => {
@@ -292,7 +292,11 @@ export default function Sidebar({
                 key={href}
                 href={href}
                 className={`flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium border no-underline transition-all duration-200
-                  ${active ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
+                  ${
+                    active
+                      ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20"
+                      : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"
+                  }`}>
                 <Icon size={15} /> {label}
               </Link>
             );
@@ -304,11 +308,19 @@ export default function Sidebar({
 
           {/* Notifikasi button */}
           <button
-            onClick={() => setShowNotif((v) => !v)}
+            onClick={handleToggleNotif}
             className={`flex items-center justify-between px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium cursor-pointer border w-[calc(100%-16px)] transition-all duration-200
-              ${showNotif ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
+              ${
+                showNotif
+                  ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20"
+                  : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"
+              }`}>
             <span className="flex items-center gap-[10px]">
-              <Bell size={15} /> Notifikasi
+              <Bell size={15} />
+              Notifikasi
+              {loading && (
+                <span className="w-[6px] h-[6px] rounded-full bg-emerald-400/50 animate-pulse" />
+              )}
             </span>
             {unreadCount > 0 && (
               <span className="bg-emerald-500 text-black rounded-[4px] px-[6px] py-[1px] text-[0.65rem] font-extrabold">
@@ -320,7 +332,11 @@ export default function Sidebar({
           <Link
             href="/dashboard/hr/settings"
             className={`flex items-center gap-[10px] px-3 py-[10px] rounded-[9px] mx-2 mb-[2px] text-[0.86rem] font-medium border no-underline transition-all duration-200
-              ${pathname === "/dashboard/hr/settings" ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20" : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"}`}>
+              ${
+                pathname === "/dashboard/hr/settings"
+                  ? "text-emerald-400 bg-emerald-500/[0.08] border-emerald-500/20"
+                  : "text-[#7a9585] bg-transparent border-transparent hover:text-[#e8f0ec] hover:bg-white/[0.04]"
+              }`}>
             <Settings size={15} /> Pengaturan
           </Link>
         </div>
@@ -359,9 +375,7 @@ export default function Sidebar({
           <NotificationModal
             notifs={notifs}
             onClose={() => setShowNotif(false)}
-            onMarkAllRead={() =>
-              setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))
-            }
+            onMarkAllRead={handleMarkAllRead}
           />
         )}
       </AnimatePresence>
