@@ -3,206 +3,322 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import {
+  Upload,
+  Brain,
+  BarChart3,
+  Target,
+  Sparkles,
+  Briefcase,
+  Users,
+  Building2,
+  Clock,
+  Scale,
+  XCircle,
+  Star,
+  Plus,
+  ChevronRight,
+  TrendingUp,
+  Zap,
+  CheckCircle2,
+  FileText,
+  Search,
+  LayoutDashboard,
+  Bookmark,
+  Settings,
+  Shield,
+  Award,
+  ArrowRight,
+} from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type Step = { num: string; title: string; desc: string; icon: string };
+type Step = { num: string; title: string; desc: string; icon: React.ReactNode };
 type Feature = {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   badge: string;
   desc: string;
   bullets: string[];
   color: string;
+  href: string;
 };
 type Problem = {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   stat: string;
   statLabel: string;
   desc: string;
 };
 type Faq = { q: string; a: string };
-type TechItem = { name: string; icon: string; color: string };
+type Testimonial = {
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  avatar: string;
+  color: string;
+  rating: number;
+  tag: string;
+};
+type TechItem = { name: string; icon: React.ReactNode; color: string };
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const STEPS: Step[] = [
   {
     num: "01",
-    icon: "📄",
+    icon: <Upload size={20} />,
     title: "Upload CV Anda",
-    desc: "Upload file PDF atau DOCX. Sistem mendukung berbagai format CV modern maupun ATS-style.",
+    desc: "Upload file PDF CV kamu. Sistem membaca dan memproses isi dokumen secara otomatis — tidak perlu isi form manual.",
   },
   {
     num: "02",
-    icon: "🤖",
-    title: "AI Menganalisis",
-    desc: "Google Gemini AI mengekstraksi skill, pengalaman, pendidikan, dan kompetensi secara otomatis dalam hitungan detik.",
+    icon: <Brain size={20} />,
+    title: "AI Menganalisis CV",
+    desc: "Model AI kami mengekstraksi skill, pengalaman, pendidikan, dan menilai kesesuaian dengan standar seleksi otomatis dalam hitungan detik.",
   },
   {
     num: "03",
-    icon: "📊",
-    title: "Dapatkan Resume Score",
-    desc: "Sistem memberikan skor 0–100 berdasarkan kelengkapan, relevansi, dan standar ATS internasional.",
+    icon: <BarChart3 size={20} />,
+    title: "Dapatkan Skor & Analisis",
+    desc: "Sistem memberikan Resume Score, ATS Score, dan Overall Rating dengan penjelasan per kategori yang mudah ditindaklanjuti.",
   },
   {
     num: "04",
-    icon: "🎯",
-    title: "Job Matching & Rekomendasi",
-    desc: "Cocokkan CV dengan deskripsi pekerjaan dan dapatkan gap analysis serta saran perbaikan spesifik.",
+    icon: <Target size={20} />,
+    title: "Temukan Job yang Cocok",
+    desc: "Skill yang terdeteksi dari CV kamu otomatis dipakai untuk menyarankan lowongan paling relevan — langsung dari halaman Job Matches.",
   },
 ];
 
 const FEATURES: Feature[] = [
   {
-    icon: "🧠",
-    title: "AI Resume Analyzer",
-    badge: "Powered by Gemini",
+    icon: <Brain size={24} />,
+    title: "Analisis CV dengan AI",
+    badge: "Analisis Cerdas",
     color: "#10b981",
-    desc: "Menganalisis CV secara mendalam menggunakan Google Gemini AI — mengekstraksi skill teknis, soft skill, pengalaman kerja, dan latar belakang pendidikan secara akurat.",
+    href: "/analyze",
+    desc: "Upload PDF CV dan dapatkan analisis mendalam — ekstraksi skill, penilaian skor, dan rekomendasi perbaikan konkret per bagian.",
     bullets: [
-      "Ekstraksi 50+ kategori skill",
-      "Deteksi format ATS compatibility",
-      "Multi-bahasa (ID & EN)",
+      "Resume Score + ATS Score + Overall Rating",
+      "Breakdown skor per kategori (Pengalaman, Pendidikan, dll.)",
+      "Rekomendasi perbaikan spesifik per bagian CV",
     ],
   },
   {
-    icon: "🔗",
-    title: "Job Matching Score",
+    icon: <Briefcase size={24} />,
+    title: "Pencocokan Lowongan Otomatis",
     badge: "Smart Matching",
     color: "#06b6d4",
-    desc: "Algoritma matching canggih yang membandingkan profil kandidat dengan requirements pekerjaan, menghasilkan compatibility score dan gap analysis yang actionable.",
+    href: "/jobs",
+    desc: "Skill yang terdeteksi dari CV kamu langsung dipakai untuk mencocokkan lowongan paling relevan — tanpa perlu input ulang.",
     bullets: [
-      "Skor kecocokan 0–100%",
-      "Gap analysis per kategori",
-      "Keyword density check",
+      "Skill terdeteksi otomatis dari CV",
+      "Saran lowongan berdasarkan profil terkini",
+      "Lihat semua lowongan aktif di direktori Jobs",
     ],
   },
   {
-    icon: "💡",
-    title: "AI Recommendation Engine",
-    badge: "Personalized",
-    color: "#8b5cf6",
-    desc: "Menghasilkan rekomendasi personal yang spesifik dan dapat langsung diimplementasikan — bukan saran generik — untuk meningkatkan daya saing CV kandidat.",
-    bullets: [
-      "Rekomendasi per section",
-      "Contoh kalimat konkret",
-      "Priority improvement list",
-    ],
-  },
-  {
-    icon: "👥",
-    title: "HR Candidate Dashboard",
-    badge: "For Recruiters",
+    icon: <Users size={24} />,
+    title: "Dashboard Rekruter",
+    badge: "Untuk HR",
     color: "#f59e0b",
-    desc: "Dashboard komprehensif untuk tim HR — kelola ratusan kandidat, bandingkan profil secara side-by-side, dan percepat shortlisting dengan ranking otomatis.",
+    href: "/dashboard/hr/overview",
+    desc: "Dashboard komprehensif untuk tim HR — lihat semua pelamar, bandingkan skor kandidat, dan update status secara real-time.",
     bullets: [
-      "Bulk CV processing",
-      "Candidate ranking board",
-      "Export laporan PDF/Excel",
+      "Ranking kandidat otomatis berdasarkan skor AI",
+      "Shortlist, review, atau tolak kandidat dengan mudah",
+      "Lihat CV asli & detail skill setiap kandidat",
+    ],
+  },
+  {
+    icon: <Building2 size={24} />,
+    title: "Direktori Perusahaan",
+    badge: "Company Directory",
+    color: "#8b5cf6",
+    href: "/company",
+    desc: "Kandidat dapat menjelajahi perusahaan yang sedang merekrut, melihat lowongan aktif, dan langsung melamar ke posisi yang tersedia.",
+    bullets: [
+      "Filter perusahaan per kota & industri",
+      "Lihat lowongan aktif per perusahaan",
+      "Ikuti perusahaan yang diminati",
     ],
   },
 ];
 
 const PROBLEMS: Problem[] = [
   {
-    icon: "⏳",
+    icon: <Clock size={28} />,
     title: "Screening Manual Memakan Waktu",
     stat: "73%",
-    statLabel: "HR menghabiskan >6 jam/hari untuk screening CV",
-    desc: "Rata-rata recruiter hanya menghabiskan 7,4 detik per CV. AI kami memproses ribuan CV dalam hitungan menit dengan akurasi yang konsisten.",
+    statLabel:
+      "HR menghabiskan lebih dari 6 jam per hari hanya untuk membaca CV",
+    desc: "Rata-rata rekruter hanya menghabiskan 7 detik per CV. AI kami memproses dan memberikan skor CV dalam hitungan detik dengan konsistensi yang tidak bisa dilakukan secara manual.",
   },
   {
-    icon: "⚖️",
-    title: "Bias Subjektif dalam Seleksi",
+    icon: <Scale size={28} />,
+    title: "Penilaian yang Tidak Objektif",
     stat: "62%",
-    statLabel: "keputusan hiring dipengaruhi bias tak disadari",
-    desc: "Penilaian manusia rentan terhadap confirmation bias, affinity bias, dan halo effect. Sistem kami memberikan evaluasi objektif berbasis data.",
+    statLabel: "Keputusan hiring dipengaruhi penilaian subjektif tak disadari",
+    desc: "Penilaian manusia rentan bias. Sistem kami memberikan skor yang objektif dan konsisten, berbasis konten CV yang sebenarnya — bukan kesan pertama.",
   },
   {
-    icon: "❌",
-    title: "CV Tidak Lolos ATS",
+    icon: <XCircle size={28} />,
+    title: "CV Tidak Lolos Seleksi Awal",
     stat: "75%",
-    statLabel: "CV berkualitas ditolak sistem ATS sebelum dibaca HR",
-    desc: "Banyak kandidat kompeten gagal di tahap pertama karena formatting CV yang tidak ATS-friendly. Kami mendeteksi dan memperbaiki ini secara otomatis.",
+    statLabel: "CV berkualitas gagal di seleksi otomatis sebelum dibaca HR",
+    desc: "Banyak kandidat kompeten gugur di tahap pertama. Fitur ATS Score kami mendeteksi masalah sebelum CV dikirim, sehingga kamu punya waktu memperbaikinya.",
   },
 ];
 
 const FAQS: Faq[] = [
   {
-    q: "Apa itu AI Resume Analyzer dan bagaimana cara kerjanya?",
-    a: "AI Resume Analyzer adalah sistem berbasis kecerdasan buatan yang menggunakan Google Gemini AI untuk menganalisis CV secara otomatis. Sistem membaca file PDF/DOCX, mengekstraksi informasi terstruktur (skill, pengalaman, pendidikan), lalu menghitung resume score dan job matching score berdasarkan algoritma multi-parameter.",
+    q: "Apa itu fitur Analisis CV dan bagaimana cara kerjanya?",
+    a: "Fitur Analisis CV memproses file PDF menggunakan model kecerdasan buatan. Sistem membaca isi dokumen, mengidentifikasi skill, pengalaman, dan pendidikan, lalu menghasilkan Resume Score (kualitas konten), ATS Score (kesesuaian dengan sistem seleksi otomatis), dan Overall Rating beserta rekomendasi perbaikan yang spesifik.",
   },
   {
-    q: "Teknologi apa yang digunakan dalam sistem ini?",
-    a: "Stack teknologi: Next.js 14 (frontend), Express.js (backend API), Supabase (database & storage), Google Gemini AI (analisis CV), pdf-parse & mammoth (ekstraksi dokumen), dan TailwindCSS (styling). Sistem di-deploy di cloud dengan uptime 99.9%.",
+    q: "Apakah hasil analisis CV saya tersimpan?",
+    a: "Ya, jika kamu sudah login. Hasil analisis termasuk skor, skill yang terdeteksi, dan rekomendasi tersimpan ke akunmu dan bisa dibuka kembali kapan saja. Jika belum login, analisis tetap berjalan tapi tidak tersimpan untuk sesi berikutnya.",
   },
   {
-    q: "Seberapa akurat analisis AI-nya?",
-    a: "Berdasarkan pengujian internal dengan 10.000+ CV, sistem kami mencapai akurasi ekstraksi skill sebesar 94.2% dan akurasi job matching sebesar 91.7%. Model terus di-retrain secara berkala untuk meningkatkan performa.",
+    q: "Bagaimana cara Job Matching bekerja setelah analisis CV?",
+    a: "Setelah analisis selesai, skill yang terdeteksi dari CV kamu ditampilkan sebagai label di halaman hasil. Kamu bisa langsung klik 'Lihat Job Matches' untuk melihat lowongan yang paling relevan berdasarkan skill tersebut, atau jelajahi semua lowongan yang tersedia.",
   },
   {
-    q: "Apakah data CV saya aman dan terjaga privasi-nya?",
-    a: "Keamanan data adalah prioritas utama kami. Sistem menggunakan Supabase Storage dengan enkripsi AES-256, Role Based Access Control (RBAC), dan kebijakan data retention yang ketat. CV Anda tidak dibagikan ke pihak ketiga manapun. Kami juga PDPA & GDPR compliant.",
+    q: "Apakah data CV saya aman dan terlindungi?",
+    a: "CV diproses langsung di perangkat kamu sebelum dikirim untuk dianalisis. File asli disimpan dengan sistem keamanan berlapis sehingga data kamu hanya bisa diakses oleh akunmu sendiri.",
   },
   {
-    q: "Berapa lama proses analisis CV berlangsung?",
-    a: "Proses analisis rata-rata membutuhkan 15–30 detik per CV, tergantung ukuran file dan kompleksitas konten. Untuk batch processing HR (100+ CV), sistem dapat memproses secara paralel dengan estimasi 2–5 menit.",
+    q: "Apa perbedaan akun Kandidat dan HR?",
+    a: "Akun Kandidat dapat menganalisis CV, melihat job matches, menyimpan lowongan, dan memantau status lamaran. Akun HR mendapat akses ke dashboard rekrutmen: melihat semua pelamar, membandingkan skor kandidat, serta mengubah status kandidat.",
+  },
+  {
+    q: "Apakah platform ini gratis digunakan?",
+    a: "Fitur analisis CV tersedia gratis untuk kandidat. Cukup buat akun dan langsung upload CV untuk mendapatkan skor dan rekomendasi. Untuk fitur rekrutmen tim HR, tersedia paket yang bisa disesuaikan dengan kebutuhan perusahaan.",
   },
 ];
 
-const TECH_STACK: TechItem[] = [
-  { name: "Next.js 14", icon: "▲", color: "#a3e635" },
-  { name: "Express.js", icon: "⚡", color: "#68a063" },
-  { name: "Supabase", icon: "⚡", color: "#3ecf8e" },
-  { name: "Gemini AI", icon: "✦", color: "#4285f4" },
-  { name: "TypeScript", icon: "TS", color: "#3178c6" },
-  { name: "TailwindCSS", icon: "🌊", color: "#06b6d4" },
+const TESTIMONIALS: Testimonial[] = [
+  {
+    quote:
+      "Sebelumnya saya sudah lamar ke 20+ perusahaan tapi tidak lolos seleksi awal sama sekali. Setelah pakai RecruitAI, ATS Score saya naik signifikan — dan akhirnya dapat interview pertama dalam 2 minggu.",
+    name: "Rizky Aditya",
+    role: "Fresh Graduate",
+    company: "Teknik Informatika, Universitas Brawijaya",
+    avatar: "RA",
+    color: "#10b981",
+    rating: 5,
+    tag: "Kandidat",
+  },
+  {
+    quote:
+      "Sebagai HR di startup dengan tim kecil, kami tidak punya waktu untuk baca 200+ CV satu per satu. Dashboard RecruitAI langsung mengurutkan kandidat berdasarkan skor — proses shortlist yang biasanya 3 hari jadi 2 jam.",
+    name: "Dinda Maharani",
+    role: "HR Manager",
+    company: "Inovasi Digital Nusantara",
+    avatar: "DM",
+    color: "#06b6d4",
+    rating: 5,
+    tag: "Rekruter",
+  },
+  {
+    quote:
+      "Rekomendasinya sangat spesifik — bukan cuma 'perbaiki summary' tapi langsung memberi contoh kalimat yang bisa dipakai. Dalam 3 hari revisi CV, skor match saya ke posisi Frontend Engineer naik signifikan.",
+    name: "Fajar Nugroho",
+    role: "Frontend Developer",
+    company: "2 tahun pengalaman, aktif mencari kerja",
+    avatar: "FN",
+    color: "#8b5cf6",
+    rating: 5,
+    tag: "Kandidat",
+  },
+  {
+    quote:
+      "Fitur melihat CV asli kandidat langsung dari dashboard sangat membantu — tidak perlu buka tab baru atau download satu per satu. Kombinasi skor AI dan akses CV asli membuat keputusan shortlist jauh lebih percaya diri.",
+    name: "Budi Santoso",
+    role: "Talent Acquisition Lead",
+    company: "GoTech Indonesia",
+    avatar: "BS",
+    color: "#f59e0b",
+    rating: 5,
+    tag: "Rekruter",
+  },
+  {
+    quote:
+      "Yang paling berguna adalah pencocokan lowongan otomatis setelah upload CV — skill saya langsung dicocokkan dan lowongan yang muncul benar-benar relevan. Tidak perlu filter manual lagi.",
+    name: "Sari Wulandari",
+    role: "UI/UX Designer",
+    company: "Portfolio freelance, 3 tahun pengalaman",
+    avatar: "SW",
+    color: "#ec4899",
+    rating: 5,
+    tag: "Kandidat",
+  },
+  {
+    quote:
+      "Ranking kandidat berdasarkan skor langsung terurut otomatis. Tim kami bisa fokus ke kandidat terbaik saja dan tidak buang waktu untuk yang jelas tidak sesuai kualifikasi.",
+    name: "Andika Pratama",
+    role: "Head of People",
+    company: "Fintek Maju",
+    avatar: "AP",
+    color: "#ef4444",
+    rating: 5,
+    tag: "Rekruter",
+  },
 ];
 
 const CANDIDATE_CARDS = [
   {
-    icon: "📈",
-    title: "Resume Score Instan",
-    desc: "Ketahui seberapa kuat CV Anda dibandingkan standar industri dalam hitungan detik.",
+    icon: <TrendingUp size={28} />,
+    title: "Skor CV Instan",
+    desc: "Ketahui seberapa kuat CV kamu berdasarkan Resume Score, ATS Score, dan Overall Rating dalam hitungan detik.",
+    href: "/analyze",
   },
   {
-    icon: "🎯",
-    title: "Gap Analysis",
-    desc: "Identifikasi skill apa yang perlu ditingkatkan untuk posisi yang Anda inginkan.",
+    icon: <Target size={28} />,
+    title: "Pencocokan Lowongan Otomatis",
+    desc: "Skill yang terdeteksi dari CV langsung dipakai untuk menyarankan lowongan paling relevan — tidak perlu input ulang.",
+    href: "/dashboard/candidate/matches",
   },
   {
-    icon: "✍️",
-    title: "Rekomendasi Personal",
-    desc: "Dapatkan saran konkret per section CV yang spesifik dan dapat langsung diimplementasikan.",
+    icon: <Sparkles size={28} />,
+    title: "Rekomendasi Konkret",
+    desc: "Dapatkan saran perbaikan spesifik per bagian CV yang bisa langsung diimplementasikan untuk meningkatkan skor.",
+    href: "/analyze",
   },
   {
-    icon: "🔍",
-    title: "ATS Checker",
-    desc: "Pastikan CV Anda lolos sistem ATS sebelum dikirim ke perusahaan impian Anda.",
+    icon: <CheckCircle2 size={28} />,
+    title: "Cek Kompatibilitas Seleksi",
+    desc: "ATS Score menunjukkan seberapa baik CV kamu akan terbaca oleh sistem seleksi otomatis perusahaan sebelum sampai ke HR.",
+    href: "/analyze",
   },
 ];
 
 const HR_CARDS = [
   {
-    icon: "⚡",
-    title: "Bulk CV Processing",
-    desc: "Proses ratusan CV sekaligus secara otomatis — tanpa harus membuka satu per satu.",
+    icon: <Award size={28} />,
+    title: "Ranking Kandidat Otomatis",
+    desc: "Semua pelamar diurutkan otomatis berdasarkan skor AI — tanpa perlu membaca satu per satu secara manual.",
+    href: "/dashboard/hr/overview",
   },
   {
-    icon: "🏆",
-    title: "Candidate Ranking",
-    desc: "Dapatkan daftar kandidat terurut berdasarkan resume score dan job matching secara otomatis.",
+    icon: <Search size={28} />,
+    title: "Detail Kandidat & CV",
+    desc: "Lihat skill terdeteksi, rincian skor, dan akses CV asli kandidat langsung dari dashboard tanpa berpindah halaman.",
+    href: "/dashboard/hr/overview",
   },
   {
-    icon: "📊",
-    title: "Analytics Dashboard",
-    desc: "Pantau pipeline rekrutmen, conversion rate, dan tren kandidat dalam satu dashboard terpadu.",
+    icon: <Zap size={28} />,
+    title: "Update Status Cepat",
+    desc: "Shortlist, pindahkan ke review, atau tolak kandidat dengan satu klik. Status terupdate langsung ke sistem.",
+    href: "/dashboard/hr/overview",
   },
   {
-    icon: "📥",
-    title: "Export Laporan",
-    desc: "Export hasil analisis ke PDF atau Excel untuk keperluan reporting dan dokumentasi internal.",
+    icon: <LayoutDashboard size={28} />,
+    title: "Ringkasan per Posisi",
+    desc: "Lihat jumlah pelamar dan persentase shortlisted per posisi lowongan dalam tampilan yang mudah dibaca.",
+    href: "/dashboard/hr/overview",
   },
 ];
 
@@ -242,7 +358,6 @@ function Counter({
   );
 }
 
-// ── FadeIn ────────────────────────────────────────────────────────────────────
 function FadeIn({
   children,
   delay = 0,
@@ -266,7 +381,6 @@ function FadeIn({
   );
 }
 
-// ── Tag ───────────────────────────────────────────────────────────────────────
 function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-[6px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-[14px] py-[5px] rounded-full text-[0.72rem] font-semibold tracking-[0.1em] uppercase">
@@ -275,7 +389,6 @@ function Tag({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ── Card ──────────────────────────────────────────────────────────────────────
 function Card({
   children,
   className = "",
@@ -305,8 +418,8 @@ export default function Home() {
         {/* ── HERO ── */}
         <section
           className="pt-[120px] pb-20 relative overflow-hidden"
-          id="hero">
-          {/* Grid + blobs */}
+          id="hero"
+          aria-labelledby="hero-heading">
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -338,52 +451,66 @@ export default function Home() {
               className="text-center max-w-[820px] mx-auto">
               <div className="mb-6">
                 <Tag>
-                  <span className="animate-pulse">●</span> AI-Powered
-                  Recruitment System
+                  <Sparkles size={10} className="animate-pulse" /> Platform
+                  Rekrutmen Berbasis Kecerdasan Buatan
                 </Tag>
               </div>
 
               <h1
+                id="hero-heading"
                 className="font-syne font-extrabold leading-[1.08] tracking-tight mb-6"
                 style={{ fontSize: "clamp(2.6rem,6vw,4.2rem)" }}>
-                Rekrut Kandidat Terbaik{" "}
+                Upload CV. Dapat Skor.{" "}
                 <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                  10× Lebih Cepat
-                </span>{" "}
-                dengan AI
+                  Temukan Pekerjaan yang Cocok.
+                </span>
               </h1>
 
               <p className="text-[#7a9585] text-[1.15rem] leading-[1.7] max-w-[620px] mx-auto mb-10">
-                Platform rekrutmen berbasis AI yang menganalisis CV secara
-                otomatis, mencocokkan kandidat dengan posisi yang tepat, dan
-                memberikan rekomendasi personal untuk meningkatkan kualitas
-                resume.
+                RecruitAI menggunakan kecerdasan buatan untuk menganalisis CV
+                kamu secara otomatis — menghasilkan skor kualitas, tingkat
+                kompatibilitas seleksi, rekomendasi perbaikan, dan menyarankan
+                lowongan yang paling sesuai dengan profilmu.
               </p>
 
               <div className="flex gap-3 justify-center flex-wrap mb-[60px]">
-                <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[0.95rem] px-7 py-[13px] rounded-[10px] hover:-translate-y-[1px] hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
-                  Upload CV Sekarang →
+                <Button
+                  asChild
+                  className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[0.95rem] px-7 py-[13px] rounded-[10px] hover:-translate-y-[1px] hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
+                  <Link href="/analyze" className="flex items-center gap-2">
+                    Analisis CV Sekarang <ArrowRight size={16} />
+                  </Link>
                 </Button>
                 <Button
+                  asChild
+                  variant="outline"
                   className="border-white/15 hover:border-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/[0.05] text-[#e8f0ec] text-[0.95rem] px-7 py-[13px] rounded-[10px]">
-                  Lihat Demo ▶
+                  <Link href="/jobs" className="flex items-center gap-2">
+                    <Briefcase size={16} /> Lihat Lowongan
+                  </Link>
                 </Button>
               </div>
 
-              {/* Stats row */}
+              {/* 3 nilai utama */}
               <div
                 className="grid grid-cols-3 max-w-[600px] mx-auto rounded-[14px] overflow-hidden border border-emerald-500/15"
                 style={{ gap: 1, background: "rgba(16,185,129,0.15)" }}>
                 {[
-                  { n: 50000, suf: "+", label: "CV Dianalisis" },
-                  { n: 94, suf: "%", label: "Akurasi AI" },
-                  { n: 10, suf: "×", label: "Lebih Cepat" },
+                  { icon: <Brain size={20} />, label: "Analisis berbasis AI" },
+                  {
+                    icon: <Zap size={20} />,
+                    label: "Hasil dalam hitungan detik",
+                  },
+                  {
+                    icon: <Target size={20} />,
+                    label: "Pencocokan lowongan otomatis",
+                  },
                 ].map((s, i) => (
                   <div key={i} className="bg-[#0f1612] py-5 px-4 text-center">
-                    <div className="font-syne text-[1.8rem] font-extrabold text-emerald-400">
-                      <Counter to={s.n} suffix={s.suf} />
+                    <div className="flex justify-center text-emerald-400 mb-1">
+                      {s.icon}
                     </div>
-                    <div className="text-[#7a9585] text-[0.78rem] mt-1">
+                    <div className="text-[#7a9585] text-[0.78rem]">
                       {s.label}
                     </div>
                   </div>
@@ -394,11 +521,15 @@ export default function Home() {
         </section>
 
         {/* ── MASALAH ── */}
-        <section className="py-[100px] bg-[#0f1612]" id="masalah">
+        <section
+          className="py-[100px] bg-[#0f1612]"
+          id="masalah"
+          aria-labelledby="masalah-heading">
           <div className="max-w-[1180px] mx-auto px-6">
             <FadeIn className="text-center mb-[60px]">
               <Tag>Permasalahan</Tag>
               <h2
+                id="masalah-heading"
                 className="font-syne font-extrabold mt-4 mb-4"
                 style={{ fontSize: "clamp(1.8rem,3.5vw,2.6rem)" }}>
                 Mengapa Rekrutmen Konvensional Gagal?
@@ -416,7 +547,9 @@ export default function Home() {
               {PROBLEMS.map((p, i) => (
                 <FadeIn key={i} delay={i * 0.12}>
                   <Card className="h-full flex flex-col">
-                    <div className="text-[2rem] mb-4">{p.icon}</div>
+                    <div className="text-emerald-400 mb-4" aria-hidden="true">
+                      {p.icon}
+                    </div>
                     <h3 className="font-syne font-bold text-[1.05rem] mb-3">
                       {p.title}
                     </h3>
@@ -439,7 +572,10 @@ export default function Home() {
         </section>
 
         {/* ── CARA KERJA ── */}
-        <section className="py-[100px]" id="cara-kerja">
+        <section
+          className="py-[100px]"
+          id="cara-kerja"
+          aria-labelledby="cara-kerja-heading">
           <div className="max-w-[1180px] mx-auto px-6">
             <div
               className="grid gap-20 items-center"
@@ -448,20 +584,22 @@ export default function Home() {
                 <FadeIn>
                   <Tag>Cara Kerja</Tag>
                   <h2
+                    id="cara-kerja-heading"
                     className="font-syne font-extrabold mt-4 mb-4 leading-[1.15]"
                     style={{ fontSize: "clamp(1.8rem,3vw,2.4rem)" }}>
                     Dari Upload ke Insight dalam 30 Detik
                   </h2>
                   <p className="text-[#7a9585] leading-[1.7] mb-10 text-[0.95rem]">
-                    Proses otomatis end-to-end yang mengubah CV mentah menjadi
-                    laporan analitik komprehensif tanpa intervensi manual.
+                    Proses otomatis dari awal hingga akhir: isi CV dibaca dan
+                    dikirim ke sistem AI untuk dianalisis, lalu hasilnya
+                    langsung ditampilkan dan tersimpan ke akunmu.
                   </p>
                 </FadeIn>
 
-                <div className="flex flex-col">
+                <ol className="flex flex-col">
                   {STEPS.map((s, i) => (
                     <FadeIn key={i} delay={i * 0.1}>
-                      <div
+                      <li
                         className="flex gap-5 relative"
                         style={{
                           paddingBottom: i < STEPS.length - 1 ? 32 : 0,
@@ -472,7 +610,9 @@ export default function Home() {
                             style={{ top: 48, bottom: -28 }}
                           />
                         )}
-                        <div className="w-[46px] h-[46px] rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[1.2rem] flex-shrink-0 z-10">
+                        <div
+                          className="w-[46px] h-[46px] rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0 z-10"
+                          aria-hidden="true">
                           {s.icon}
                         </div>
                         <div>
@@ -486,19 +626,21 @@ export default function Home() {
                             {s.desc}
                           </p>
                         </div>
-                      </div>
+                      </li>
                     </FadeIn>
                   ))}
-                </div>
+                </ol>
               </div>
 
               {/* Mock result card */}
               <FadeIn delay={0.2}>
-                <div className="bg-[#0f1612] border border-emerald-500/15 rounded-[20px] p-7 shadow-[0_0_80px_rgba(16,185,129,0.12),0_0_160px_rgba(6,182,212,0.06)]">
+                <div
+                  className="bg-[#0f1612] border border-emerald-500/15 rounded-[20px] p-7 shadow-[0_0_80px_rgba(16,185,129,0.12),0_0_160px_rgba(6,182,212,0.06)]"
+                  aria-label="Contoh tampilan hasil analisis CV">
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <div className="text-[0.72rem] text-[#7a9585] mb-1">
-                        CANDIDATE REPORT
+                        LAPORAN ANALISIS CV
                       </div>
                       <div className="font-syne font-bold text-[1.1rem]">
                         Arif Pratama
@@ -507,60 +649,44 @@ export default function Home() {
                         Frontend Developer
                       </div>
                     </div>
-                    <div className="bg-emerald-500/10 border border-emerald-500/25 rounded-[8px] px-3 py-[6px] text-[0.72rem] text-emerald-400 font-semibold">
-                      Selesai Dianalisis ✓
+                    <div className="bg-emerald-500/10 border border-emerald-500/25 rounded-[8px] px-3 py-[6px] text-[0.72rem] text-emerald-400 font-semibold flex items-center gap-1">
+                      <CheckCircle2 size={12} /> Analisis Selesai
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 mb-5">
-                    {/* Score ring */}
-                    <div className="bg-[#141f19] rounded-[12px] p-4 text-center">
+                  {/* 3 score rings */}
+                  <div className="grid grid-cols-3 gap-2 mb-5">
+                    {[
+                      { label: "Resume Score", val: 82, color: "#10b981" },
+                      { label: "ATS Score", val: 76, color: "#8b5cf6" },
+                      { label: "Overall", val: 79, color: "#f59e0b" },
+                    ].map((ring, i) => (
                       <div
-                        className="w-[110px] h-[110px] rounded-full flex items-center justify-center relative mx-auto mb-[10px]"
-                        style={{
-                          background:
-                            "conic-gradient(#10b981 0% 82%, rgba(255,255,255,0.08) 82%)",
-                        }}>
-                        <div className="absolute w-[82px] h-[82px] rounded-full bg-[#141f19]" />
-                        <span className="relative z-10 font-syne text-[1.5rem] font-extrabold text-emerald-400">
-                          82
-                        </span>
-                      </div>
-                      <div className="text-[0.75rem] text-[#7a9585]">
-                        Resume Score
-                      </div>
-                    </div>
-                    {/* Matching bars */}
-                    <div className="bg-[#141f19] rounded-[12px] p-4">
-                      <div className="text-[0.75rem] text-[#7a9585] mb-[10px]">
-                        Job Matching
-                      </div>
-                      {[
-                        { l: "React.js", pct: 92, c: "#10b981" },
-                        { l: "TypeScript", pct: 78, c: "#06b6d4" },
-                        { l: "Node.js", pct: 65, c: "#8b5cf6" },
-                        { l: "SQL", pct: 55, c: "#f59e0b" },
-                      ].map((b, j) => (
-                        <div key={j} className="mb-2">
-                          <div className="flex justify-between text-[0.72rem] text-[#7a9585] mb-[3px]">
-                            <span>{b.l}</span>
-                            <span style={{ color: b.c }}>{b.pct}%</span>
-                          </div>
-                          <div className="h-[6px] rounded-full bg-white/[0.06] overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-[1.5s]"
-                              style={{ width: `${b.pct}%`, background: b.c }}
-                            />
-                          </div>
+                        key={i}
+                        className="bg-[#141f19] rounded-[12px] p-3 text-center">
+                        <div
+                          className="w-[70px] h-[70px] rounded-full flex items-center justify-center relative mx-auto mb-2"
+                          style={{
+                            background: `conic-gradient(${ring.color} 0% ${ring.val}%, rgba(255,255,255,0.08) ${ring.val}%)`,
+                          }}>
+                          <div className="absolute w-[52px] h-[52px] rounded-full bg-[#141f19]" />
+                          <span
+                            className="relative z-10 font-syne text-[1rem] font-extrabold"
+                            style={{ color: ring.color }}>
+                            {ring.val}
+                          </span>
                         </div>
-                      ))}
-                    </div>
+                        <div className="text-[0.65rem] text-[#7a9585]">
+                          {ring.label}
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Skills */}
                   <div className="mb-5">
-                    <div className="text-[0.72rem] text-[#7a9585] mb-2">
-                      SKILLS TERDETEKSI
+                    <div className="text-[0.72rem] text-[#7a9585] mb-2 flex items-center gap-1">
+                      <Search size={10} /> SKILL TERDETEKSI
                     </div>
                     <div className="flex flex-wrap gap-[6px]">
                       {[
@@ -575,7 +701,7 @@ export default function Home() {
                       ].map((s) => (
                         <span
                           key={s}
-                          className="inline-flex items-center gap-[6px] bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-300 px-3 py-1 rounded-[6px] text-[0.78rem] font-medium font-mono">
+                          className="inline-flex items-center bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-300 px-3 py-1 rounded-[6px] text-[0.75rem] font-medium font-mono">
                           {s}
                         </span>
                       ))}
@@ -583,24 +709,35 @@ export default function Home() {
                   </div>
 
                   {/* Recommendations */}
-                  <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-[10px] px-4 py-[14px]">
-                    <div className="text-[0.72rem] text-amber-400 font-semibold mb-2">
-                      💡 REKOMENDASI AI
+                  <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-[10px] px-4 py-[14px] mb-4">
+                    <div className="text-[0.72rem] text-amber-400 font-semibold mb-2 flex items-center gap-1">
+                      <Sparkles size={10} /> REKOMENDASI PERBAIKAN
                     </div>
                     <ul className="list-disc pl-4 text-[#7a9585] text-[0.8rem] leading-[1.7]">
                       <li>
-                        Tambahkan angka kuantitatif pada achievement (mis.
+                        Tambahkan angka kuantitatif pada pencapaian (mis.
                         "meningkatkan performa 40%")
                       </li>
                       <li>
-                        Sertakan sertifikasi cloud (AWS/GCP) untuk meningkatkan
-                        daya saing
-                      </li>
-                      <li>
-                        Section summary perlu diperkuat dengan value proposition
-                        yang jelas
+                        Bagian ringkasan perlu diperkuat dengan nilai jual yang
+                        jelas
                       </li>
                     </ul>
+                  </div>
+
+                  {/* Job matches CTA */}
+                  <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-[10px] px-4 py-3 flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-[0.72rem] text-emerald-400 font-semibold mb-[2px] flex items-center gap-1">
+                        <Target size={10} /> LOWONGAN YANG COCOK TERSEDIA
+                      </div>
+                      <div className="text-[0.72rem] text-[#7a9585]">
+                        Berdasarkan 8 skill yang terdeteksi
+                      </div>
+                    </div>
+                    <div className="text-[0.75rem] text-emerald-400 font-bold whitespace-nowrap flex items-center gap-1">
+                      Lihat Lowongan <ArrowRight size={12} />
+                    </div>
                   </div>
                 </div>
               </FadeIn>
@@ -609,18 +746,22 @@ export default function Home() {
         </section>
 
         {/* ── FITUR UTAMA ── */}
-        <section className="py-[100px] bg-[#0f1612]" id="fitur">
+        <section
+          className="py-[100px] bg-[#0f1612]"
+          id="fitur"
+          aria-labelledby="fitur-heading">
           <div className="max-w-[1180px] mx-auto px-6">
             <FadeIn className="text-center mb-[60px]">
               <Tag>Fitur Utama</Tag>
               <h2
+                id="fitur-heading"
                 className="font-syne font-extrabold mt-4 mb-4"
                 style={{ fontSize: "clamp(1.8rem,3.5vw,2.6rem)" }}>
                 Semua yang Anda Butuhkan, Dalam Satu Platform
               </h2>
               <p className="text-[#7a9585] max-w-[520px] mx-auto leading-[1.7]">
-                Solusi lengkap untuk kandidat yang ingin CV-nya menonjol dan HR
-                yang ingin proses rekrutmen lebih efisien.
+                Dari analisis CV untuk kandidat hingga dashboard rekrutmen untuk
+                HR — semua tersedia dan terintegrasi.
               </p>
             </FadeIn>
             <div
@@ -631,7 +772,11 @@ export default function Home() {
               {FEATURES.map((f, i) => (
                 <FadeIn key={i} delay={i * 0.1}>
                   <Card className="h-full flex flex-col">
-                    <div className="text-[2rem] mb-3">{f.icon}</div>
+                    <div
+                      className="w-10 h-10 rounded-[10px] flex items-center justify-center mb-3"
+                      style={{ background: `${f.color}15`, color: f.color }}>
+                      {f.icon}
+                    </div>
                     <span
                       className="inline-block px-[10px] py-[3px] rounded-[4px] text-[0.68rem] font-semibold tracking-[0.08em] uppercase mb-3"
                       style={{
@@ -647,20 +792,26 @@ export default function Home() {
                     <p className="text-[#7a9585] text-[0.875rem] leading-[1.65] mb-4 flex-1">
                       {f.desc}
                     </p>
-                    <ul className="flex flex-col gap-[6px]">
+                    <ul className="flex flex-col gap-[6px] mb-4">
                       {f.bullets.map((b, j) => (
                         <li
                           key={j}
-                          className="flex items-center gap-2 text-[#7a9585] text-[0.82rem]">
-                          <span
-                            className="font-bold"
-                            style={{ color: f.color }}>
-                            ✓
-                          </span>{" "}
+                          className="flex items-start gap-2 text-[#7a9585] text-[0.82rem]">
+                          <CheckCircle2
+                            size={14}
+                            className="flex-shrink-0 mt-[1px]"
+                            style={{ color: f.color }}
+                          />{" "}
                           {b}
                         </li>
                       ))}
                     </ul>
+                    <Link
+                      href={f.href}
+                      className="mt-auto text-[0.78rem] font-semibold flex items-center gap-1 transition-colors"
+                      style={{ color: f.color }}>
+                      Coba fitur ini <ArrowRight size={13} />
+                    </Link>
                   </Card>
                 </FadeIn>
               ))}
@@ -669,38 +820,53 @@ export default function Home() {
         </section>
 
         {/* ── UNTUK SIAPA (TABS) ── */}
-        <section className="py-[100px]">
+        <section className="py-[100px]" aria-labelledby="untuk-siapa-heading">
           <div className="max-w-[1180px] mx-auto px-6">
             <FadeIn className="text-center mb-12">
               <Tag>Untuk Siapa</Tag>
               <h2
+                id="untuk-siapa-heading"
                 className="font-syne font-extrabold mt-4"
                 style={{ fontSize: "clamp(1.8rem,3.5vw,2.6rem)" }}>
                 Dirancang untuk Dua Peran Kunci
               </h2>
             </FadeIn>
 
-            <div className="flex justify-center gap-2 mb-10">
+            <div
+              className="flex justify-center gap-2 mb-10"
+              role="tablist"
+              aria-label="Pilih peran">
               {[
-                { k: "candidate", l: "👤 Kandidat / Pencari Kerja" },
-                { k: "hr", l: "🏢 HR / Perusahaan" },
-              ].map(({ k, l }) => (
+                {
+                  k: "candidate",
+                  l: "Kandidat / Pencari Kerja",
+                  icon: <FileText size={15} />,
+                },
+                {
+                  k: "hr",
+                  l: "HR / Perusahaan",
+                  icon: <Building2 size={15} />,
+                },
+              ].map(({ k, l, icon }) => (
                 <button
                   key={k}
+                  role="tab"
+                  aria-selected={activeTab === k}
                   onClick={() => setActiveTab(k)}
-                  className={`px-6 py-[10px] rounded-[8px] text-[0.9rem] font-medium cursor-pointer transition-all border
+                  className={`px-6 py-[10px] rounded-[8px] text-[0.9rem] font-medium cursor-pointer transition-all border flex items-center gap-2
                     ${
                       activeTab === k
                         ? "bg-emerald-500/10 border-emerald-500/15 text-emerald-400"
                         : "bg-transparent border-transparent text-[#7a9585] hover:text-[#e8f0ec]"
                     }`}>
-                  {l}
+                  {icon} {l}
                 </button>
               ))}
             </div>
 
             <motion.div
               key={activeTab}
+              role="tabpanel"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}>
@@ -711,15 +877,21 @@ export default function Home() {
                 }}>
                 {(activeTab === "candidate" ? CANDIDATE_CARDS : HR_CARDS).map(
                   (c, i) => (
-                    <Card key={i}>
-                      <div className="text-[1.8rem] mb-3">{c.icon}</div>
-                      <h3 className="font-syne font-bold text-[0.95rem] mb-2">
-                        {c.title}
-                      </h3>
-                      <p className="text-[#7a9585] text-[0.85rem] leading-[1.6]">
-                        {c.desc}
-                      </p>
-                    </Card>
+                    <Link key={i} href={c.href} className="no-underline block">
+                      <Card className="h-full cursor-pointer group">
+                        <div
+                          className="text-emerald-400 mb-3 group-hover:text-emerald-300 transition-colors"
+                          aria-hidden="true">
+                          {c.icon}
+                        </div>
+                        <h3 className="font-syne font-bold text-[0.95rem] mb-2 group-hover:text-emerald-400 transition-colors">
+                          {c.title}
+                        </h3>
+                        <p className="text-[#7a9585] text-[0.85rem] leading-[1.6]">
+                          {c.desc}
+                        </p>
+                      </Card>
+                    </Link>
                   ),
                 )}
               </div>
@@ -727,54 +899,95 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── METRICS ── */}
-        <section className="py-[60px] bg-[#0f1612] border-y border-emerald-500/15">
+        {/* ── TESTIMONIALS ── */}
+        <section
+          className="py-[100px] bg-[#0f1612]"
+          id="testimoni"
+          aria-labelledby="testimoni-heading">
           <div className="max-w-[1180px] mx-auto px-6">
+            <FadeIn className="text-center mb-[60px]">
+              <Tag>Testimoni</Tag>
+              <h2
+                id="testimoni-heading"
+                className="font-syne font-extrabold mt-4 mb-4"
+                style={{ fontSize: "clamp(1.8rem,3.5vw,2.6rem)" }}>
+                Dipercaya Kandidat & Tim HR
+              </h2>
+              <p className="text-[#7a9585] max-w-[480px] mx-auto leading-[1.7] text-[0.95rem]">
+                Dari pencari kerja yang akhirnya lolos seleksi awal hingga
+                rekruter yang mempersingkat proses shortlist dari hari ke jam.
+              </p>
+            </FadeIn>
+
             <div
               className="grid gap-4"
               style={{
-                gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+                gridTemplateColumns: "repeat(auto-fit,minmax(340px,1fr))",
               }}>
-              {[
-                { n: 50000, suf: "+", label: "CV berhasil dianalisis" },
-                { n: 1200, suf: "+", label: "Perusahaan menggunakan platform" },
-                { n: 94, suf: "%", label: "Akurasi analisis AI" },
-                { n: 30, suf: "det", label: "Waktu analisis rata-rata" },
-              ].map((m, i) => (
+              {TESTIMONIALS.map((t, i) => (
                 <FadeIn key={i} delay={i * 0.08}>
-                  <div className="bg-gradient-to-br from-[#141f19] to-[#0f1612] border border-emerald-500/15 rounded-[14px] p-6 text-center">
-                    <div className="font-syne text-[2.5rem] font-extrabold text-emerald-400 leading-none mb-[6px]">
-                      <Counter to={m.n} suffix={m.suf} />
+                  <article className="bg-[#0a0f0d] border border-emerald-500/15 rounded-[16px] p-7 flex flex-col gap-5 transition-all duration-300 hover:border-emerald-500/30 hover:-translate-y-[2px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
+                    {/* Rating + tag */}
+                    <div className="flex items-center justify-between">
+                      <div
+                        className="flex gap-[3px]"
+                        aria-label={`Rating ${t.rating} dari 5`}>
+                        {Array.from({ length: t.rating }).map((_, j) => (
+                          <Star
+                            key={j}
+                            size={14}
+                            className="text-amber-400 fill-amber-400"
+                            aria-hidden="true"
+                          />
+                        ))}
+                      </div>
+                      <span
+                        className="text-[0.65rem] font-bold tracking-[0.08em] uppercase px-[10px] py-[3px] rounded-[4px]"
+                        style={{
+                          background: `${t.color}12`,
+                          color: t.color,
+                          border: `1px solid ${t.color}25`,
+                        }}>
+                        {t.tag}
+                      </span>
                     </div>
-                    <div className="text-[#7a9585] text-[0.82rem] leading-[1.4]">
-                      {m.label}
-                    </div>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* ── TECH STACK ── */}
-        <section className="py-[100px]" id="teknologi">
-          <div className="max-w-[1180px] mx-auto px-6">
-            <FadeIn className="text-center mb-12">
-              <Tag>Tech Stack</Tag>
-              <h2
-                className="font-syne font-extrabold mt-4 mb-4"
-                style={{ fontSize: "clamp(1.8rem,3.5vw,2.6rem)" }}>
-                Dibangun dengan Teknologi Terkini
-              </h2>
-              <p className="text-[#7a9585] max-w-[480px] mx-auto leading-[1.7] text-[0.95rem]">
-                Stack teknologi modern yang menjamin performa, keamanan, dan
-                skalabilitas enterprise-grade.
-              </p>
-            </FadeIn>
-            <div className="flex flex-wrap gap-3 justify-center">
-              {TECH_STACK.map((t, i) => (
-                <FadeIn key={i} delay={i * 0.07}>
-                  <TechCard tech={t} />
+                    {/* Quote */}
+                    <blockquote className="text-[#c8d9d0] text-[0.88rem] leading-[1.75] flex-1">
+                      <span
+                        className="text-emerald-400 text-[1.4rem] font-syne leading-none mr-1"
+                        aria-hidden="true">
+                        "
+                      </span>
+                      {t.quote}
+                      <span
+                        className="text-emerald-400 text-[1.4rem] font-syne leading-none ml-1"
+                        aria-hidden="true">
+                        "
+                      </span>
+                    </blockquote>
+
+                    {/* Author */}
+                    <footer className="flex items-center gap-3 pt-1 border-t border-emerald-500/10">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center font-syne font-extrabold text-[0.78rem] flex-shrink-0"
+                        style={{ background: `${t.color}18`, color: t.color }}
+                        aria-hidden="true">
+                        {t.avatar}
+                      </div>
+                      <div>
+                        <div className="font-syne font-bold text-[0.88rem]">
+                          {t.name}
+                        </div>
+                        <div className="text-[#7a9585] text-[0.75rem]">
+                          {t.role}
+                        </div>
+                        <div className="text-[#7a9585] text-[0.72rem] opacity-70">
+                          {t.company}
+                        </div>
+                      </div>
+                    </footer>
+                  </article>
                 </FadeIn>
               ))}
             </div>
@@ -782,36 +995,41 @@ export default function Home() {
         </section>
 
         {/* ── FAQ ── */}
-        <section className="py-[100px] bg-[#0f1612]" id="faq">
+        <section className="py-[100px]" id="faq" aria-labelledby="faq-heading">
           <div className="max-w-[760px] mx-auto px-6">
             <FadeIn className="text-center mb-[56px]">
               <Tag>FAQ</Tag>
               <h2
+                id="faq-heading"
                 className="font-syne font-extrabold mt-4"
                 style={{ fontSize: "clamp(1.8rem,3.5vw,2.6rem)" }}>
                 Pertanyaan yang Sering Diajukan
               </h2>
             </FadeIn>
-            <div>
+            <dl>
               {FAQS.map((f, i) => (
                 <FadeIn key={i} delay={i * 0.06}>
                   <div className="border-b border-emerald-500/15">
-                    <button
-                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="w-full bg-transparent border-0 text-[#e8f0ec] font-syne font-semibold text-[1rem] py-[22px] text-left flex justify-between items-center gap-4 cursor-pointer hover:text-emerald-400 transition-colors">
-                      <span>{f.q}</span>
-                      <span
-                        className="text-emerald-400 text-[1.2rem] flex-shrink-0 transition-transform duration-300"
-                        style={{
-                          transform:
-                            openFaq === i ? "rotate(45deg)" : "rotate(0)",
-                        }}>
-                        +
-                      </span>
-                    </button>
-                    <div
+                    <dt>
+                      <button
+                        onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                        aria-expanded={openFaq === i}
+                        className="w-full bg-transparent border-0 text-[#e8f0ec] font-syne font-semibold text-[1rem] py-[22px] text-left flex justify-between items-center gap-4 cursor-pointer hover:text-emerald-400 transition-colors">
+                        <span>{f.q}</span>
+                        <Plus
+                          size={18}
+                          className="text-emerald-400 flex-shrink-0 transition-transform duration-300"
+                          style={{
+                            transform:
+                              openFaq === i ? "rotate(45deg)" : "rotate(0)",
+                          }}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </dt>
+                    <dd
                       style={{
-                        maxHeight: openFaq === i ? 200 : 0,
+                        maxHeight: openFaq === i ? 300 : 0,
                         overflow: "hidden",
                         transition: "max-height 0.4s ease, padding 0.3s",
                         paddingBottom: openFaq === i ? 20 : 0,
@@ -819,16 +1037,18 @@ export default function Home() {
                       <p className="text-[#7a9585] leading-[1.7] text-[0.95rem]">
                         {f.a}
                       </p>
-                    </div>
+                    </dd>
                   </div>
                 </FadeIn>
               ))}
-            </div>
+            </dl>
           </div>
         </section>
 
         {/* ── CTA ── */}
-        <section className="py-[100px] relative overflow-hidden">
+        <section
+          className="py-[100px] relative overflow-hidden bg-[#0f1612]"
+          aria-labelledby="cta-heading">
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -848,118 +1068,195 @@ export default function Home() {
             <FadeIn>
               <Tag>Mulai Sekarang</Tag>
               <h2
+                id="cta-heading"
                 className="font-syne font-extrabold mt-6 mb-5 leading-[1.15]"
                 style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>
-                Siap Revolusi Proses
+                Siap Analisis CV
                 <br />
-                Rekrutmen Anda?
+                atau Rekrut Lebih Cerdas?
               </h2>
               <p className="text-[#7a9585] text-[1rem] max-w-[480px] mx-auto mb-10 leading-[1.7]">
-                Mulai gratis. Tidak perlu kartu kredit. Analisis CV pertama Anda
-                dalam kurang dari satu menit.
+                Pilih peran yang sesuai dan mulai sekarang — gratis, tanpa perlu
+                kartu kredit.
               </p>
-              <div className="flex gap-3 justify-center flex-wrap">
-                <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[1rem] px-8 py-[15px] rounded-[10px] hover:-translate-y-[1px] hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
-                  Upload CV Gratis →
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-emerald-500 text-emerald-400 text-black text-[1rem] px-8 py-[15px] rounded-[10px]">
-                  Hubungi Tim Sales
-                </Button>
+              <div className="flex gap-4 justify-center flex-wrap">
+                <div className="flex flex-col items-center gap-2">
+                  <Button
+                    asChild
+                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[1rem] px-8 py-[15px] rounded-[10px] hover:-translate-y-[1px] hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
+                    <Link href="/analyze" className="flex items-center gap-2">
+                      <FileText size={16} /> Analisis CV Saya
+                    </Link>
+                  </Button>
+                  <p className="text-[#7a9585] text-[0.75rem] flex items-center gap-1">
+                    <Users size={11} /> Untuk Kandidat
+                  </p>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/[0.06] text-[1rem] px-8 py-[15px] rounded-[10px]">
+                    <Link
+                      href="/dashboard/hr/overview"
+                      className="flex items-center gap-2">
+                      <LayoutDashboard size={16} /> Buka Dashboard HR
+                    </Link>
+                  </Button>
+                  <p className="text-[#7a9585] text-[0.75rem] flex items-center gap-1">
+                    <Building2 size={11} /> Untuk Rekruter
+                  </p>
+                </div>
               </div>
-              <p className="text-[#7a9585] text-[0.8rem] mt-6">
-                ✓ Gratis untuk kandidat &nbsp;·&nbsp; ✓ Trial 14 hari untuk HR
-                &nbsp;·&nbsp; ✓ Tanpa setup biaya
+              <p className="text-[#7a9585] text-[0.8rem] mt-8 flex items-center justify-center gap-3 flex-wrap">
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 size={13} className="text-emerald-400" /> Gratis
+                  untuk kandidat
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Brain size={13} className="text-emerald-400" /> Analisis
+                  berbasis AI
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Shield size={13} className="text-emerald-400" /> Data aman &
+                  terenkripsi
+                </span>
               </p>
             </FadeIn>
           </div>
         </section>
 
         {/* ── FOOTER ── */}
-        <footer className="bg-[#0f1612] border-t border-emerald-500/15 pt-12 pb-8">
+        <footer className="bg-[#0a0f0d] border-t border-emerald-500/15 pt-12 pb-8">
           <div className="max-w-[1180px] mx-auto px-6">
             <div
               className="grid gap-10 mb-12"
               style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr" }}>
               <div>
                 <div className="flex items-center gap-2 font-syne font-extrabold text-[1.15rem] mb-3">
-                  <span className="text-emerald-400">✦</span> RecruitAI
+                  <Sparkles
+                    size={16}
+                    className="text-emerald-400"
+                    aria-hidden="true"
+                  />{" "}
+                  RecruitAI
                 </div>
                 <p className="text-[#7a9585] text-[0.85rem] leading-[1.7] max-w-[260px]">
-                  Platform rekrutmen AI terdepan yang membantu perusahaan dan
-                  kandidat bertemu dengan cara yang lebih cerdas.
+                  Platform rekrutmen berbasis kecerdasan buatan yang
+                  menghubungkan kandidat terbaik dengan perusahaan yang tepat.
                 </p>
               </div>
+
               {[
                 {
                   title: "Produk",
-                  links: ["Fitur", "Cara Kerja", "Harga", "Demo"],
+                  links: [
+                    {
+                      label: "Analisis CV",
+                      href: "/analyze",
+                      icon: <FileText size={12} />,
+                    },
+                    {
+                      label: "Cari Lowongan",
+                      href: "/jobs",
+                      icon: <Search size={12} />,
+                    },
+                    {
+                      label: "Direktori Perusahaan",
+                      href: "/company",
+                      icon: <Building2 size={12} />,
+                    },
+                    {
+                      label: "Dashboard HR",
+                      href: "/dashboard/hr/overview",
+                      icon: <LayoutDashboard size={12} />,
+                    },
+                  ],
+                },
+                {
+                  title: "Kandidat",
+                  links: [
+                    {
+                      label: "Dashboard",
+                      href: "/dashboard/candidate",
+                      icon: <LayoutDashboard size={12} />,
+                    },
+                    {
+                      label: "Lamaran Saya",
+                      href: "/dashboard/candidate/applications",
+                      icon: <Briefcase size={12} />,
+                    },
+                    {
+                      label: "Job Matches",
+                      href: "/dashboard/candidate/matches",
+                      icon: <Target size={12} />,
+                    },
+                    {
+                      label: "Lowongan Tersimpan",
+                      href: "/dashboard/candidate/saved",
+                      icon: <Bookmark size={12} />,
+                    },
+                  ],
                 },
                 {
                   title: "Perusahaan",
-                  links: ["Tentang Kami", "Blog", "Karir", "Kontak"],
-                },
-                {
-                  title: "Legal",
                   links: [
-                    "Kebijakan Privasi",
-                    "Syarat & Ketentuan",
-                    "Keamanan Data",
+                    {
+                      label: "Overview",
+                      href: "/dashboard/hr/overview",
+                      icon: <BarChart3 size={12} />,
+                    },
+                    {
+                      label: "Kelola Kandidat",
+                      href: "/dashboard/hr/candidates",
+                      icon: <Users size={12} />,
+                    },
+                    {
+                      label: "Buat Lowongan",
+                      href: "/dashboard/hr/jobs",
+                      icon: <Plus size={12} />,
+                    },
+                    {
+                      label: "Pengaturan",
+                      href: "/dashboard/hr/settings",
+                      icon: <Settings size={12} />,
+                    },
                   ],
                 },
               ].map((col, i) => (
-                <div key={i}>
+                <nav key={i} aria-label={`Navigasi ${col.title}`}>
                   <div className="font-bold text-[0.85rem] tracking-[0.05em] mb-4 text-[#e8f0ec]">
                     {col.title}
                   </div>
-                  <ul className="flex flex-col gap-[10px]">
+                  <ul className="flex flex-col gap-[10px] list-none p-0 m-0">
                     {col.links.map((l) => (
-                      <li key={l}>
-                        <a
-                          href="#"
-                          className="text-[#7a9585] text-[0.85rem] no-underline hover:text-emerald-400 transition-colors">
-                          {l}
-                        </a>
+                      <li key={l.label}>
+                        <Link
+                          href={l.href}
+                          className="text-[#7a9585] text-[0.85rem] no-underline hover:text-emerald-400 transition-colors flex items-center gap-[6px]">
+                          <span className="opacity-60">{l.icon}</span>
+                          {l.label}
+                        </Link>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </nav>
               ))}
             </div>
             <div className="border-t border-emerald-500/15 pt-6 flex justify-between items-center flex-wrap gap-3">
               <p className="text-[#7a9585] text-[0.78rem]">
                 © 2025 RecruitAI. All rights reserved.
               </p>
-              <p className="text-[#7a9585] text-[0.78rem]">
-                Built with Next.js · Supabase · Google Gemini AI
+              <p className="text-[#7a9585] text-[0.78rem] flex items-center gap-1">
+                <Shield size={11} /> Platform rekrutmen berbasis kecerdasan
+                buatan
               </p>
             </div>
           </div>
         </footer>
       </main>
-    </div>
-  );
-}
-
-// ── TechCard (separate to avoid inline onMouseEnter/Leave) ────────────────────
-function TechCard({ tech }: { tech: TechItem }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      className="rounded-[12px] px-[22px] py-[14px] flex items-center gap-[10px] cursor-default transition-all duration-200"
-      style={{
-        background: hovered ? "#141f19" : "#0f1612",
-        border: `1px solid ${hovered ? tech.color + "60" : "rgba(16,185,129,0.15)"}`,
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}>
-      <span
-        className="text-[1.1rem] font-mono font-extrabold"
-        style={{ color: tech.color }}>
-        {tech.icon}
-      </span>
-      <span className="font-semibold text-[0.9rem]">{tech.name}</span>
     </div>
   );
 }
