@@ -1,5 +1,0 @@
-import { redirect } from "next/navigation";
-
-export default function DashboardPage() {
-  redirect("/dashboard/hr/overview");
-}
