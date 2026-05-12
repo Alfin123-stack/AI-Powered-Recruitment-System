@@ -452,21 +452,16 @@ export default function Home() {
               </p>
 
               <div className="flex gap-3 justify-center flex-wrap mb-[60px]">
-                <Button
-                  asChild
-                  className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[0.95rem] px-7 py-[13px] rounded-[10px] hover:-translate-y-[1px] hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
-                  <Link href="/analyze" className="flex items-center gap-2">
-                    Analisis CV Sekarang <ArrowRight size={16} />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-white/15 hover:border-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/[0.05] text-[#e8f0ec] text-[0.95rem] px-7 py-[13px] rounded-[10px]">
-                  <Link href="/jobs" className="flex items-center gap-2">
-                    <Briefcase size={16} /> Lihat Lowongan
-                  </Link>
-                </Button>
+                <Link
+                  href="/dashboard/candidate/matches"
+                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-5 py-[10px] rounded-[10px] no-underline text-[0.85rem] transition-all hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)] whitespace-nowrap">
+                  Analisis CV Sekarang <ArrowRight size={14} />
+                </Link>
+                <Link
+                  href="/jobs"
+                  className="flex items-center justify-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[9px] rounded-[10px] no-underline text-[0.82rem] transition-all whitespace-nowrap">
+                  <Briefcase size={13} /> Lihat Lowongan
+                </Link>
               </div>
 
               {/* 3 nilai utama */}
@@ -995,62 +990,45 @@ export default function Home() {
           aria-labelledby="cta-heading">
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.05)_1px,transparent_1px)] bg-[size:48px_48px]" />
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.08)_0%,transparent_70%)]" />
-          <div className="max-w-[1180px] mx-auto px-6 text-center relative">
+          <div className="max-w-[760px] mx-auto px-6 text-center relative">
             <FadeIn>
-              <Tag>Mulai Sekarang</Tag>
+              <Tag>
+                <Sparkles size={10} className="animate-pulse" /> Mulai Gratis
+              </Tag>
               <h2
                 id="cta-heading"
-                className="font-syne font-extrabold mt-6 mb-5 leading-[1.15] text-[clamp(2rem,4vw,3rem)]">
-                Siap Analisis CV
+                className="font-syne font-extrabold mt-6 mb-5 leading-[1.12] text-[clamp(2rem,4.5vw,3.2rem)]">
+                CV Kamu Sudah Siap.
                 <br />
-                atau Rekrut Lebih Cerdas?
+                <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                  Tahu Seberapa Kuatnya?
+                </span>
               </h2>
-              <p className="text-[#7a9585] text-[1rem] max-w-[480px] mx-auto mb-10 leading-[1.7]">
-                Pilih peran yang sesuai dan mulai sekarang — gratis, tanpa perlu
-                kartu kredit.
+              <p className="text-[#7a9585] text-[1rem] max-w-[460px] mx-auto mb-10 leading-[1.72]">
+                Upload PDF CV kamu dan dalam 30 detik kamu tahu skor kualitas,
+                seberapa lolos seleksi otomatis, serta lowongan mana yang paling
+                cocok dengan profilmu.
               </p>
-              <div className="flex gap-4 justify-center flex-wrap">
-                <div className="flex flex-col items-center gap-2">
-                  <Button
-                    asChild
-                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[1rem] px-8 py-[15px] rounded-[10px] hover:-translate-y-[1px] hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
-                    <Link href="/analyze" className="flex items-center gap-2">
-                      <FileText size={16} /> Analisis CV Saya
-                    </Link>
-                  </Button>
-                  <p className="text-[#7a9585] text-[0.75rem] flex items-center gap-1">
-                    <Users size={11} /> Untuk Kandidat
-                  </p>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/[0.06] text-[1rem] px-8 py-[15px] rounded-[10px]">
-                    <Link
-                      href="/dashboard/hr/overview"
-                      className="flex items-center gap-2">
-                      <LayoutDashboard size={16} /> Buka Dashboard HR
-                    </Link>
-                  </Button>
-                  <p className="text-[#7a9585] text-[0.75rem] flex items-center gap-1">
-                    <Building2 size={11} /> Untuk Rekruter
-                  </p>
-                </div>
-              </div>
-              <p className="text-[#7a9585] text-[0.8rem] mt-8 flex items-center justify-center gap-3 flex-wrap">
+
+              <Link
+                href="/analyze"
+                className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[1.05rem] px-9 py-[15px] rounded-[11px] no-underline transition-all hover:-translate-y-[2px] hover:shadow-[0_10px_36px_rgba(16,185,129,0.32)]">
+                <FileText size={17} /> Analisis CV Sekarang
+              </Link>
+
+              <p className="text-[#4a6b58] text-[0.78rem] mt-6 flex items-center justify-center gap-3 flex-wrap">
                 <span className="flex items-center gap-1">
-                  <CheckCircle2 size={13} className="text-emerald-400" /> Gratis
+                  <CheckCircle2 size={12} className="text-emerald-600" /> Gratis
                   untuk kandidat
                 </span>
-                <span>·</span>
+                <span className="text-[#2a4035]">·</span>
                 <span className="flex items-center gap-1">
-                  <Brain size={13} className="text-emerald-400" /> Analisis
-                  berbasis AI
+                  <Zap size={12} className="text-emerald-600" /> Hasil dalam 30
+                  detik
                 </span>
-                <span>·</span>
+                <span className="text-[#2a4035]">·</span>
                 <span className="flex items-center gap-1">
-                  <Shield size={13} className="text-emerald-400" /> Data aman &
+                  <Shield size={12} className="text-emerald-600" /> Data aman &
                   terenkripsi
                 </span>
               </p>
@@ -1059,28 +1037,62 @@ export default function Home() {
         </section>
 
         {/* ── FOOTER ── */}
-        <footer className="bg-[#0a0f0d] border-t border-emerald-500/15 pt-12 pb-8">
+        <footer className="bg-[#0a0f0d] border-t border-emerald-500/10 pt-14 pb-8">
           <div className="max-w-[1180px] mx-auto px-6">
-            <div className="grid gap-10 mb-12 [grid-template-columns:2fr_1fr_1fr_1fr]">
+            {/* Strip rekruter */}
+            <div className="flex items-center justify-between gap-6 flex-wrap bg-emerald-500/[0.05] border border-emerald-500/15 rounded-[14px] px-7 py-5 mb-14">
               <div>
-                <div className="flex items-center gap-2 font-syne font-extrabold text-[1.15rem] mb-3">
+                <p className="font-syne font-bold text-[0.95rem] text-[#e8f0ec] mb-[3px]">
+                  Kamu dari tim HR atau perusahaan?
+                </p>
+                <p className="text-[#7a9585] text-[0.82rem]">
+                  Hubungi kami untuk akses dashboard rekrutmen dan mulai terima
+                  lamaran dengan analisis AI.
+                </p>
+              </div>
+              <Link
+                href="/contact"
+                className="flex items-center gap-2 border border-emerald-500/35 text-emerald-400 hover:bg-emerald-500/[0.08] px-5 py-[9px] rounded-[9px] no-underline text-[0.84rem] font-semibold transition-all whitespace-nowrap flex-shrink-0">
+                <Building2 size={14} /> Hubungi Kami
+              </Link>
+            </div>
+
+            {/* Grid kolom */}
+            <div className="grid gap-10 mb-12 [grid-template-columns:2fr_1fr_1fr]">
+              {/* Brand */}
+              <div>
+                <div className="flex items-center gap-2 font-syne font-extrabold text-[1.15rem] mb-3 text-[#e8f0ec]">
                   <Sparkles
                     size={16}
                     className="text-emerald-400"
                     aria-hidden="true"
-                  />{" "}
+                  />
                   RecruitAI
                 </div>
-                <p className="text-[#7a9585] text-[0.85rem] leading-[1.7] max-w-[260px]">
-                  Platform rekrutmen berbasis kecerdasan buatan yang
-                  menghubungkan kandidat terbaik dengan perusahaan yang tepat.
+                <p className="text-[#7a9585] text-[0.855rem] leading-[1.72] max-w-[270px] mb-5">
+                  Platform rekrutmen berbasis kecerdasan buatan. Membantu
+                  kandidat tampil lebih baik dan perusahaan menemukan talenta
+                  yang tepat.
                 </p>
+                <div className="flex flex-col gap-[8px]">
+                  <div className="flex items-center gap-2 text-[#4a6b58] text-[0.78rem]">
+                    <Brain size={13} className="text-emerald-700" />
+                    Didukung model AI generatif terkini
+                  </div>
+                  <div className="flex items-center gap-2 text-[#4a6b58] text-[0.78rem]">
+                    <Shield size={13} className="text-emerald-700" />
+                    Dibuat di Indonesia, untuk pasar lokal
+                  </div>
+                </div>
               </div>
 
-              {[
-                {
-                  title: "Produk",
-                  links: [
+              {/* Platform */}
+              <nav aria-label="Navigasi Platform">
+                <div className="font-syne font-bold text-[0.82rem] tracking-[0.07em] uppercase text-[#c8d9d0] mb-4">
+                  Platform
+                </div>
+                <ul className="flex flex-col gap-[10px] list-none p-0 m-0">
+                  {[
                     {
                       label: "Analisis CV",
                       href: "/analyze",
@@ -1097,90 +1109,88 @@ export default function Home() {
                       icon: <Building2 size={12} />,
                     },
                     {
-                      label: "Dashboard HR",
-                      href: "/dashboard/hr/overview",
-                      icon: <LayoutDashboard size={12} />,
+                      label: "Tentang RecruitAI",
+                      href: "/about",
+                      icon: <Sparkles size={12} />,
                     },
-                  ],
-                },
-                {
-                  title: "Kandidat",
-                  links: [
+                  ].map((l) => (
+                    <li key={l.label}>
+                      <Link
+                        href={l.href}
+                        className="text-[#7a9585] text-[0.855rem] no-underline hover:text-emerald-400 transition-colors flex items-center gap-[7px]">
+                        <span className="opacity-55">{l.icon}</span>
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              {/* Informasi */}
+              <nav aria-label="Navigasi Informasi">
+                <div className="font-syne font-bold text-[0.82rem] tracking-[0.07em] uppercase text-[#c8d9d0] mb-4">
+                  Informasi
+                </div>
+                <ul className="flex flex-col gap-[10px] list-none p-0 m-0">
+                  {[
                     {
-                      label: "Dashboard",
-                      href: "/dashboard/candidate",
-                      icon: <LayoutDashboard size={12} />,
-                    },
-                    {
-                      label: "Lamaran Saya",
-                      href: "/dashboard/candidate/applications",
-                      icon: <Briefcase size={12} />,
-                    },
-                    {
-                      label: "Job Matches",
-                      href: "/dashboard/candidate/matches",
-                      icon: <Target size={12} />,
-                    },
-                    {
-                      label: "Lowongan Tersimpan",
-                      href: "/dashboard/candidate/saved",
-                      icon: <Bookmark size={12} />,
-                    },
-                  ],
-                },
-                {
-                  title: "Perusahaan",
-                  links: [
-                    {
-                      label: "Overview",
-                      href: "/dashboard/hr/overview",
-                      icon: <BarChart3 size={12} />,
+                      label: "Blog & Tips Karier",
+                      href: "/blog",
+                      icon: <FileText size={12} />,
                     },
                     {
-                      label: "Kelola Kandidat",
-                      href: "/dashboard/hr/candidates",
-                      icon: <Users size={12} />,
+                      label: "Pertanyaan Umum",
+                      href: "/faq",
+                      icon: <Search size={12} />,
                     },
                     {
-                      label: "Buat Lowongan",
-                      href: "/dashboard/hr/jobs",
-                      icon: <Plus size={12} />,
+                      label: "Hubungi Kami",
+                      href: "/contact",
+                      icon: <Building2 size={12} />,
                     },
                     {
-                      label: "Pengaturan",
-                      href: "/dashboard/hr/settings",
-                      icon: <Settings size={12} />,
+                      label: "Kebijakan Privasi",
+                      href: "/privacy",
+                      icon: <Shield size={12} />,
                     },
-                  ],
-                },
-              ].map((col, i) => (
-                <nav key={i} aria-label={`Navigasi ${col.title}`}>
-                  <div className="font-bold text-[0.85rem] tracking-[0.05em] mb-4 text-[#e8f0ec]">
-                    {col.title}
-                  </div>
-                  <ul className="flex flex-col gap-[10px] list-none p-0 m-0">
-                    {col.links.map((l) => (
-                      <li key={l.label}>
-                        <Link
-                          href={l.href}
-                          className="text-[#7a9585] text-[0.85rem] no-underline hover:text-emerald-400 transition-colors flex items-center gap-[6px]">
-                          <span className="opacity-60">{l.icon}</span>
-                          {l.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              ))}
+                  ].map((l) => (
+                    <li key={l.label}>
+                      <Link
+                        href={l.href}
+                        className="text-[#7a9585] text-[0.855rem] no-underline hover:text-emerald-400 transition-colors flex items-center gap-[7px]">
+                        <span className="opacity-55">{l.icon}</span>
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
             </div>
-            <div className="border-t border-emerald-500/15 pt-6 flex justify-between items-center flex-wrap gap-3">
-              <p className="text-[#7a9585] text-[0.78rem]">
-                © 2025 RecruitAI. All rights reserved.
+
+            {/* Bottom bar */}
+            <div className="border-t border-emerald-500/10 pt-6 flex justify-between items-center flex-wrap gap-3">
+              <p className="text-[#4a6b58] text-[0.775rem]">
+                © 2025 RecruitAI. Hak cipta dilindungi undang-undang.
               </p>
-              <p className="text-[#7a9585] text-[0.78rem] flex items-center gap-1">
-                <Shield size={11} /> Platform rekrutmen berbasis kecerdasan
-                buatan
-              </p>
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="flex items-center gap-[6px] text-[#4a6b58] text-[0.775rem]">
+                  <span
+                    className="w-[6px] h-[6px] rounded-full bg-emerald-500 inline-block"
+                    aria-hidden="true"
+                  />
+                  Semua sistem berjalan normal
+                </span>
+                <Link
+                  href="/terms"
+                  className="text-[#4a6b58] text-[0.775rem] no-underline hover:text-[#7a9585] transition-colors">
+                  Syarat & Ketentuan
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="text-[#4a6b58] text-[0.775rem] no-underline hover:text-[#7a9585] transition-colors">
+                  Privasi
+                </Link>
+              </div>
             </div>
           </div>
         </footer>

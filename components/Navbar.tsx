@@ -20,7 +20,8 @@ const navLinks = [
   { label: "Jobs", href: "/jobs" },
   { label: "AI Analyzer", href: "/analyze" },
   { label: "Company", href: "/company" },
-  { label: "Applications", href: "/applications" },
+  { label: "Blog", href: "/blog" },
+  {label:"About", href: "/about"}
 ];
 
 export default function Navbar() {

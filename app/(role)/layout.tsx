@@ -146,7 +146,6 @@ const CANDIDATE_TITLES: Record<string, string> = {
   "/dashboard/candidate/applications": "Lamaranku",
   "/dashboard/candidate/saved": "Tersimpan",
   "/dashboard/candidate/matches": "Job Matches",
-  "/dashboard/candidate/profile": "Profil Saya",
 };
 
 const HR_TITLES: Record<string, string> = {
@@ -155,7 +154,6 @@ const HR_TITLES: Record<string, string> = {
   "/dashboard/hr/candidates": "Candidates",
   "/dashboard/hr/analytics": "Analytics",
   "/dashboard/hr/interviews": "Interviews",
-  "/dashboard/hr/settings": "Pengaturan",
 };
 
 // ── Layout ────────────────────────────────────────────────────────────────────
