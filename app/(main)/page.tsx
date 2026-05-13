@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import {
@@ -19,18 +18,19 @@ import {
   XCircle,
   Star,
   Plus,
-  ChevronRight,
   TrendingUp,
   Zap,
   CheckCircle2,
   FileText,
   Search,
   LayoutDashboard,
-  Bookmark,
-  Settings,
   Shield,
   Award,
   ArrowRight,
+  Heart,
+  Lightbulb,
+  Globe,
+  Mail,
 } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -267,65 +267,11 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-const CANDIDATE_CARDS = [
-  {
-    icon: <TrendingUp size={28} />,
-    title: "Skor CV Instan",
-    desc: "Ketahui seberapa kuat CV kamu berdasarkan Resume Score, ATS Score, dan Overall Rating dalam hitungan detik.",
-    href: "/analyze",
-  },
-  {
-    icon: <Target size={28} />,
-    title: "Pencocokan Lowongan Otomatis",
-    desc: "Skill yang terdeteksi dari CV langsung dipakai untuk menyarankan lowongan paling relevan — tidak perlu input ulang.",
-    href: "/dashboard/candidate/matches",
-  },
-  {
-    icon: <Sparkles size={28} />,
-    title: "Rekomendasi Konkret",
-    desc: "Dapatkan saran perbaikan spesifik per bagian CV yang bisa langsung diimplementasikan untuk meningkatkan skor.",
-    href: "/analyze",
-  },
-  {
-    icon: <CheckCircle2 size={28} />,
-    title: "Cek Kompatibilitas Seleksi",
-    desc: "ATS Score menunjukkan seberapa baik CV kamu akan terbaca oleh sistem seleksi otomatis perusahaan sebelum sampai ke HR.",
-    href: "/analyze",
-  },
-];
-
-const HR_CARDS = [
-  {
-    icon: <Award size={28} />,
-    title: "Ranking Kandidat Otomatis",
-    desc: "Semua pelamar diurutkan otomatis berdasarkan skor AI — tanpa perlu membaca satu per satu secara manual.",
-    href: "/dashboard/hr/overview",
-  },
-  {
-    icon: <Search size={28} />,
-    title: "Detail Kandidat & CV",
-    desc: "Lihat skill terdeteksi, rincian skor, dan akses CV asli kandidat langsung dari dashboard tanpa berpindah halaman.",
-    href: "/dashboard/hr/overview",
-  },
-  {
-    icon: <Zap size={28} />,
-    title: "Update Status Cepat",
-    desc: "Shortlist, pindahkan ke review, atau tolak kandidat dengan satu klik. Status terupdate langsung ke sistem.",
-    href: "/dashboard/hr/overview",
-  },
-  {
-    icon: <LayoutDashboard size={28} />,
-    title: "Ringkasan per Posisi",
-    desc: "Lihat jumlah pelamar dan persentase shortlisted per posisi lowongan dalam tampilan yang mudah dibaca.",
-    href: "/dashboard/hr/overview",
-  },
-];
-
 // ── Animated Counter ──────────────────────────────────────────────────────────
 function Counter({
   to,
   suffix = "",
-  duration = 2000,
+  duration = 2200,
 }: {
   to: number;
   suffix?: string;
@@ -404,7 +350,7 @@ function Card({
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
-export default function Home() {
+export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("candidate");
 
@@ -413,109 +359,234 @@ export default function Home() {
       <Navbar />
 
       <main className="pt-16">
-        {/* ── HERO ── */}
-        <section
-          className="pt-[120px] pb-20 relative overflow-hidden"
-          id="hero"
-          aria-labelledby="hero-heading">
-          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.05)_1px,transparent_1px)] bg-[size:48px_48px]" />
-          <div className="absolute top-[10%] left-[5%] w-[400px] h-[400px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(16,185,129,0.08)_0%,transparent_70%)]" />
-          <div className="absolute bottom-[10%] right-[5%] w-[350px] h-[350px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(6,182,212,0.07)_0%,transparent_70%)]" />
+        {/* ══════════════════════════════════════════════════════════════════
+            1. HERO — foto nyata + badge floating + CTA
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="pt-[110px] pb-20 relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.04)_1px,transparent_1px)] bg-[size:48px_48px]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] pointer-events-none bg-[radial-gradient(ellipse,rgba(16,185,129,0.08)_0%,transparent_70%)]" />
 
           <div className="max-w-[1180px] mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 32 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center max-w-[820px] mx-auto">
-              <div className="mb-6">
-                <Tag>
-                  <Sparkles size={10} className="animate-pulse" /> Platform
-                  Rekrutmen Berbasis Kecerdasan Buatan
-                </Tag>
-              </div>
+            <div className="grid gap-12 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1">
+              {/* Left: Teks */}
+              <motion.div
+                initial={{ opacity: 0, y: 32 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+                <div className="mb-5">
+                  <Tag>
+                    <Sparkles size={9} className="animate-pulse" /> Platform
+                    Rekrutmen Berbasis AI
+                  </Tag>
+                </div>
+                <h1 className="font-syne font-extrabold text-[clamp(2.4rem,5vw,3.6rem)] leading-[1.09] tracking-tight mb-6">
+                  Upload CV. Dapat Skor.{" "}
+                  <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                    Temukan Pekerjaan yang Cocok.
+                  </span>
+                </h1>
+                <p className="text-[#7a9585] text-[1rem] leading-[1.78] mb-8 max-w-[500px]">
+                  RecruitAI menggunakan kecerdasan buatan untuk menganalisis CV
+                  kamu secara otomatis — menghasilkan skor kualitas, tingkat
+                  kompatibilitas seleksi, rekomendasi perbaikan, dan menyarankan
+                  lowongan yang paling sesuai dengan profilmu.
+                </p>
 
-              <h1
-                id="hero-heading"
-                className="font-syne font-extrabold leading-[1.08] tracking-tight mb-6 text-[clamp(2.6rem,6vw,4.2rem)]">
-                Upload CV. Dapat Skor.{" "}
-                <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                  Temukan Pekerjaan yang Cocok.
-                </span>
-              </h1>
-
-              <p className="text-[#7a9585] text-[1.15rem] leading-[1.7] max-w-[620px] mx-auto mb-10">
-                RecruitAI menggunakan kecerdasan buatan untuk menganalisis CV
-                kamu secara otomatis — menghasilkan skor kualitas, tingkat
-                kompatibilitas seleksi, rekomendasi perbaikan, dan menyarankan
-                lowongan yang paling sesuai dengan profilmu.
-              </p>
-
-              <div className="flex gap-3 justify-center flex-wrap mb-[60px]">
-                <Link
-                  href="/dashboard/candidate/matches"
-                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-5 py-[10px] rounded-[10px] no-underline text-[0.85rem] transition-all hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)] whitespace-nowrap">
-                  Analisis CV Sekarang <ArrowRight size={14} />
-                </Link>
-                <Link
-                  href="/jobs"
-                  className="flex items-center justify-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[9px] rounded-[10px] no-underline text-[0.82rem] transition-all whitespace-nowrap">
-                  <Briefcase size={13} /> Lihat Lowongan
-                </Link>
-              </div>
-
-              {/* 3 nilai utama */}
-              <div className="grid grid-cols-3 max-w-[600px] mx-auto rounded-[14px] overflow-hidden border border-emerald-500/15 gap-[1px] bg-[rgba(16,185,129,0.15)]">
-                {[
-                  { icon: <Brain size={20} />, label: "Analisis berbasis AI" },
-                  {
-                    icon: <Zap size={20} />,
-                    label: "Hasil dalam hitungan detik",
-                  },
-                  {
-                    icon: <Target size={20} />,
-                    label: "Pencocokan lowongan otomatis",
-                  },
-                ].map((s, i) => (
-                  <div key={i} className="bg-[#0f1612] py-5 px-4 text-center">
-                    <div className="flex justify-center text-emerald-400 mb-1">
-                      {s.icon}
+                {/* 3 nilai utama */}
+                <div className="grid grid-cols-3 rounded-[12px] overflow-hidden border border-emerald-500/15 gap-[1px] bg-[rgba(16,185,129,0.12)] mb-8 max-w-[460px]">
+                  {[
+                    { icon: <Brain size={16} />, label: "Analisis AI" },
+                    { icon: <Zap size={16} />, label: "Hasil 30 detik" },
+                    { icon: <Target size={16} />, label: "Job Matching" },
+                  ].map((s, i) => (
+                    <div key={i} className="bg-[#0f1612] py-4 px-3 text-center">
+                      <div className="flex justify-center text-emerald-400 mb-1">
+                        {s.icon}
+                      </div>
+                      <div className="text-[#7a9585] text-[0.72rem]">
+                        {s.label}
+                      </div>
                     </div>
-                    <div className="text-[#7a9585] text-[0.78rem]">
-                      {s.label}
-                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Link
+                    href="/analyze"
+                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.88rem] px-6 py-[11px] rounded-[10px] no-underline transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_28px_rgba(16,185,129,0.3)]">
+                    <FileText size={14} /> Analisis CV Sekarang
+                  </Link>
+                  <Link
+                    href="/jobs"
+                    className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] text-[0.88rem] px-6 py-[10px] rounded-[10px] no-underline transition-all">
+                    Lihat Lowongan <ArrowRight size={13} />
+                  </Link>
+                </div>
+              </motion.div>
+
+              {/* Right: Foto nyata dengan badge floating */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.15,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="relative h-[420px] max-lg:h-[280px] rounded-[24px] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0d] via-transparent to-transparent z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0d]/40 to-transparent z-10" />
+                <div className="absolute inset-0 bg-emerald-900/20 z-[5] mix-blend-multiply" />
+                <img
+                  src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80"
+                  alt="Tim profesional bekerja bersama"
+                  className="w-full h-full object-cover"
+                />
+                {/* Badge ATS Score */}
+                <div className="absolute bottom-6 left-6 z-20 bg-[#0a0f0d]/90 border border-emerald-500/30 backdrop-blur-sm rounded-[12px] px-4 py-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                    <BarChart3 size={14} className="text-emerald-400" />
                   </div>
-                ))}
-              </div>
-            </motion.div>
+                  <div>
+                    <p className="text-[0.65rem] text-[#7a9585]">ATS Score</p>
+                    <p className="text-[0.9rem] font-bold text-emerald-400">
+                      82 / 100
+                    </p>
+                  </div>
+                </div>
+                {/* Badge Job Match */}
+                <div className="absolute top-6 right-6 z-20 bg-[#0a0f0d]/90 border border-cyan-500/30 backdrop-blur-sm rounded-[12px] px-4 py-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                    <Award size={14} className="text-cyan-400" />
+                  </div>
+                  <div>
+                    <p className="text-[0.65rem] text-[#7a9585]">Job Match</p>
+                    <p className="text-[0.9rem] font-bold text-cyan-400">
+                      8 lowongan
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
-        {/* ── MASALAH ── */}
-        <section
-          className="py-[100px] bg-[#0f1612]"
-          id="masalah"
-          aria-labelledby="masalah-heading">
+        {/* ══════════════════════════════════════════════════════════════════
+            2. STATS BAR
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-14 bg-[#0f1612] border-y border-emerald-500/[0.08]">
           <div className="max-w-[1180px] mx-auto px-6">
-            <FadeIn className="text-center mb-[60px]">
-              <Tag>Permasalahan</Tag>
-              <h2
-                id="masalah-heading"
-                className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
-                Mengapa Rekrutmen Konvensional Gagal?
-              </h2>
-              <p className="text-[#7a9585] max-w-[560px] mx-auto leading-[1.7]">
-                Proses hiring tradisional penuh dengan inefisiensi yang
-                merugikan perusahaan dan kandidat berkualitas.
-              </p>
-            </FadeIn>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                {
+                  value: 5000,
+                  suffix: "+",
+                  label: "CV Dianalisis",
+                  color: "#10b981",
+                },
+                {
+                  value: 98,
+                  suffix: "%",
+                  label: "Akurasi Ekstraksi Skill",
+                  color: "#06b6d4",
+                },
+                {
+                  value: 30,
+                  suffix: " dtk",
+                  label: "Rata-rata Waktu Analisis",
+                  color: "#f59e0b",
+                },
+                {
+                  value: 200,
+                  suffix: "+",
+                  label: "Perusahaan Terdaftar",
+                  color: "#8b5cf6",
+                },
+              ].map((s, i) => (
+                <FadeIn key={i} delay={i * 0.1} className="text-center">
+                  <div
+                    className="font-syne font-extrabold text-[2.4rem] leading-none mb-1"
+                    style={{ color: s.color }}>
+                    <Counter to={s.value} suffix={s.suffix} />
+                  </div>
+                  <p className="text-[#7a9585] text-[0.82rem]">{s.label}</p>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            3. MASALAH (foto data analitik di kiri)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px]">
+          <div className="max-w-[1180px] mx-auto px-6">
+            {/* Photo + intro */}
+            <div className="grid gap-16 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1 mb-[80px]">
+              <FadeIn
+                y={20}
+                className="relative h-[380px] max-lg:order-last rounded-[20px] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0d]/60 via-transparent to-transparent z-10" />
+                <div className="absolute inset-0 bg-emerald-900/15 z-[5] mix-blend-multiply" />
+                <img
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
+                  alt="Analisis data rekrutmen"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-6 right-6 z-20 bg-[#0a0f0d]/90 border border-amber-500/30 backdrop-blur-sm rounded-[12px] px-4 py-3">
+                  <p className="text-[0.65rem] text-[#7a9585] mb-1">
+                    Efisiensi Rekrutmen
+                  </p>
+                  <p className="text-[0.9rem] font-bold text-amber-400">
+                    +65% lebih cepat
+                  </p>
+                </div>
+              </FadeIn>
+
+              <FadeIn delay={0.1}>
+                <Tag>Mengapa RecruitAI</Tag>
+                <h2 className="font-syne font-extrabold text-[clamp(1.8rem,3.5vw,2.5rem)] leading-[1.15] mt-4 mb-5">
+                  Rekrutmen Konvensional Sudah Tidak Cukup
+                </h2>
+                <p className="text-[#7a9585] text-[0.95rem] leading-[1.78] mb-6">
+                  Proses screening CV manual memakan waktu berjam-jam per hari,
+                  rentan bias, dan tidak konsisten. Di sisi lain, kandidat
+                  kompeten sering gagal di seleksi awal hanya karena CV mereka
+                  tidak dioptimalkan untuk sistem ATS — bukan karena mereka
+                  tidak layak.
+                </p>
+                <p className="text-[#7a9585] text-[0.95rem] leading-[1.78] mb-6">
+                  RecruitAI hadir untuk memecahkan gap ini: memberikan kandidat
+                  analisis CV yang objektif dan rekomendasi konkret, sekaligus
+                  membantu HR memilah ratusan pelamar dengan efisien berbasis
+                  data.
+                </p>
+                <div className="flex flex-col gap-3">
+                  {[
+                    "73% HR menghabiskan lebih dari 6 jam/hari untuk screening manual",
+                    "75% CV berkualitas gagal di seleksi ATS sebelum dibaca HR",
+                    "62% keputusan hiring masih dipengaruhi bias tidak disadari",
+                  ].map((s, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <CheckCircle2
+                        size={15}
+                        className="text-emerald-500 flex-shrink-0 mt-[2px]"
+                      />
+                      <span className="text-[#7a9585] text-[0.88rem] leading-[1.6]">
+                        {s}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </FadeIn>
+            </div>
+
+            {/* Problem cards */}
             <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
               {PROBLEMS.map((p, i) => (
                 <FadeIn key={i} delay={i * 0.12}>
                   <Card className="h-full flex flex-col">
-                    <div className="text-emerald-400 mb-4" aria-hidden="true">
-                      {p.icon}
-                    </div>
+                    <div className="text-emerald-400 mb-4">{p.icon}</div>
                     <h3 className="font-syne font-bold text-[1.05rem] mb-3">
                       {p.title}
                     </h3>
@@ -537,69 +608,73 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CARA KERJA ── */}
-        <section
-          className="py-[100px]"
-          id="cara-kerja"
-          aria-labelledby="cara-kerja-heading">
+        {/* ══════════════════════════════════════════════════════════════════
+            4. CARA KERJA — steps + mock result card
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px] bg-[#0f1612]">
           <div className="max-w-[1180px] mx-auto px-6">
-            <div className="grid gap-20 items-center [grid-template-columns:1fr_1fr]">
-              <div>
-                <FadeIn>
-                  <Tag>Cara Kerja</Tag>
-                  <h2
-                    id="cara-kerja-heading"
-                    className="font-syne font-extrabold mt-4 mb-4 leading-[1.15] text-[clamp(1.8rem,3vw,2.4rem)]">
-                    Dari Upload ke Insight dalam 30 Detik
-                  </h2>
-                  <p className="text-[#7a9585] leading-[1.7] mb-10 text-[0.95rem]">
-                    Proses otomatis dari awal hingga akhir: isi CV dibaca dan
-                    dikirim ke sistem AI untuk dianalisis, lalu hasilnya
-                    langsung ditampilkan dan tersimpan ke akunmu.
-                  </p>
-                </FadeIn>
+            {/* Section header with photo */}
+            <div className="grid gap-16 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1 mb-[80px]">
+              <FadeIn>
+                <Tag>Cara Kerja</Tag>
+                <h2 className="font-syne font-extrabold mt-4 mb-5 leading-[1.15] text-[clamp(1.8rem,3vw,2.4rem)]">
+                  Dari Upload ke Insight dalam 30 Detik
+                </h2>
+                <p className="text-[#7a9585] leading-[1.7] text-[0.95rem]">
+                  Proses otomatis dari awal hingga akhir: isi CV dibaca dan
+                  dikirim ke sistem AI untuk dianalisis, lalu hasilnya langsung
+                  ditampilkan dan tersimpan ke akunmu.
+                </p>
+              </FadeIn>
+              <FadeIn
+                delay={0.1}
+                className="relative h-[260px] rounded-[20px] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f1612]/50 to-transparent z-10" />
+                <div className="absolute inset-0 bg-cyan-900/20 z-[5] mix-blend-multiply" />
+                <img
+                  src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80"
+                  alt="Analisis data AI"
+                  className="w-full h-full object-cover"
+                />
+              </FadeIn>
+            </div>
 
-                <ol className="flex flex-col">
-                  {STEPS.map((s, i) => (
-                    <FadeIn key={i} delay={i * 0.1}>
-                      <li
-                        className="flex gap-5 relative"
-                        style={{
-                          paddingBottom: i < STEPS.length - 1 ? 32 : 0,
-                        }}>
-                        {i < STEPS.length - 1 && (
-                          <div
-                            className="absolute left-[23px] w-[2px] bg-gradient-to-b from-emerald-500 to-transparent"
-                            style={{ top: 48, bottom: -28 }}
-                          />
-                        )}
+            {/* Steps + mock card */}
+            <div className="grid gap-20 items-start [grid-template-columns:1fr_1fr] max-lg:grid-cols-1">
+              <ol className="flex flex-col">
+                {STEPS.map((s, i) => (
+                  <FadeIn key={i} delay={i * 0.1}>
+                    <li
+                      className="flex gap-5 relative"
+                      style={{ paddingBottom: i < STEPS.length - 1 ? 32 : 0 }}>
+                      {i < STEPS.length - 1 && (
                         <div
-                          className="w-[46px] h-[46px] rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0 z-10"
-                          aria-hidden="true">
-                          {s.icon}
+                          className="absolute left-[23px] w-[2px] bg-gradient-to-b from-emerald-500 to-transparent"
+                          style={{ top: 48, bottom: -28 }}
+                        />
+                      )}
+                      <div className="w-[46px] h-[46px] rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0 z-10">
+                        {s.icon}
+                      </div>
+                      <div>
+                        <div className="text-[0.7rem] text-emerald-400 font-semibold tracking-[0.1em] mb-1">
+                          {s.num}
                         </div>
-                        <div>
-                          <div className="text-[0.7rem] text-emerald-400 font-semibold tracking-[0.1em] mb-1">
-                            {s.num}
-                          </div>
-                          <h3 className="font-syne font-bold text-[1rem] mb-[6px]">
-                            {s.title}
-                          </h3>
-                          <p className="text-[#7a9585] text-[0.875rem] leading-[1.6]">
-                            {s.desc}
-                          </p>
-                        </div>
-                      </li>
-                    </FadeIn>
-                  ))}
-                </ol>
-              </div>
+                        <h3 className="font-syne font-bold text-[1rem] mb-[6px]">
+                          {s.title}
+                        </h3>
+                        <p className="text-[#7a9585] text-[0.875rem] leading-[1.6]">
+                          {s.desc}
+                        </p>
+                      </div>
+                    </li>
+                  </FadeIn>
+                ))}
+              </ol>
 
               {/* Mock result card */}
               <FadeIn delay={0.2}>
-                <div
-                  className="bg-[#0f1612] border border-emerald-500/15 rounded-[20px] p-7 shadow-[0_0_80px_rgba(16,185,129,0.12),0_0_160px_rgba(6,182,212,0.06)]"
-                  aria-label="Contoh tampilan hasil analisis CV">
+                <div className="bg-[#0a0f0d] border border-emerald-500/15 rounded-[20px] p-7 shadow-[0_0_80px_rgba(16,185,129,0.1)]">
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <div className="text-[0.72rem] text-[#7a9585] mb-1">
@@ -617,7 +692,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* 3 score rings */}
                   <div className="grid grid-cols-3 gap-2 mb-5">
                     {[
                       { label: "Resume Score", val: 82, color: "#10b981" },
@@ -630,7 +704,7 @@ export default function Home() {
                         <div
                           className="w-[70px] h-[70px] rounded-full flex items-center justify-center relative mx-auto mb-2"
                           style={{
-                            background: `conic-gradient(${ring.color} 0% ${ring.val}%, rgba(255,255,255,0.08) ${ring.val}%)`,
+                            background: `conic-gradient(${ring.color} 0% ${ring.val}%, rgba(255,255,255,0.06) ${ring.val}%)`,
                           }}>
                           <div className="absolute w-[52px] h-[52px] rounded-full bg-[#141f19]" />
                           <span
@@ -646,7 +720,6 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* Skills */}
                   <div className="mb-5">
                     <div className="text-[0.72rem] text-[#7a9585] mb-2 flex items-center gap-1">
                       <Search size={10} /> SKILL TERDETEKSI
@@ -671,7 +744,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Recommendations */}
                   <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-[10px] px-4 py-[14px] mb-4">
                     <div className="text-[0.72rem] text-amber-400 font-semibold mb-2 flex items-center gap-1">
                       <Sparkles size={10} /> REKOMENDASI PERBAIKAN
@@ -688,7 +760,6 @@ export default function Home() {
                     </ul>
                   </div>
 
-                  {/* Job matches CTA */}
                   <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-[10px] px-4 py-3 flex items-center justify-between gap-3">
                     <div>
                       <div className="text-[0.72rem] text-emerald-400 font-semibold mb-[2px] flex items-center gap-1">
@@ -708,17 +779,102 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FITUR UTAMA ── */}
-        <section
-          className="py-[100px] bg-[#0f1612]"
-          id="fitur"
-          aria-labelledby="fitur-heading">
+        {/* ══════════════════════════════════════════════════════════════════
+            5. CARA KERJA VISUAL (3 langkah foto)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px]">
+          <div className="max-w-[1180px] mx-auto px-6">
+            <FadeIn className="text-center mb-[60px]">
+              <Tag>Proses Nyata</Tag>
+              <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.5rem)]">
+                Tiga Langkah yang Mengubah Kariermu
+              </h2>
+              <p className="text-[#7a9585] max-w-[480px] mx-auto mt-4 leading-[1.7] text-[0.95rem]">
+                Dari unggah CV hingga dapat panggilan interview — prosesnya
+                sederhana, hasilnya nyata.
+              </p>
+            </FadeIn>
+
+            <div className="flex flex-col gap-16">
+              {[
+                {
+                  num: "01",
+                  title: "Upload CV kamu",
+                  desc: "Cukup upload file CV dalam format PDF. Sistem kami langsung memulai proses ekstraksi dan analisis secara otomatis tanpa perlu konfigurasi tambahan.",
+                  img: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=700&q=80",
+                  alt: "Upload dokumen CV",
+                  reverse: false,
+                  color: "#10b981",
+                },
+                {
+                  num: "02",
+                  title: "AI Menganalisis dalam Detik",
+                  desc: "Sistem kecerdasan buatan kami membaca setiap bagian CV — mengekstraksi skill, pengalaman, dan pendidikan untuk menghasilkan skor objektif yang komprehensif.",
+                  img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=700&q=80",
+                  alt: "Tim berdiskusi dan menganalisis",
+                  reverse: true,
+                  color: "#06b6d4",
+                },
+                {
+                  num: "03",
+                  title: "Temukan Lowongan yang Cocok",
+                  desc: "Berdasarkan profil CV-mu, platform secara otomatis mencocokkan dengan ratusan lowongan yang relevan dari perusahaan terpercaya di seluruh Indonesia.",
+                  img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80",
+                  alt: "Kandidat mendapat pekerjaan",
+                  reverse: false,
+                  color: "#f59e0b",
+                },
+              ].map((step, i) => (
+                <FadeIn key={i} delay={0.1}>
+                  <div
+                    className={`grid gap-12 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1`}>
+                    <div
+                      className={
+                        step.reverse ? "order-last max-lg:order-none" : ""
+                      }>
+                      <div
+                        className="font-syne font-extrabold text-[4.5rem] leading-none mb-3 opacity-[0.07]"
+                        style={{ color: step.color }}>
+                        {step.num}
+                      </div>
+                      <h3 className="font-syne font-bold text-[1.5rem] text-[#e8f0ec] mb-4">
+                        {step.title}
+                      </h3>
+                      <p className="text-[#7a9585] text-[0.95rem] leading-[1.78]">
+                        {step.desc}
+                      </p>
+                      <div
+                        className="mt-5 w-12 h-[3px] rounded-full"
+                        style={{ background: step.color }}
+                      />
+                    </div>
+                    <div className="relative h-[280px] rounded-[20px] overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0d]/40 to-transparent z-10" />
+                      <div
+                        className="absolute inset-0 z-[5] mix-blend-multiply opacity-20"
+                        style={{ background: step.color }}
+                      />
+                      <img
+                        src={step.img}
+                        alt={step.alt}
+                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+                      />
+                    </div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            6. FITUR UTAMA — 4 kartu
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px] bg-[#0f1612]">
           <div className="max-w-[1180px] mx-auto px-6">
             <FadeIn className="text-center mb-[60px]">
               <Tag>Fitur Utama</Tag>
-              <h2
-                id="fitur-heading"
-                className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
+              <h2 className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
                 Semua yang Anda Butuhkan, Dalam Satu Platform
               </h2>
               <p className="text-[#7a9585] max-w-[520px] mx-auto leading-[1.7]">
@@ -759,7 +915,7 @@ export default function Home() {
                             size={14}
                             className="flex-shrink-0 mt-[1px]"
                             style={{ color: f.color }}
-                          />{" "}
+                          />
                           {b}
                         </li>
                       ))}
@@ -777,22 +933,39 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── UNTUK SIAPA (TABS) ── */}
-        <section className="py-[100px]" aria-labelledby="untuk-siapa-heading">
+        {/* ══════════════════════════════════════════════════════════════════
+            7. UNTUK SIAPA — tab kandidat / HR
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px]">
           <div className="max-w-[1180px] mx-auto px-6">
-            <FadeIn className="text-center mb-12">
-              <Tag>Untuk Siapa</Tag>
-              <h2
-                id="untuk-siapa-heading"
-                className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
-                Dirancang untuk Dua Peran Kunci
-              </h2>
-            </FadeIn>
+            {/* Header with team photo */}
+            <div className="grid gap-16 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1 mb-[60px]">
+              <FadeIn>
+                <Tag>Untuk Siapa</Tag>
+                <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.5rem)] leading-[1.15] mb-5">
+                  Dirancang untuk Kandidat dan Tim HR
+                </h2>
+                <p className="text-[#7a9585] text-[0.95rem] leading-[1.78]">
+                  Platform ini melayani dua sisi proses rekrutmen — pencari
+                  kerja yang ingin tampil lebih kuat, dan tim HR yang ingin
+                  proses seleksi lebih efisien berbasis data.
+                </p>
+              </FadeIn>
+              <FadeIn
+                delay={0.1}
+                className="relative rounded-[20px] overflow-hidden h-[260px]">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0d]/60 to-transparent z-10" />
+                <div className="absolute inset-0 bg-emerald-900/20 z-[5] mix-blend-multiply" />
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+                  alt="Tim developer dan HR bekerja bersama"
+                  className="w-full h-full object-cover"
+                />
+              </FadeIn>
+            </div>
 
-            <div
-              className="flex justify-center gap-2 mb-10"
-              role="tablist"
-              aria-label="Pilih peran">
+            {/* Tabs */}
+            <div className="flex justify-center gap-2 mb-10">
               {[
                 {
                   k: "candidate",
@@ -807,8 +980,6 @@ export default function Home() {
               ].map(({ k, l, icon }) => (
                 <button
                   key={k}
-                  role="tab"
-                  aria-selected={activeTab === k}
                   onClick={() => setActiveTab(k)}
                   className={`px-6 py-[10px] rounded-[8px] text-[0.9rem] font-medium cursor-pointer transition-all border flex items-center gap-2
                     ${
@@ -823,46 +994,197 @@ export default function Home() {
 
             <motion.div
               key={activeTab}
-              role="tabpanel"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}>
               <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
-                {(activeTab === "candidate" ? CANDIDATE_CARDS : HR_CARDS).map(
-                  (c, i) => (
-                    <Link key={i} href={c.href} className="no-underline block">
-                      <Card className="h-full cursor-pointer group">
-                        <div
-                          className="text-emerald-400 mb-3 group-hover:text-emerald-300 transition-colors"
-                          aria-hidden="true">
-                          {c.icon}
-                        </div>
-                        <h3 className="font-syne font-bold text-[0.95rem] mb-2 group-hover:text-emerald-400 transition-colors">
-                          {c.title}
-                        </h3>
-                        <p className="text-[#7a9585] text-[0.85rem] leading-[1.6]">
-                          {c.desc}
-                        </p>
-                      </Card>
-                    </Link>
-                  ),
-                )}
+                {(activeTab === "candidate"
+                  ? [
+                      {
+                        icon: <TrendingUp size={28} />,
+                        title: "Skor CV Instan",
+                        desc: "Ketahui seberapa kuat CV kamu berdasarkan Resume Score, ATS Score, dan Overall Rating dalam hitungan detik.",
+                        href: "/analyze",
+                      },
+                      {
+                        icon: <Target size={28} />,
+                        title: "Pencocokan Lowongan Otomatis",
+                        desc: "Skill yang terdeteksi dari CV langsung dipakai untuk menyarankan lowongan paling relevan — tidak perlu input ulang.",
+                        href: "/dashboard/candidate/matches",
+                      },
+                      {
+                        icon: <Sparkles size={28} />,
+                        title: "Rekomendasi Konkret",
+                        desc: "Dapatkan saran perbaikan spesifik per bagian CV yang bisa langsung diimplementasikan untuk meningkatkan skor.",
+                        href: "/analyze",
+                      },
+                      {
+                        icon: <CheckCircle2 size={28} />,
+                        title: "Cek Kompatibilitas Seleksi",
+                        desc: "ATS Score menunjukkan seberapa baik CV kamu akan terbaca oleh sistem seleksi otomatis perusahaan sebelum sampai ke HR.",
+                        href: "/analyze",
+                      },
+                    ]
+                  : [
+                      {
+                        icon: <Award size={28} />,
+                        title: "Ranking Kandidat Otomatis",
+                        desc: "Semua pelamar diurutkan otomatis berdasarkan skor AI — tanpa perlu membaca satu per satu secara manual.",
+                        href: "/dashboard/hr/overview",
+                      },
+                      {
+                        icon: <Search size={28} />,
+                        title: "Detail Kandidat & CV",
+                        desc: "Lihat skill terdeteksi, rincian skor, dan akses CV asli kandidat langsung dari dashboard tanpa berpindah halaman.",
+                        href: "/dashboard/hr/overview",
+                      },
+                      {
+                        icon: <Zap size={28} />,
+                        title: "Update Status Cepat",
+                        desc: "Shortlist, pindahkan ke review, atau tolak kandidat dengan satu klik. Status terupdate langsung ke sistem.",
+                        href: "/dashboard/hr/overview",
+                      },
+                      {
+                        icon: <LayoutDashboard size={28} />,
+                        title: "Ringkasan per Posisi",
+                        desc: "Lihat jumlah pelamar dan persentase shortlisted per posisi lowongan dalam tampilan yang mudah dibaca.",
+                        href: "/dashboard/hr/overview",
+                      },
+                    ]
+                ).map((c, i) => (
+                  <Link key={i} href={c.href} className="no-underline block">
+                    <Card className="h-full cursor-pointer group">
+                      <div className="text-emerald-400 mb-3 group-hover:text-emerald-300 transition-colors">
+                        {c.icon}
+                      </div>
+                      <h3 className="font-syne font-bold text-[0.95rem] mb-2 group-hover:text-emerald-400 transition-colors">
+                        {c.title}
+                      </h3>
+                      <p className="text-[#7a9585] text-[0.85rem] leading-[1.6]">
+                        {c.desc}
+                      </p>
+                    </Card>
+                  </Link>
+                ))}
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* ── TESTIMONIALS ── */}
-        <section
-          className="py-[100px] bg-[#0f1612]"
-          id="testimoni"
-          aria-labelledby="testimoni-heading">
+        {/* ══════════════════════════════════════════════════════════════════
+            8. MISI & VISI — 3 kartu foto
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px] bg-[#0f1612]">
+          <div className="max-w-[1180px] mx-auto px-6">
+            <FadeIn className="text-center mb-[60px]">
+              <Tag>Misi & Visi</Tag>
+              <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.5rem)]">
+                Apa yang Kami Perjuangkan
+              </h2>
+              <p className="text-[#7a9585] max-w-[480px] mx-auto mt-4 leading-[1.7] text-[0.95rem]">
+                RecruitAI bukan sekadar alat — ini adalah upaya mewujudkan
+                rekrutmen yang lebih adil dan efisien untuk semua.
+              </p>
+            </FadeIn>
+
+            <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+              {[
+                {
+                  img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80",
+                  imgAlt: "Tim berdiskusi misi",
+                  overlayColor: "#10b981",
+                  borderColor: "border-emerald-500/20",
+                  iconBg: "bg-emerald-500/10 border-emerald-500/20",
+                  icon: <Target size={22} className="text-emerald-400" />,
+                  titleColor: "text-emerald-400",
+                  title: "Misi Kami",
+                  desc: "Mendemokratisasi akses ke proses rekrutmen yang adil dan efisien — di mana setiap kandidat kompeten punya kesempatan yang sama untuk ditemukan, dan setiap perusahaan dapat menemukan talenta terbaik dengan proses yang lebih cepat, objektif, dan berbasis data.",
+                },
+                {
+                  img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80",
+                  imgAlt: "Visi masa depan",
+                  overlayColor: "#06b6d4",
+                  borderColor: "border-cyan-500/20",
+                  iconBg: "bg-cyan-500/10 border-cyan-500/20",
+                  icon: <TrendingUp size={22} className="text-cyan-400" />,
+                  titleColor: "text-cyan-400",
+                  title: "Visi Kami",
+                  desc: "Menjadi infrastruktur rekrutmen digital terpercaya di Indonesia — tempat di mana teknologi AI bukan pengganti keputusan manusia, melainkan alat yang memperkuat kemampuan HR dan kandidat untuk membuat keputusan yang lebih baik.",
+                },
+                {
+                  img: "https://images.unsplash.com/photo-1543269664-56d93c1b41a6?w=600&q=80",
+                  imgAlt: "Nilai dan budaya tim",
+                  overlayColor: "#f59e0b",
+                  borderColor: "border-amber-500/20",
+                  iconBg: "bg-amber-500/10 border-amber-500/20",
+                  icon: <Heart size={22} className="text-amber-400" />,
+                  titleColor: "text-amber-400",
+                  title: "Nilai Kami",
+                  isValues: true,
+                  values: [
+                    "Objektivitas tanpa kompromi",
+                    "Transparansi dalam setiap skor",
+                    "Inklusif untuk semua latar belakang",
+                    "Inovasi yang berpusat pada pengguna",
+                  ],
+                },
+              ].map((card, i) => (
+                <FadeIn key={i} delay={i * 0.1}>
+                  <div
+                    className={`relative bg-[#0a0f0d] border ${card.borderColor} rounded-[20px] overflow-hidden h-full`}>
+                    <div className="relative h-[160px] overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0f0d] z-10" />
+                      <div
+                        className="absolute inset-0 z-[5] mix-blend-multiply opacity-30"
+                        style={{ background: card.overlayColor }}
+                      />
+                      <img
+                        src={card.img}
+                        alt={card.imgAlt}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-8 pt-4">
+                      <div
+                        className={`w-11 h-11 rounded-[12px] border flex items-center justify-center mb-4 ${card.iconBg}`}>
+                        {card.icon}
+                      </div>
+                      <h3
+                        className={`font-syne font-bold text-[1.15rem] mb-3 ${card.titleColor}`}>
+                        {card.title}
+                      </h3>
+                      {card.isValues ? (
+                        <div className="flex flex-col gap-2">
+                          {card.values!.map((v, j) => (
+                            <div
+                              key={j}
+                              className="flex items-center gap-2 text-[#7a9585] text-[0.88rem]">
+                              <span className="w-1 h-1 rounded-full bg-amber-400 flex-shrink-0" />
+                              {v}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[#7a9585] text-[0.92rem] leading-[1.78]">
+                          {card.desc}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            9. TESTIMONI
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px]">
           <div className="max-w-[1180px] mx-auto px-6">
             <FadeIn className="text-center mb-[60px]">
               <Tag>Testimoni</Tag>
-              <h2
-                id="testimoni-heading"
-                className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
+              <h2 className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
                 Dipercaya Kandidat & Tim HR
               </h2>
               <p className="text-[#7a9585] max-w-[480px] mx-auto leading-[1.7] text-[0.95rem]">
@@ -874,17 +1196,14 @@ export default function Home() {
             <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(340px,1fr))]">
               {TESTIMONIALS.map((t, i) => (
                 <FadeIn key={i} delay={i * 0.08}>
-                  <article className="bg-[#0a0f0d] border border-emerald-500/15 rounded-[16px] p-7 flex flex-col gap-5 transition-all duration-300 hover:border-emerald-500/30 hover:-translate-y-[2px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
+                  <article className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] p-7 flex flex-col gap-5 transition-all duration-300 hover:border-emerald-500/30 hover:-translate-y-[2px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)] h-full">
                     <div className="flex items-center justify-between">
-                      <div
-                        className="flex gap-[3px]"
-                        aria-label={`Rating ${t.rating} dari 5`}>
+                      <div className="flex gap-[3px]">
                         {Array.from({ length: t.rating }).map((_, j) => (
                           <Star
                             key={j}
                             size={14}
                             className="text-amber-400 fill-amber-400"
-                            aria-hidden="true"
                           />
                         ))}
                       </div>
@@ -898,26 +1217,19 @@ export default function Home() {
                         {t.tag}
                       </span>
                     </div>
-
                     <blockquote className="text-[#c8d9d0] text-[0.88rem] leading-[1.75] flex-1">
-                      <span
-                        className="text-emerald-400 text-[1.4rem] font-syne leading-none mr-1"
-                        aria-hidden="true">
+                      <span className="text-emerald-400 text-[1.4rem] font-syne leading-none mr-1">
                         "
                       </span>
                       {t.quote}
-                      <span
-                        className="text-emerald-400 text-[1.4rem] font-syne leading-none ml-1"
-                        aria-hidden="true">
+                      <span className="text-emerald-400 text-[1.4rem] font-syne leading-none ml-1">
                         "
                       </span>
                     </blockquote>
-
                     <footer className="flex items-center gap-3 pt-1 border-t border-emerald-500/10">
                       <div
                         className="w-10 h-10 rounded-full flex items-center justify-center font-syne font-extrabold text-[0.78rem] flex-shrink-0"
-                        style={{ background: `${t.color}18`, color: t.color }}
-                        aria-hidden="true">
+                        style={{ background: `${t.color}18`, color: t.color }}>
                         {t.avatar}
                       </div>
                       <div>
@@ -939,14 +1251,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FAQ ── */}
-        <section className="py-[100px]" id="faq" aria-labelledby="faq-heading">
+        {/* ══════════════════════════════════════════════════════════════════
+            10. FAQ
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px] bg-[#0f1612]">
           <div className="max-w-[760px] mx-auto px-6">
             <FadeIn className="text-center mb-[56px]">
               <Tag>FAQ</Tag>
-              <h2
-                id="faq-heading"
-                className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
+              <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
                 Pertanyaan yang Sering Diajukan
               </h2>
             </FadeIn>
@@ -957,13 +1269,11 @@ export default function Home() {
                     <dt>
                       <button
                         onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                        aria-expanded={openFaq === i}
                         className="w-full bg-transparent border-0 text-[#e8f0ec] font-syne font-semibold text-[1rem] py-[22px] text-left flex justify-between items-center gap-4 cursor-pointer hover:text-emerald-400 transition-colors">
                         <span>{f.q}</span>
                         <Plus
                           size={18}
                           className={`text-emerald-400 flex-shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-45" : "rotate-0"}`}
-                          aria-hidden="true"
                         />
                       </button>
                     </dt>
@@ -984,39 +1294,49 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA ── */}
-        <section
-          className="py-[100px] relative overflow-hidden bg-[#0f1612]"
-          aria-labelledby="cta-heading">
-          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.05)_1px,transparent_1px)] bg-[size:48px_48px]" />
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.08)_0%,transparent_70%)]" />
-          <div className="max-w-[760px] mx-auto px-6 text-center relative">
+        {/* ══════════════════════════════════════════════════════════════════
+            11. CTA FINAL — foto background + tombol utama
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="py-[100px] relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.04)_1px,transparent_1px)] bg-[size:48px_48px]" />
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.07)_0%,transparent_70%)]" />
+          <div className="absolute inset-0 overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=60"
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover opacity-[0.04]"
+            />
+          </div>
+          <div className="max-w-[700px] mx-auto px-6 text-center relative">
             <FadeIn>
               <Tag>
-                <Sparkles size={10} className="animate-pulse" /> Mulai Gratis
+                <Sparkles size={9} className="animate-pulse" /> Mulai Gratis
               </Tag>
-              <h2
-                id="cta-heading"
-                className="font-syne font-extrabold mt-6 mb-5 leading-[1.12] text-[clamp(2rem,4.5vw,3.2rem)]">
-                CV Kamu Sudah Siap.
-                <br />
+              <h2 className="font-syne font-extrabold mt-6 mb-5 leading-[1.12] text-[clamp(2rem,4vw,3.2rem)]">
+                CV Kamu Sudah Siap. <br />
                 <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                   Tahu Seberapa Kuatnya?
                 </span>
               </h2>
-              <p className="text-[#7a9585] text-[1rem] max-w-[460px] mx-auto mb-10 leading-[1.72]">
+              <p className="text-[#7a9585] text-[0.95rem] leading-[1.72] mb-10 max-w-[480px] mx-auto">
                 Upload PDF CV kamu dan dalam 30 detik kamu tahu skor kualitas,
                 seberapa lolos seleksi otomatis, serta lowongan mana yang paling
                 cocok dengan profilmu.
               </p>
-
-              <Link
-                href="/analyze"
-                className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[1.05rem] px-9 py-[15px] rounded-[11px] no-underline transition-all hover:-translate-y-[2px] hover:shadow-[0_10px_36px_rgba(16,185,129,0.32)]">
-                <FileText size={17} /> Analisis CV Sekarang
-              </Link>
-
-              <p className="text-[#4a6b58] text-[0.78rem] mt-6 flex items-center justify-center gap-3 flex-wrap">
+              <div className="flex items-center gap-4 justify-center flex-wrap mb-6">
+                <Link
+                  href="/analyze"
+                  className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.95rem] px-8 py-[13px] rounded-[11px] no-underline transition-all hover:-translate-y-[2px] hover:shadow-[0_10px_36px_rgba(16,185,129,0.32)]">
+                  <FileText size={16} /> Analisis CV Sekarang
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] text-[0.88rem] px-6 py-[12px] rounded-[10px] no-underline transition-all">
+                  <Mail size={14} /> Hubungi Kami
+                </Link>
+              </div>
+              <p className="text-[#4a6b58] text-[0.78rem] flex items-center justify-center gap-3 flex-wrap">
                 <span className="flex items-center gap-1">
                   <CheckCircle2 size={12} className="text-emerald-600" /> Gratis
                   untuk kandidat
@@ -1036,10 +1356,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FOOTER ── */}
+        {/* ══════════════════════════════════════════════════════════════════
+            FOOTER
+        ══════════════════════════════════════════════════════════════════ */}
         <footer className="bg-[#0a0f0d] border-t border-emerald-500/10 pt-14 pb-8">
           <div className="max-w-[1180px] mx-auto px-6">
-            {/* Strip rekruter */}
+            {/* Strip HR */}
             <div className="flex items-center justify-between gap-6 flex-wrap bg-emerald-500/[0.05] border border-emerald-500/15 rounded-[14px] px-7 py-5 mb-14">
               <div>
                 <p className="font-syne font-bold text-[0.95rem] text-[#e8f0ec] mb-[3px]">
@@ -1059,14 +1381,9 @@ export default function Home() {
 
             {/* Grid kolom */}
             <div className="grid gap-10 mb-12 [grid-template-columns:2fr_1fr_1fr]">
-              {/* Brand */}
               <div>
                 <div className="flex items-center gap-2 font-syne font-extrabold text-[1.15rem] mb-3 text-[#e8f0ec]">
-                  <Sparkles
-                    size={16}
-                    className="text-emerald-400"
-                    aria-hidden="true"
-                  />
+                  <Sparkles size={16} className="text-emerald-400" />
                   RecruitAI
                 </div>
                 <p className="text-[#7a9585] text-[0.855rem] leading-[1.72] max-w-[270px] mb-5">
@@ -1086,8 +1403,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Platform */}
-              <nav aria-label="Navigasi Platform">
+              <nav>
                 <div className="font-syne font-bold text-[0.82rem] tracking-[0.07em] uppercase text-[#c8d9d0] mb-4">
                   Platform
                 </div>
@@ -1108,11 +1424,6 @@ export default function Home() {
                       href: "/company",
                       icon: <Building2 size={12} />,
                     },
-                    {
-                      label: "Tentang RecruitAI",
-                      href: "/about",
-                      icon: <Sparkles size={12} />,
-                    },
                   ].map((l) => (
                     <li key={l.label}>
                       <Link
@@ -1126,39 +1437,21 @@ export default function Home() {
                 </ul>
               </nav>
 
-              {/* Informasi */}
-              <nav aria-label="Navigasi Informasi">
+              <nav>
                 <div className="font-syne font-bold text-[0.82rem] tracking-[0.07em] uppercase text-[#c8d9d0] mb-4">
                   Informasi
                 </div>
                 <ul className="flex flex-col gap-[10px] list-none p-0 m-0">
                   {[
-                    {
-                      label: "Blog & Tips Karier",
-                      href: "/blog",
-                      icon: <FileText size={12} />,
-                    },
-                    {
-                      label: "Pertanyaan Umum",
-                      href: "/faq",
-                      icon: <Search size={12} />,
-                    },
-                    {
-                      label: "Hubungi Kami",
-                      href: "/contact",
-                      icon: <Building2 size={12} />,
-                    },
-                    {
-                      label: "Kebijakan Privasi",
-                      href: "/privacy",
-                      icon: <Shield size={12} />,
-                    },
+                    { label: "Pertanyaan Umum", href: "/faq" },
+                    { label: "Hubungi Kami", href: "/contact" },
+                    { label: "Kebijakan Privasi", href: "/privacy" },
+                    { label: "Syarat & Ketentuan", href: "/terms" },
                   ].map((l) => (
                     <li key={l.label}>
                       <Link
                         href={l.href}
-                        className="text-[#7a9585] text-[0.855rem] no-underline hover:text-emerald-400 transition-colors flex items-center gap-[7px]">
-                        <span className="opacity-55">{l.icon}</span>
+                        className="text-[#7a9585] text-[0.855rem] no-underline hover:text-emerald-400 transition-colors">
                         {l.label}
                       </Link>
                     </li>
@@ -1174,21 +1467,18 @@ export default function Home() {
               </p>
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="flex items-center gap-[6px] text-[#4a6b58] text-[0.775rem]">
-                  <span
-                    className="w-[6px] h-[6px] rounded-full bg-emerald-500 inline-block"
-                    aria-hidden="true"
-                  />
+                  <span className="w-[6px] h-[6px] rounded-full bg-emerald-500 inline-block" />
                   Semua sistem berjalan normal
                 </span>
-                <Link
-                  href="/terms"
-                  className="text-[#4a6b58] text-[0.775rem] no-underline hover:text-[#7a9585] transition-colors">
-                  Syarat & Ketentuan
-                </Link>
                 <Link
                   href="/privacy"
                   className="text-[#4a6b58] text-[0.775rem] no-underline hover:text-[#7a9585] transition-colors">
                   Privasi
+                </Link>
+                <Link
+                  href="/terms"
+                  className="text-[#4a6b58] text-[0.775rem] no-underline hover:text-[#7a9585] transition-colors">
+                  Ketentuan
                 </Link>
               </div>
             </div>

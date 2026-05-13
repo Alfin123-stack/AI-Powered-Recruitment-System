@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 import {
   Upload,
   CheckCircle2,
@@ -22,13 +21,10 @@ import {
   ArrowRight,
   Briefcase,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type AnalysisData = {

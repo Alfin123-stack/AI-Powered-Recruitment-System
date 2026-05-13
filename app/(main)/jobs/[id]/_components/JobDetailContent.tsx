@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase"; // ✅ ganti import
 import {
   CheckCircle2,
   Building2,
@@ -17,10 +17,6 @@ import { Job } from "../page";
 import { formatDeadline } from "@/lib/utils";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
 
 function Card({
   children,
@@ -67,7 +63,6 @@ export default function JobDetailContent({
   const [savingLoading, setSavingLoading] = useState(false);
   const [checkingSaved, setCheckingSaved] = useState(false);
 
-  // Cek apakah sudah disave
   useEffect(() => {
     const checkSavedStatus = async () => {
       const {
@@ -101,14 +96,12 @@ export default function JobDetailContent({
     setSavingLoading(true);
     try {
       if (saved) {
-        // Unsave
         await fetch(`${API}/api/saved-jobs/${job.id}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
         setSaved(false);
       } else {
-        // Save
         await fetch(`${API}/api/saved-jobs`, {
           method: "POST",
           headers: {
@@ -247,24 +240,41 @@ export default function JobDetailContent({
               </Button>
             )}
 
-            {/* Simpan button — terhubung ke backend */}
-            <Button
-              variant="outline"
+            {/* ✅ Tombol Simpan — hover diperbaiki */}
+            <button
               onClick={handleToggleSave}
               disabled={savingLoading || checkingSaved}
-              className={`w-full py-3 rounded-[11px] text-[0.88rem] border transition-all
-                ${saved ? "bg-emerald-500/[0.07] text-emerald-400 border-emerald-500/30" : "bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] hover:border-emerald-500/35 hover:bg-emerald-500/[0.04]"}`}>
+              className={`
+                w-full py-[11px] rounded-[11px] text-[0.88rem] font-semibold border
+                flex items-center justify-center gap-2
+                transition-all duration-200 cursor-pointer
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${
+                  saved
+                    ? `bg-emerald-500/10 text-emerald-400 border-emerald-500/30
+                     hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30
+                     active:scale-[0.98]`
+                    : `bg-[#141f19] text-[#c5d8cc] border-emerald-500/15
+                     hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/40
+                     hover:shadow-[0_0_16px_rgba(16,185,129,0.08)]
+                     active:scale-[0.98]`
+                }
+              `}>
               {savingLoading ? (
                 <Loader2 size={14} className="animate-spin" />
               ) : (
-                <Bookmark size={14} fill={saved ? "currentColor" : "none"} />
+                <Bookmark
+                  size={14}
+                  fill={saved ? "currentColor" : "none"}
+                  className="transition-transform duration-200 group-hover:scale-110"
+                />
               )}
               {savingLoading
                 ? "Memproses..."
                 : saved
-                  ? "Tersimpan"
+                  ? "Tersimpan · Klik untuk hapus"
                   : "Simpan Lowongan"}
-            </Button>
+            </button>
 
             <Separator className="my-5 bg-emerald-500/15" />
 

@@ -20,13 +20,9 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@supabase/supabase-js";
-import { DashboardUser } from "@/app/(role)/layout";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
+import { DashboardUser } from "@/app/(role)/layout";
+import { supabase } from "@/lib/supabase";
 
 const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 

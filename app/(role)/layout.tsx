@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, createContext, useContext } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { usePathname } from "next/navigation";
+
 import { Loader2 } from "lucide-react";
 import {
   LayoutDashboard,
@@ -19,19 +19,14 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
-
-// ── Supabase ──────────────────────────────────────────────────────────────────
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
+import { supabase } from "@/lib/supabase";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type DashboardUser = {
   id: string;
   email: string;
   full_name: string;
-  role: "candidate" | "hr" | string;
+  role: "candidate" | "hr";
 };
 
 type DashboardContextType = {
@@ -146,6 +141,7 @@ const CANDIDATE_TITLES: Record<string, string> = {
   "/dashboard/candidate/applications": "Lamaranku",
   "/dashboard/candidate/saved": "Tersimpan",
   "/dashboard/candidate/matches": "Job Matches",
+  "/dashboard/candidate/profile": "Profil",
 };
 
 const HR_TITLES: Record<string, string> = {
@@ -154,6 +150,7 @@ const HR_TITLES: Record<string, string> = {
   "/dashboard/hr/candidates": "Candidates",
   "/dashboard/hr/analytics": "Analytics",
   "/dashboard/hr/interviews": "Interviews",
+  "/dashboard/hr/settings": "Pengaturan",
 };
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -162,7 +159,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
 
   const [user, setUser] = useState<DashboardUser | null>(null);
@@ -176,19 +172,19 @@ export default function DashboardLayout({
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (!session) {
-        router.push("/login");
-        return;
-      }
+      // Tidak perlu redirect manual — middleware sudah handle
+      // Kalau sampai sini tanpa session, middleware pasti sudah redirect
+      if (!session) return;
 
-      const role: string = session.user.user_metadata?.role || "candidate";
+      const rawRole = session.user.user_metadata?.role;
+      const role: "candidate" | "hr" = rawRole === "hr" ? "hr" : "candidate"; // fallback aman
 
       setToken(session.access_token);
       setUser({
         id: session.user.id,
-        email: session.user.email || "",
+        email: session.user.email ?? "",
         full_name:
-          session.user.user_metadata?.full_name || session.user.email || "User",
+          session.user.user_metadata?.full_name ?? session.user.email ?? "User",
         role,
       });
 
@@ -200,7 +196,7 @@ export default function DashboardLayout({
           });
           if (res.ok) setCompany(await res.json());
         } catch {
-          // belum ada company → CompanySetupModal akan handle di page-nya
+          // Belum ada company → CompanySetupModal handle di page-nya
         }
       }
 
@@ -210,6 +206,7 @@ export default function DashboardLayout({
     init();
   }, []);
 
+  // ── Loading state ───────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0f0d] flex items-center justify-center">
@@ -223,11 +220,18 @@ export default function DashboardLayout({
     );
   }
 
+  // ── Derive UI from role ─────────────────────────────────────────────────────
+  // Middleware sudah pastikan role sesuai URL, jadi tidak perlu guard lagi
   const isHR = user?.role === "hr";
   const sections = isHR ? HR_SECTIONS : CANDIDATE_SECTIONS;
   const titleMap = isHR ? HR_TITLES : CANDIDATE_TITLES;
   const roleLabel = isHR ? "HR Manager" : "Kandidat";
-  const pageTitle = titleMap[pathname] ?? "Dashboard";
+
+  // Support dynamic routes (misal /dashboard/hr/jobs/[id])
+  const pageTitle =
+    titleMap[pathname] ??
+    Object.entries(titleMap).find(([key]) => pathname.startsWith(key))?.[1] ??
+    "Dashboard";
 
   return (
     <DashboardContext.Provider value={{ user, token, company, setCompany }}>
@@ -243,7 +247,6 @@ export default function DashboardLayout({
         />
 
         <div className="ml-[240px] flex-1 min-h-screen">
-          {/* Topbar reusable */}
           <Topbar
             token={token}
             title={pageTitle}

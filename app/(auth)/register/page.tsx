@@ -484,9 +484,7 @@ export default function RegisterPage() {
             </span>
             <div className="flex-1 h-px bg-emerald-500/15" />
           </div>
-          <Button
-            variant="outline"
-            className="w-full bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] rounded-[10px] h-11 hover:bg-emerald-500/[0.06] hover:border-emerald-500/30 transition-all">
+          <Button className="w-full bg-[#141f19] border-emerald-500/15 text-[#e8f0ec] rounded-[10px] h-11 hover:bg-emerald-500/[0.06] hover:border-emerald-500/30 transition-all">
             <svg
               width="18"
               height="18"

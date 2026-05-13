@@ -1,22 +1,49 @@
 // app/(auth)/layout.tsx
 import type { Metadata } from "next";
-import { BrainCircuit, Target, Zap } from "lucide-react";
+import {
+  BrainCircuit,
+  Target,
+  Zap,
+  CheckCircle2,
+  Shield,
+  Award,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Autentikasi · RecruitAI",
 };
 
 const features = [
-  { icon: BrainCircuit, label: "Analisis CV dalam hitungan detik" },
-  { icon: Target, label: "Cocokkan kandidat dengan posisi terbaik" },
-  { icon: Zap, label: "Kurangi waktu screening dari minggu ke jam" },
+  {
+    icon: BrainCircuit,
+    label: "Analisis CV berbasis AI dalam 30 detik",
+    sub: "Ekstraksi skill, skor, dan rekomendasi otomatis",
+  },
+  {
+    icon: Target,
+    label: "Job matching otomatis sesuai profilmu",
+    sub: "Cocokkan dengan ratusan lowongan relevan",
+  },
+  {
+    icon: Zap,
+    label: "Rekrutmen 10× lebih cepat untuk HR",
+    sub: "Ranking kandidat, shortlist, dan update status",
+  },
 ];
 
 const stats = [
-  { value: "50K+", label: "CV Dianalisis" },
-  { value: "2.4K+", label: "Perusahaan" },
+  { value: "5.000+", label: "CV Dianalisis" },
+  { value: "200+", label: "Perusahaan" },
   { value: "98%", label: "Akurasi AI" },
 ];
+
+const testimonial = {
+  quote:
+    "Dalam 2 minggu setelah perbaikan CV pakai RecruitAI, saya sudah dapat 3 panggilan interview dari perusahaan impian.",
+  name: "Rizky A.",
+  role: "Software Engineer",
+  avatar: "RA",
+};
 
 export default function AuthLayout({
   children,
@@ -24,88 +51,104 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-[#0a0f0d]">
-      {/* ── LEFT PANEL ── */}
-      <div className="hidden lg:flex flex-col relative overflow-hidden bg-[#0a0f0d]">
-        {/* Grid texture */}
+    <div className="min-h-screen flex bg-[#0a0f0d] font-poppins">
+      {/* ══ LEFT PANEL ══════════════════════════════════════════════════════ */}
+      <div className="hidden lg:flex flex-col relative w-[52%] xl:w-[55%] flex-shrink-0 overflow-hidden">
+        {/* Background photo */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=85"
+            alt=""
+            aria-hidden="true"
+            className="w-full h-full object-cover"
+          />
+          {/* Multi-layer overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f0d]/95 via-[#0a0f0d]/80 to-[#0a0f0d]/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0d] via-transparent to-transparent" />
+          {/* Green tint */}
+          <div className="absolute inset-0 bg-emerald-950/30 mix-blend-multiply" />
+        </div>
+
+        {/* Grid texture overlay */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-40"
           style={{
-            backgroundImage: `linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(16,185,129,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.06) 1px, transparent 1px)`,
             backgroundSize: "48px 48px",
           }}
         />
 
-        {/* Glow */}
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-emerald-500/[0.06] blur-[120px] pointer-events-none" />
-
-        {/* Rings */}
-        <div className="absolute w-[600px] h-[600px] rounded-full border border-emerald-500/[0.06] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-[spin_60s_linear_infinite]" />
-        <div className="absolute w-[380px] h-[380px] rounded-full border border-emerald-500/[0.09] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-[spin_35s_linear_infinite_reverse]" />
+        {/* Top glow */}
+        <div className="absolute top-0 left-0 right-0 h-[300px] pointer-events-none bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.12)_0%,transparent_70%)]" />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col h-full px-14 py-12">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-[10px] flex items-center justify-center text-base font-extrabold text-black bg-gradient-to-br from-emerald-500 to-cyan-400 shadow-[0_0_20px_rgba(16,185,129,0.35)]">
-              ✦
-            </div>
-            <span className="text-[1.4rem] font-extrabold tracking-tight text-[#e8f0ec]">
-              Recruit<em className="not-italic text-emerald-400">AI</em>
-            </span>
-          </div>
-
-          {/* Center */}
-          <div className="flex-1 flex flex-col justify-center max-w-[360px]">
-            {/* Headline */}
-            <h1 className="text-[2.4rem] font-extrabold leading-[1.15] tracking-tight text-[#e8f0ec] mb-4">
+        <div className="relative z-10 flex flex-col h-full px-12 xl:px-16 py-10">
+          {/* Main headline — center */}
+          <div className="flex-1 flex flex-col justify-center max-w-[420px]">
+            <h1 className="font-syne text-[2.6rem] xl:text-[3rem] font-extrabold leading-[1.1] tracking-tight text-[#e8f0ec] mb-5">
               Rekrutmen lebih{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+              <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                 cerdas
               </span>{" "}
               dimulai di sini.
             </h1>
-            <p className="text-[#7a9585] text-[0.9rem] leading-relaxed mb-10">
-              Analisis CV otomatis, job matching cerdas, dan rekrutmen 10× lebih
-              cepat dengan AI.
+            <p className="text-[#7a9585] text-[0.92rem] leading-[1.75] mb-10 max-w-[360px]">
+              Analisis CV otomatis, job matching cerdas, dan rekrutmen lebih
+              cepat dengan kecerdasan buatan.
             </p>
 
             {/* Features */}
-            <div className="space-y-5">
-              {features.map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-[8px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+            <div className="space-y-4 mb-10">
+              {features.map(({ icon: Icon, label, sub }) => (
+                <div key={label} className="flex items-start gap-[14px] group">
+                  <div
+                    className="w-9 h-9 rounded-[10px] bg-emerald-500/10 border border-emerald-500/20
+                    flex items-center justify-center flex-shrink-0 mt-[1px]
+                    group-hover:bg-emerald-500/15 group-hover:border-emerald-500/35
+                    transition-all duration-200">
                     <Icon size={15} className="text-emerald-400" />
                   </div>
-                  <span className="text-[0.85rem] text-[#c5d9ce]">{label}</span>
+                  <div>
+                    <p className="text-[0.86rem] font-semibold text-[#d4e8dd] leading-snug">
+                      {label}
+                    </p>
+                    <p className="text-[0.76rem] text-[#5a7a6a] mt-[2px]">
+                      {sub}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Bottom stats */}
+          {/* Stats */}
           <div className="grid grid-cols-3 gap-3">
             {stats.map((s) => (
               <div
                 key={s.label}
-                className="bg-emerald-500/[0.04] border border-emerald-500/15 rounded-[10px] px-3 py-3 text-center">
-                <p className="text-[1.3rem] font-extrabold text-emerald-400 leading-none mb-[3px]">
+                className="bg-white/[0.03] border border-emerald-500/12 rounded-[12px] px-3 py-4 text-center
+                  backdrop-blur-sm hover:bg-white/[0.05] hover:border-emerald-500/22 transition-all duration-200">
+                <p className="font-syne text-[1.4rem] font-extrabold text-emerald-400 leading-none mb-[4px]">
                   {s.value}
                 </p>
-                <p className="text-[0.68rem] text-[#7a9585]">{s.label}</p>
+                <p className="text-[0.68rem] text-[#5a7a6a]">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Right edge fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0a0f0d] to-transparent pointer-events-none" />
       </div>
 
-      {/* ── RIGHT PANEL ── */}
-      <div className="flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
-        {/* Mobile bg */}
-        <div className="absolute inset-0 lg:hidden pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_20%_20%,rgba(16,185,129,0.07)_0%,transparent_60%),radial-gradient(ellipse_50%_60%_at_80%_80%,rgba(6,182,212,0.05)_0%,transparent_60%)]" />
+      {/* ══ RIGHT PANEL ══════════════════════════════════════════════════════ */}
+      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden min-h-screen">
+        {/* Background for right panel */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_30%_20%,rgba(16,185,129,0.05)_0%,transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_80%_80%,rgba(6,182,212,0.04)_0%,transparent_60%)]" />
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 opacity-30"
             style={{
               backgroundImage: `linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px)`,
               backgroundSize: "48px 48px",
@@ -113,10 +156,14 @@ export default function AuthLayout({
           />
         </div>
 
-        {/* Separator */}
-        <div className="hidden lg:block absolute left-0 top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent" />
+        {/* Left separator */}
+        <div
+          className="hidden lg:block absolute left-0 top-[8%] bottom-[8%] w-px
+          bg-gradient-to-b from-transparent via-emerald-500/15 to-transparent pointer-events-none"
+        />
 
-        <div className="relative z-10 w-full max-w-[460px] px-6 py-10">
+        {/* Form container */}
+        <div className="relative z-10 w-full max-w-[440px] px-6 sm:px-8 py-10">
           {children}
         </div>
       </div>

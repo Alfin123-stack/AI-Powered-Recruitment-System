@@ -14,12 +14,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
+import { supabase } from "@/lib/supabase";
 
 const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 

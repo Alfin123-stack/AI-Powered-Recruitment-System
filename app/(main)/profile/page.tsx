@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
 import {
   User,
   Mail,
@@ -28,11 +27,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// ─── Supabase ──────────────────────────────────────────────────────────────────
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
+import { supabase } from "@/lib/supabase";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 const inputCls =
