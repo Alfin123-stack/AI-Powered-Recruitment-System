@@ -13,10 +13,26 @@ import {
   ChevronRight,
   Search,
   Trash2,
+  Sparkles,
+  TrendingUp,
+  AlertCircle,
+  Zap,
+  Brain,
+  BarChart2,
+  Star,
+  X,
+  Filter,
+  SortAsc,
+  ChevronDown,
+  ExternalLink,
+  CheckCircle2,
+  Timer,
+  Award,
+  Target,
+  Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDashboard } from "@/app/(role)/layout";
-
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -32,9 +48,13 @@ type SavedJob = {
   skills: string[];
   deadline: string | null;
   created_at: string;
+  resume_score?: number;
+  matching_score?: number;
   companies: { name: string; logo_url: string | null; company_size: string };
   color: string;
 };
+
+type SortOption = "saved_at" | "deadline" | "matching_score" | "title";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const COLORS = [
@@ -58,12 +78,14 @@ const timeAgo = (dateStr: string) => {
   return `${Math.floor(days / 30)} bulan lalu`;
 };
 
+const daysUntilDeadline = (deadline: string | null): number | null => {
+  if (!deadline) return null;
+  return Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000);
+};
+
 const isDeadlineSoon = (deadline: string | null) => {
-  if (!deadline) return false;
-  const days = Math.ceil(
-    (new Date(deadline).getTime() - Date.now()) / 86400000,
-  );
-  return days >= 0 && days <= 7;
+  const d = daysUntilDeadline(deadline);
+  return d !== null && d >= 0 && d <= 7;
 };
 
 const isExpired = (deadline: string | null) => {
@@ -88,6 +110,570 @@ function FadeIn({
   );
 }
 
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+function SkeletonPulse({ className }: { className?: string }) {
+  return (
+    <div
+      className={`animate-pulse rounded-lg bg-emerald-500/[0.06] ${className}`}
+    />
+  );
+}
+
+function SavedJobCardSkeleton() {
+  return (
+    <div className="bg-[#0a0f0c] border border-emerald-500/10 rounded-[18px] overflow-hidden">
+      <div className="flex">
+        <div className="w-[3px] bg-emerald-500/10 rounded-l-[18px] flex-shrink-0" />
+        <div className="flex-1 p-5">
+          <div className="flex items-start gap-4">
+            <SkeletonPulse className="w-11 h-11 rounded-[10px] flex-shrink-0" />
+            <div className="flex-1">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <SkeletonPulse className="h-4 w-44 mb-2" />
+                  <SkeletonPulse className="h-3 w-28" />
+                </div>
+                <SkeletonPulse className="h-6 w-20 rounded-full" />
+              </div>
+              <div className="flex gap-3 mb-3">
+                <SkeletonPulse className="h-3 w-24" />
+                <SkeletonPulse className="h-3 w-20" />
+                <SkeletonPulse className="h-3 w-28" />
+              </div>
+              <div className="flex gap-2 mb-4">
+                {Array(3)
+                  .fill(0)
+                  .map((_, i) => (
+                    <SkeletonPulse key={i} className="h-5 w-16 rounded-[4px]" />
+                  ))}
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  <SkeletonPulse className="h-8 w-28 rounded-[8px]" />
+                  <SkeletonPulse className="h-8 w-20 rounded-[8px]" />
+                </div>
+                <SkeletonPulse className="h-8 w-20 rounded-[8px]" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Stats Bar ─────────────────────────────────────────────────────────────────
+function StatsBar({ jobs }: { jobs: SavedJob[] }) {
+  const total = jobs.length;
+  const expiring = jobs.filter(
+    (j) => isDeadlineSoon(j.deadline) && !isExpired(j.deadline),
+  ).length;
+  const expired = jobs.filter((j) => isExpired(j.deadline)).length;
+  const highMatch = jobs.filter((j) => (j.matching_score ?? 0) >= 75).length;
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      {[
+        {
+          label: "Tersimpan",
+          value: total,
+          Icon: Bookmark,
+          color: "text-emerald-400",
+          bg: "bg-emerald-500/8",
+          border: "border-emerald-500/12",
+        },
+        {
+          label: "Segera Expired",
+          value: expiring,
+          Icon: Timer,
+          color: "text-amber-400",
+          bg: "bg-amber-500/8",
+          border: "border-amber-500/12",
+        },
+        {
+          label: "High Match",
+          value: highMatch,
+          Icon: Target,
+          color: "text-violet-400",
+          bg: "bg-violet-500/8",
+          border: "border-violet-500/12",
+        },
+        {
+          label: "Sudah Expired",
+          value: expired,
+          Icon: AlertCircle,
+          color: "text-red-400",
+          bg: "bg-red-500/8",
+          border: "border-red-500/12",
+        },
+      ].map(({ label, value, Icon, color, bg, border }) => (
+        <div
+          key={label}
+          className={`bg-[#0a0f0c] border ${border} rounded-[14px] p-4`}>
+          <div
+            className={`w-8 h-8 rounded-[8px] ${bg} flex items-center justify-center mb-3`}>
+            <Icon size={15} className={color} />
+          </div>
+          <div
+            className={`text-[1.5rem] font-black ${color} leading-none mb-1`}>
+            {value}
+          </div>
+          <div className="text-[0.68rem] text-[#7a9585]">{label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── AI Insight for a job ──────────────────────────────────────────────────────
+function getJobInsights(
+  job: SavedJob,
+): { type: "tip" | "warning" | "success"; text: string }[] {
+  const insights = [];
+  const days = daysUntilDeadline(job.deadline);
+
+  if (days !== null && days >= 0 && days <= 3) {
+    insights.push({
+      type: "warning" as const,
+      text: `Deadline ${days === 0 ? "hari ini" : `${days} hari lagi`}! Segera apply sebelum terlambat.`,
+    });
+  }
+  if ((job.matching_score ?? 0) >= 80) {
+    insights.push({
+      type: "success" as const,
+      text: "Profil kamu sangat cocok untuk posisi ini. Peluang lolos lebih tinggi!",
+    });
+  } else if ((job.matching_score ?? 0) >= 60) {
+    insights.push({
+      type: "tip" as const,
+      text: "Match lumayan bagus. Highlight pengalaman yang relevan di cover letter.",
+    });
+  }
+  if ((job.resume_score ?? 0) >= 85) {
+    insights.push({
+      type: "success" as const,
+      text: "CV kamu sudah kuat untuk posisi ini berdasarkan analisis ATS.",
+    });
+  }
+  if (!job.salary) {
+    insights.push({
+      type: "tip" as const,
+      text: "Riset kisaran gaji posisi ini di Glassdoor/LinkedIn sebelum negosiasi.",
+    });
+  }
+
+  return insights.slice(0, 2);
+}
+
+// ── Deadline Urgency Bar ──────────────────────────────────────────────────────
+function DeadlineBar({ deadline }: { deadline: string | null }) {
+  if (!deadline) return null;
+  const days = daysUntilDeadline(deadline);
+  if (days === null || days < 0) return null;
+
+  const maxDays = 30;
+  const pct = Math.max(0, Math.min(100, (days / maxDays) * 100));
+  const color = days <= 3 ? "#ef4444" : days <= 7 ? "#f59e0b" : "#10b981";
+
+  return (
+    <div className="flex items-center gap-2 text-[0.68rem]">
+      <span
+        style={{ color }}
+        className="font-semibold tabular-nums whitespace-nowrap">
+        {days === 0 ? "Hari terakhir!" : `${days} hari lagi`}
+      </span>
+      <div className="flex-1 h-[3px] bg-white/[0.05] rounded-full overflow-hidden min-w-[40px]">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${100 - pct}%`, background: color }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Saved Job Card ────────────────────────────────────────────────────────────
+function SavedJobCard({
+  job,
+  index,
+  onUnsave,
+  removingId,
+}: {
+  job: SavedJob;
+  index: number;
+  onUnsave: (id: string) => void;
+  removingId: string | null;
+}) {
+  const expired = isExpired(job.deadline);
+  const soon = isDeadlineSoon(job.deadline);
+  const insights = getJobInsights(job);
+  const [showInsights, setShowInsights] = useState(false);
+  const isRemoving = removingId === job.id;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -20, scale: 0.97 }}
+      transition={{ duration: 0.3, delay: index * 0.04 }}
+      className={`bg-[#0a0f0c] border rounded-[18px] overflow-hidden transition-all
+        ${
+          expired
+            ? "border-white/[0.05] opacity-55"
+            : soon
+              ? "border-amber-500/20 hover:border-amber-500/32 hover:shadow-[0_0_20px_rgba(245,158,11,0.06)]"
+              : "border-emerald-500/12 hover:border-emerald-500/28 hover:-translate-y-[1px] hover:shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
+        }`}>
+      {/* Top accent stripe */}
+      {!expired && (
+        <div
+          className={`h-[2px] w-full ${
+            soon
+              ? "bg-gradient-to-r from-amber-500/60 via-amber-400/30 to-transparent"
+              : "bg-gradient-to-r from-emerald-500/30 via-cyan-500/20 to-transparent"
+          }`}
+        />
+      )}
+
+      <div className="flex">
+        {/* Left color bar */}
+        <div
+          className="w-[3px] flex-shrink-0"
+          style={{
+            background: expired
+              ? "transparent"
+              : `linear-gradient(180deg, ${job.color}60, ${job.color}10)`,
+          }}
+        />
+
+        <div className="flex-1 p-5">
+          <div className="flex items-start gap-4">
+            {/* Icon */}
+            <div
+              className="w-11 h-11 rounded-[10px] flex items-center justify-center flex-shrink-0 border border-white/[0.07]"
+              style={{ background: `${job.color}14`, color: job.color }}>
+              <Building2 size={18} />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              {/* Title + badges */}
+              <div className="flex items-start justify-between gap-3 mb-1">
+                <div className="min-w-0">
+                  <div className="font-bold text-[0.93rem] truncate">
+                    {job.title}
+                  </div>
+                  <div className="text-[0.76rem] text-[#7a9585]">
+                    {job.companies?.name}
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                  {expired && (
+                    <span className="px-[8px] py-[2px] rounded-full text-[0.63rem] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                      Expired
+                    </span>
+                  )}
+                  {!expired && soon && (
+                    <span className="px-[8px] py-[2px] rounded-full text-[0.63rem] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25 animate-pulse">
+                      ⚡ Segera!
+                    </span>
+                  )}
+                  <span
+                    className="px-[8px] py-[2px] rounded-[5px] text-[0.63rem] font-semibold"
+                    style={{
+                      background: `${job.color}15`,
+                      color: job.color,
+                      border: `1px solid ${job.color}25`,
+                    }}>
+                    {job.type}
+                  </span>
+                </div>
+              </div>
+
+              {/* Deadline urgency bar */}
+              {!expired && job.deadline && (
+                <div className="mb-2">
+                  <DeadlineBar deadline={job.deadline} />
+                </div>
+              )}
+
+              {/* Meta */}
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[0.73rem] text-[#7a9585] mb-3">
+                {job.location && (
+                  <span className="flex items-center gap-[4px]">
+                    <MapPin size={11} className="flex-shrink-0" />{" "}
+                    {job.location}
+                  </span>
+                )}
+                {job.salary && (
+                  <span className="flex items-center gap-[4px]">
+                    💰 {job.salary}
+                  </span>
+                )}
+                {job.deadline && (
+                  <span
+                    className={`flex items-center gap-[4px] ${soon && !expired ? "text-amber-400 font-medium" : ""}`}>
+                    <Clock size={11} className="flex-shrink-0" />
+                    {new Date(job.deadline).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                )}
+                <span className="flex items-center gap-[4px] text-[#7a9585]/50">
+                  <Bookmark size={10} /> {timeAgo(job.saved_at)}
+                </span>
+              </div>
+
+              {/* Score bars */}
+              {((job.matching_score ?? 0) > 0 ||
+                (job.resume_score ?? 0) > 0) && (
+                <div className="flex gap-5 mb-3 flex-wrap">
+                  {(job.resume_score ?? 0) > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Award size={10} className="text-emerald-400 shrink-0" />
+                      <div className="w-[56px] h-[3px] rounded-full bg-white/[0.05] overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${job.resume_score}%`,
+                            background:
+                              "linear-gradient(90deg,#10b981,#06b6d4)",
+                          }}
+                        />
+                      </div>
+                      <span className="text-[0.69rem] font-bold text-emerald-400">
+                        {job.resume_score}{" "}
+                        <span className="text-[#7a9585] font-normal">CV</span>
+                      </span>
+                    </div>
+                  )}
+                  {(job.matching_score ?? 0) > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Target size={10} className="text-violet-400 shrink-0" />
+                      <div className="w-[56px] h-[3px] rounded-full bg-white/[0.05] overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${job.matching_score}%`,
+                            background:
+                              "linear-gradient(90deg,#8b5cf6,#06b6d4)",
+                          }}
+                        />
+                      </div>
+                      <span className="text-[0.69rem] font-bold text-violet-400">
+                        {job.matching_score}%{" "}
+                        <span className="text-[#7a9585] font-normal">
+                          Match
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Skills */}
+              {(job.skills || []).length > 0 && (
+                <div className="flex flex-wrap gap-[5px] mb-3">
+                  {job.skills.slice(0, 5).map((s) => (
+                    <span
+                      key={s}
+                      className="px-[7px] py-[2px] rounded-[4px] text-[0.67rem] font-mono bg-white/[0.04] border border-white/[0.07] text-[#e8f0ec]">
+                      {s}
+                    </span>
+                  ))}
+                  {job.skills.length > 5 && (
+                    <span className="text-[0.67rem] text-[#7a9585] py-[2px]">
+                      +{job.skills.length - 5}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* AI Insight toggle */}
+              {insights.length > 0 && (
+                <div className="mb-3">
+                  <button
+                    onClick={() => setShowInsights((v) => !v)}
+                    className="flex items-center gap-1.5 text-[0.7rem] text-violet-400 hover:text-violet-300 transition-colors cursor-pointer">
+                    <Sparkles size={11} />
+                    AI Insight
+                    <ChevronDown
+                      size={11}
+                      className={`transition-transform duration-200 ${showInsights ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {showInsights && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden">
+                        <div className="pt-2 space-y-1.5">
+                          {insights.map((ins, i) => {
+                            const cfg = {
+                              tip: {
+                                color: "text-violet-400",
+                                bg: "bg-violet-500/[0.06]",
+                                border: "border-violet-500/15",
+                                Icon: Brain,
+                              },
+                              warning: {
+                                color: "text-amber-400",
+                                bg: "bg-amber-500/[0.06]",
+                                border: "border-amber-500/15",
+                                Icon: AlertCircle,
+                              },
+                              success: {
+                                color: "text-emerald-400",
+                                bg: "bg-emerald-500/[0.06]",
+                                border: "border-emerald-500/15",
+                                Icon: Sparkles,
+                              },
+                            }[ins.type];
+                            return (
+                              <div
+                                key={i}
+                                className={`flex items-start gap-2 rounded-[9px] px-3 py-[8px] border ${cfg.bg} ${cfg.border}`}>
+                                <cfg.Icon
+                                  size={11}
+                                  className={`${cfg.color} mt-[1px] flex-shrink-0`}
+                                />
+                                <span
+                                  className={`text-[0.7rem] leading-relaxed ${cfg.color}`}>
+                                  {ins.text}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex gap-2 flex-wrap">
+                  {!expired && (
+                    <Link
+                      href={`/jobs/${job.id}`}
+                      className="flex items-center gap-1.5 px-4 py-[7px] rounded-[8px] bg-emerald-500 hover:bg-emerald-400 text-black text-[0.78rem] font-bold no-underline transition-all hover:shadow-[0_4px_12px_rgba(16,185,129,0.28)]">
+                      Apply Sekarang <ChevronRight size={12} />
+                    </Link>
+                  )}
+                  <Link
+                    href={`/jobs/${job.id}`}
+                    className="flex items-center gap-1.5 px-3 py-[7px] rounded-[8px] bg-white/[0.03] border border-emerald-500/15 text-emerald-400 text-[0.78rem] font-semibold no-underline hover:border-emerald-500/30 transition-all">
+                    <Eye size={12} /> Detail
+                  </Link>
+                </div>
+
+                <button
+                  onClick={() => onUnsave(job.id)}
+                  disabled={isRemoving}
+                  className="flex items-center gap-1.5 px-3 py-[7px] rounded-[8px] bg-red-500/[0.05] border border-red-500/12 text-red-400 text-[0.75rem] font-medium cursor-pointer hover:bg-red-500/10 hover:border-red-500/22 transition-all disabled:opacity-40">
+                  {isRemoving ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <Trash2 size={12} />
+                  )}
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Sort & Filter Bar ─────────────────────────────────────────────────────────
+function FilterSortBar({
+  filter,
+  setFilter,
+  sortBy,
+  setSortBy,
+  total,
+}: {
+  filter: string;
+  setFilter: (v: string) => void;
+  sortBy: SortOption;
+  setSortBy: (v: SortOption) => void;
+  total: number;
+}) {
+  return (
+    <div className="flex items-center gap-3 mb-5 flex-wrap">
+      {/* Filter chips */}
+      <div className="flex gap-2 flex-wrap">
+        {[
+          { val: "all", label: "Semua" },
+          { val: "active", label: "Aktif" },
+          { val: "expiring", label: "⚡ Segera Expired" },
+          { val: "expired", label: "Expired" },
+        ].map(({ val, label }) => (
+          <button
+            key={val}
+            onClick={() => setFilter(val)}
+            className={`px-3 py-[5px] rounded-[7px] border text-[0.75rem] font-medium cursor-pointer transition-all whitespace-nowrap
+              ${
+                filter === val
+                  ? val === "expiring"
+                    ? "bg-amber-500/10 border-amber-500/28 text-amber-400"
+                    : val === "expired"
+                      ? "bg-red-500/10 border-red-500/28 text-red-400"
+                      : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                  : "bg-transparent border-emerald-500/12 text-[#7a9585] hover:text-[#e8f0ec] hover:border-emerald-500/25"
+              }`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Sort */}
+      <div className="ml-auto">
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortOption)}
+          className="bg-[#0a0f0c] border border-emerald-500/15 text-[#7a9585] text-[0.76rem] rounded-[8px] px-3 py-[6px] cursor-pointer focus:outline-none focus:border-emerald-500/30 transition-all">
+          <option value="saved_at">Terbaru Disimpan</option>
+          <option value="deadline">Deadline Terdekat</option>
+          <option value="matching_score">Highest Match</option>
+          <option value="title">Nama A–Z</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+// ── Empty State ───────────────────────────────────────────────────────────────
+function EmptyState() {
+  return (
+    <FadeIn delay={0.05}>
+      <div className="text-center py-20 text-[#7a9585]">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/[0.05] border border-dashed border-emerald-500/20 mb-5">
+          <Bookmark size={22} className="text-emerald-500/30" />
+        </div>
+        <div className="font-bold text-[1rem] text-[#e8f0ec] mb-2">
+          Belum ada lowongan tersimpan
+        </div>
+        <p className="text-[0.82rem] mb-6 max-w-[280px] mx-auto leading-relaxed">
+          Tekan ikon bookmark di halaman lowongan untuk menyimpannya dan temukan
+          lagi nanti.
+        </p>
+        <Link
+          href="/jobs"
+          className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-5 py-[10px] rounded-[9px] no-underline text-[0.84rem] transition-all hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)]">
+          <Briefcase size={14} /> Jelajahi Lowongan
+        </Link>
+      </div>
+    </FadeIn>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function SavedJobsPage() {
   const { token } = useDashboard();
@@ -95,28 +681,28 @@ export default function SavedJobsPage() {
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-
-  const fetchSaved = async () => {
-    if (!token) return;
-    try {
-      const res = await fetch(`${API}/api/saved-jobs`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setSavedJobs(
-        (Array.isArray(data) ? data : []).map((j: any, i: number) => ({
-          ...j,
-          color: getColor(i),
-        })),
-      );
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [filter, setFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<SortOption>("saved_at");
 
   useEffect(() => {
-    fetchSaved();
+    if (!token) return;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/saved-jobs`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setSavedJobs(
+          (Array.isArray(data) ? data : []).map((j: any, i: number) => ({
+            ...j,
+            color: getColor(i),
+          })),
+        );
+      } catch {
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [token]);
 
   const handleUnsave = async (jobId: string) => {
@@ -133,235 +719,184 @@ export default function SavedJobsPage() {
     }
   };
 
-  const filtered = savedJobs.filter(
-    (j) =>
-      j.title.toLowerCase().includes(search.toLowerCase()) ||
-      j.companies?.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  // Filter
+  const afterFilter = savedJobs.filter((j) => {
+    const q = search.toLowerCase();
+    const matchSearch =
+      j.title.toLowerCase().includes(q) ||
+      j.companies?.name.toLowerCase().includes(q);
+    if (!matchSearch) return false;
+    if (filter === "active") return !isExpired(j.deadline);
+    if (filter === "expiring")
+      return isDeadlineSoon(j.deadline) && !isExpired(j.deadline);
+    if (filter === "expired") return isExpired(j.deadline);
+    return true;
+  });
 
-  if (loading)
+  // Sort
+  const sorted = [...afterFilter].sort((a, b) => {
+    if (sortBy === "saved_at")
+      return new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime();
+    if (sortBy === "deadline") {
+      const dA = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+      const dB = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+      return dA - dB;
+    }
+    if (sortBy === "matching_score")
+      return (b.matching_score ?? 0) - (a.matching_score ?? 0);
+    if (sortBy === "title") return a.title.localeCompare(b.title);
+    return 0;
+  });
+
+  // ── Loading skeleton ───────────────────────────────────────────────────────
+  if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 size={24} className="text-emerald-400 animate-spin" />
-          <span className="text-[#7a9585] text-[0.85rem]">
-            Memuat lowongan tersimpan...
-          </span>
+      <div>
+        {/* Stats skeleton */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <div
+                key={i}
+                className="bg-[#0a0f0c] border border-emerald-500/10 rounded-[14px] p-4">
+                <SkeletonPulse className="w-8 h-8 rounded-[8px] mb-3" />
+                <SkeletonPulse className="h-7 w-10 mb-1" />
+                <SkeletonPulse className="h-3 w-20" />
+              </div>
+            ))}
+        </div>
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between mb-5">
+          <SkeletonPulse className="h-5 w-40" />
+          <SkeletonPulse className="h-9 w-52 rounded-[9px]" />
+        </div>
+        {/* Filter skeleton */}
+        <div className="flex gap-2 mb-5">
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <SkeletonPulse key={i} className="h-8 w-20 rounded-[7px]" />
+            ))}
+        </div>
+        {/* Cards skeleton */}
+        <div className="flex flex-col gap-3">
+          {Array(3)
+            .fill(0)
+            .map((_, i) => (
+              <SavedJobCardSkeleton key={i} />
+            ))}
         </div>
       </div>
     );
+  }
 
   return (
     <div>
-      {/* Header */}
-      <FadeIn>
-        <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
+      {/* ── Stats Bar ── */}
+      {savedJobs.length > 0 && (
+        <FadeIn>
+          <StatsBar jobs={savedJobs} />
+        </FadeIn>
+      )}
+
+      {/* ── Header + Search ── */}
+      <FadeIn delay={0.02}>
+        <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
           <div>
             <div className="font-bold text-[1rem]">Lowongan Tersimpan</div>
-            <div className="text-[0.75rem] text-[#7a9585] mt-[3px]">
+            <div className="text-[0.73rem] text-[#7a9585] mt-[2px]">
               {savedJobs.length} lowongan disimpan
             </div>
           </div>
           {savedJobs.length > 0 && (
             <div className="relative min-w-[220px]">
               <Search
-                size={14}
+                size={13}
                 className="absolute left-[11px] top-1/2 -translate-y-1/2 text-[#7a9585] pointer-events-none"
               />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari lowongan tersimpan..."
-                className="pl-[34px] bg-[#0f1612] border-emerald-500/15 text-[#e8f0ec] placeholder:text-[rgba(122,149,133,0.45)] rounded-[9px] focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500"
+                className="pl-[34px] pr-8 bg-[#0a0f0c] border-emerald-500/15 text-[#e8f0ec] placeholder:text-[rgba(122,149,133,0.45)] rounded-[9px] focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500"
               />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[#7a9585] hover:text-[#e8f0ec] transition-colors cursor-pointer">
+                  <X size={13} />
+                </button>
+              )}
             </div>
           )}
         </div>
       </FadeIn>
 
-      {/* Empty state */}
+      {/* ── Empty ── */}
       {savedJobs.length === 0 ? (
-        <FadeIn delay={0.05}>
-          <div className="text-center py-20 text-[#7a9585]">
-            <div className="text-[3rem] mb-4 opacity-20">🔖</div>
-            <div className="font-syne font-bold text-[1rem] mb-2">
-              Belum ada lowongan tersimpan
+        <EmptyState />
+      ) : (
+        <>
+          {/* ── Filter + Sort ── */}
+          <FadeIn delay={0.04}>
+            <FilterSortBar
+              filter={filter}
+              setFilter={setFilter}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              total={sorted.length}
+            />
+          </FadeIn>
+
+          {/* ── No results ── */}
+          {sorted.length === 0 ? (
+            <div className="text-center py-16 text-[#7a9585]">
+              <div className="text-[2rem] mb-3 opacity-20">🔍</div>
+              <div className="text-[0.88rem] font-semibold mb-2">
+                Tidak ada hasil
+              </div>
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setFilter("all");
+                }}
+                className="text-emerald-400 text-[0.78rem] hover:opacity-75 transition-opacity cursor-pointer">
+                Reset filter
+              </button>
             </div>
-            <p className="text-[0.82rem] mb-5 max-w-[280px] mx-auto leading-relaxed">
-              Tekan ikon bookmark di halaman lowongan untuk menyimpannya dan
-              temukan lagi nanti.
-            </p>
+          ) : (
+            <>
+              {/* Result count */}
+              <div className="text-[0.72rem] text-[#7a9585] mb-3">
+                Menampilkan {sorted.length} lowongan
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <AnimatePresence>
+                  {sorted.map((job, i) => (
+                    <SavedJobCard
+                      key={job.saved_id}
+                      job={job}
+                      index={i}
+                      onUnsave={handleUnsave}
+                      removingId={removingId}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            </>
+          )}
+
+          {/* ── CTA ── */}
+          <div className="mt-7 text-center">
             <Link
               href="/jobs"
-              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-5 py-[10px] rounded-[9px] no-underline text-[0.85rem] transition-all">
-              <Briefcase size={14} /> Jelajahi Lowongan
+              className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[10px] rounded-[9px] text-[0.84rem] font-semibold no-underline transition-all">
+              <Briefcase size={14} /> Cari Lowongan Lainnya
             </Link>
           </div>
-        </FadeIn>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-[#7a9585]">
-          <div className="text-[2rem] mb-3 opacity-20">🔍</div>
-          <div className="text-[0.9rem] font-semibold">
-            Tidak ada hasil untuk "{search}"
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          <AnimatePresence>
-            {filtered.map((job, i) => {
-              const expired = isExpired(job.deadline);
-              const soon = isDeadlineSoon(job.deadline);
-              return (
-                <motion.div
-                  key={job.saved_id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20, scale: 0.97 }}
-                  transition={{ duration: 0.3, delay: i * 0.04 }}
-                  className={`bg-[#0f1612] border rounded-[14px] p-5 transition-all hover:-translate-y-[2px]
-                    ${expired ? "border-white/[0.06] opacity-60" : "border-emerald-500/15 hover:border-emerald-500/30"}`}>
-                  <div className="flex items-start gap-4">
-                    {/* Icon */}
-                    <div
-                      className="w-11 h-11 rounded-[10px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
-                      style={{
-                        background: `${job.color}18`,
-                        color: job.color,
-                      }}>
-                      <Building2 size={18} />
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3 mb-1">
-                        <div>
-                          <div className="font-syne font-bold text-[0.95rem]">
-                            {job.title}
-                          </div>
-                          <div className="text-[0.78rem] text-[#7a9585]">
-                            {job.companies?.name}
-                          </div>
-                        </div>
-                        {/* badges */}
-                        <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
-                          {expired && (
-                            <span className="px-[8px] py-[2px] rounded-full text-[0.65rem] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-                              Expired
-                            </span>
-                          )}
-                          {!expired && soon && (
-                            <span className="px-[8px] py-[2px] rounded-full text-[0.65rem] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25 animate-pulse">
-                              Deadline segera!
-                            </span>
-                          )}
-                          <span
-                            className="px-[8px] py-[2px] rounded-[5px] text-[0.65rem] font-semibold"
-                            style={{
-                              background: `${job.color}15`,
-                              color: job.color,
-                              border: `1px solid ${job.color}25`,
-                            }}>
-                            {job.type}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Meta */}
-                      <div className="flex flex-wrap gap-3 text-[0.75rem] text-[#7a9585] mb-3">
-                        {job.location && (
-                          <span className="flex items-center gap-[4px]">
-                            <MapPin size={11} /> {job.location}
-                          </span>
-                        )}
-                        {job.salary && <span>💰 {job.salary}</span>}
-                        {job.deadline && (
-                          <span
-                            className={`flex items-center gap-[4px] ${soon && !expired ? "text-amber-400" : ""}`}>
-                            <Clock size={11} />
-                            Deadline:{" "}
-                            {new Date(job.deadline).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              },
-                            )}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-[4px] text-[#7a9585]/60">
-                          <Bookmark size={10} /> Disimpan{" "}
-                          {timeAgo(job.saved_at)}
-                        </span>
-                      </div>
-
-                      {/* Skills */}
-                      {(job.skills || []).length > 0 && (
-                        <div className="flex flex-wrap gap-[5px] mb-3">
-                          {job.skills.slice(0, 4).map((s) => (
-                            <span
-                              key={s}
-                              className="px-[7px] py-[2px] rounded-[4px] text-[0.68rem] font-mono bg-white/[0.04] border border-white/[0.07] text-[#e8f0ec]">
-                              {s}
-                            </span>
-                          ))}
-                          {job.skills.length > 4 && (
-                            <span className="text-[0.68rem] text-[#7a9585] py-[2px]">
-                              +{job.skills.length - 4}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-2">
-                          {!expired && (
-                            <Link
-                              href={`/jobs/${job.id}`}
-                              className="flex items-center gap-1 px-4 py-[7px] rounded-[7px] bg-emerald-500 hover:bg-emerald-400 text-black text-[0.78rem] font-bold no-underline transition-all hover:shadow-[0_4px_12px_rgba(16,185,129,0.3)]">
-                              Apply Sekarang →
-                            </Link>
-                          )}
-                          <Link
-                            href={`/jobs/${job.id}`}
-                            className="flex items-center gap-1 px-3 py-[7px] rounded-[7px] bg-[#141f19] border border-emerald-500/15 text-emerald-400 text-[0.78rem] font-semibold no-underline hover:border-emerald-500/30 transition-all">
-                            Detail <ChevronRight size={12} />
-                          </Link>
-                        </div>
-
-                        {/* Hapus dari simpanan */}
-                        <button
-                          onClick={() => handleUnsave(job.id)}
-                          disabled={removingId === job.id}
-                          title="Hapus dari simpanan"
-                          className="flex items-center gap-1 px-3 py-[7px] rounded-[7px] bg-red-500/[0.06] border border-red-500/15 text-red-400 text-[0.75rem] font-medium cursor-pointer hover:bg-red-500/12 hover:border-red-500/25 transition-all disabled:opacity-40">
-                          {removingId === job.id ? (
-                            <Loader2 size={12} className="animate-spin" />
-                          ) : (
-                            <Trash2 size={12} />
-                          )}
-                          Hapus
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-      )}
-
-      {/* CTA */}
-      {savedJobs.length > 0 && (
-        <div className="mt-6 text-center">
-          <Link
-            href="/jobs"
-            className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[10px] rounded-[9px] text-[0.85rem] font-semibold no-underline transition-all">
-            <Briefcase size={14} /> Cari Lowongan Lainnya
-          </Link>
-        </div>
+        </>
       )}
     </div>
   );

@@ -9,7 +9,6 @@ import {
   Briefcase,
   Bookmark,
   Target,
-  User,
   FileText,
   BarChart3,
   Users,
@@ -20,6 +19,7 @@ import {
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
 import { supabase } from "@/lib/supabase";
+import CompanySetupModal from "./dashboard/hr/_components/CompanySetupModal";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type DashboardUser = {
@@ -75,9 +75,9 @@ const CANDIDATE_SECTIONS = [
         matchPrefix: true,
       },
       {
-        href: "/dashboard/candidate/profile",
-        icon: User,
-        label: "Profil",
+        href: "/dashboard/candidate/calendar",
+        icon: Calendar,
+        label: "Calendar",
         matchPrefix: true,
       },
     ],
@@ -96,10 +96,9 @@ const HR_SECTIONS = [
     heading: "Menu",
     items: [
       {
-        href: "/dashboard/hr/overview",
+        href: "/dashboard/hr",
         icon: BarChart3,
         label: "Dashboard",
-        matchPrefix: true,
       },
       {
         href: "/dashboard/hr/jobs",
@@ -121,16 +120,16 @@ const HR_SECTIONS = [
       },
       {
         href: "/dashboard/hr/interviews",
-        icon: Calendar,
+        icon: BarChart3,
         label: "Interviews",
         matchPrefix: true,
       },
-    ],
-  },
-  {
-    heading: "Sistem",
-    items: [
-      { href: "/dashboard/hr/settings", icon: Settings, label: "Pengaturan" },
+      {
+        href: "/dashboard/hr/calendar",
+        icon: Calendar,
+        label: "Calendar",
+        matchPrefix: true,
+      },
     ],
   },
 ];
@@ -145,12 +144,12 @@ const CANDIDATE_TITLES: Record<string, string> = {
 };
 
 const HR_TITLES: Record<string, string> = {
-  "/dashboard/hr/overview": "HR Dashboard",
+  "/dashboard/hr": "HR Dashboard",
   "/dashboard/hr/jobs": "Kelola Lowongan",
   "/dashboard/hr/candidates": "Candidates",
   "/dashboard/hr/analytics": "Analytics",
   "/dashboard/hr/interviews": "Interviews",
-  "/dashboard/hr/settings": "Pengaturan",
+  "/dashboard/hr/calendar": "calendar",
 };
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -165,6 +164,8 @@ export default function DashboardLayout({
   const [token, setToken] = useState("");
   const [company, setCompany] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  // null = belum dicek | false = tidak punya company | true = punya company
+  const [hasCompany, setHasCompany] = useState<boolean | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -172,32 +173,62 @@ export default function DashboardLayout({
         data: { session },
       } = await supabase.auth.getSession();
 
-      // Tidak perlu redirect manual — middleware sudah handle
-      // Kalau sampai sini tanpa session, middleware pasti sudah redirect
       if (!session) return;
 
-      const rawRole = session.user.user_metadata?.role;
-      const role: "candidate" | "hr" = rawRole === "hr" ? "hr" : "candidate"; // fallback aman
+      // ── 1. Ambil role & full_name dari tabel users ──────────────────────────
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role, full_name")
+        .eq("id", session.user.id)
+        .single();
 
-      setToken(session.access_token);
+      const role: "candidate" | "hr" =
+        userData?.role === "hr" ? "hr" : "candidate";
+
+      const accessToken = session.access_token;
+      setToken(accessToken);
       setUser({
         id: session.user.id,
         email: session.user.email ?? "",
         full_name:
-          session.user.user_metadata?.full_name ?? session.user.email ?? "User",
+          userData?.full_name ??
+          session.user.user_metadata?.full_name ??
+          session.user.email ??
+          "User",
         role,
       });
 
-      // Fetch company hanya untuk HR
+      // ── 2. Untuk HR: cek company via API /api/companies/me ─────────────────
       if (role === "hr") {
         try {
-          const res = await fetch("/api/companies/me", {
-            headers: { Authorization: `Bearer ${session.access_token}` },
-          });
-          if (res.ok) setCompany(await res.json());
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/companies/me`,
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            },
+          );
+
+          if (res.ok) {
+            const companyData = await res.json();
+            if (companyData) {
+              // HR sudah punya company
+              setCompany(companyData);
+              setHasCompany(true);
+            } else {
+              // API mengembalikan null → belum punya company
+              setHasCompany(false);
+            }
+          } else {
+            // Respons error → anggap belum punya company, tampilkan modal
+            setHasCompany(false);
+          }
         } catch {
-          // Belum ada company → CompanySetupModal handle di page-nya
+          // Network error → tetap tampilkan modal agar HR bisa setup
+          setHasCompany(false);
         }
+      } else {
+        // Candidate tidak perlu cek company
+        setHasCompany(true);
       }
 
       setLoading(false);
@@ -221,13 +252,11 @@ export default function DashboardLayout({
   }
 
   // ── Derive UI from role ─────────────────────────────────────────────────────
-  // Middleware sudah pastikan role sesuai URL, jadi tidak perlu guard lagi
   const isHR = user?.role === "hr";
   const sections = isHR ? HR_SECTIONS : CANDIDATE_SECTIONS;
   const titleMap = isHR ? HR_TITLES : CANDIDATE_TITLES;
   const roleLabel = isHR ? "HR Manager" : "Kandidat";
 
-  // Support dynamic routes (misal /dashboard/hr/jobs/[id])
   const pageTitle =
     titleMap[pathname] ??
     Object.entries(titleMap).find(([key]) => pathname.startsWith(key))?.[1] ??
@@ -235,6 +264,17 @@ export default function DashboardLayout({
 
   return (
     <DashboardContext.Provider value={{ user, token, company, setCompany }}>
+      {/* ── Modal setup company untuk HR yang belum punya company ── */}
+      {isHR && hasCompany === false && (
+        <CompanySetupModal
+          token={token}
+          onDone={(c) => {
+            setCompany(c);
+            setHasCompany(true);
+          }}
+        />
+      )}
+
       <div className="flex min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
         <Sidebar
           role={isHR ? "hr" : "candidate"}

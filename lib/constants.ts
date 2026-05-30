@@ -1,76 +1,3 @@
-import { Job } from "@/app/jobs/page";
-
-export const DEMO_JOBS: Job[] = [
-  {
-    id: "0",
-    title: "Frontend Developer",
-    description:
-      "Bergabunglah dengan tim engineering kami untuk membangun produk digital yang digunakan jutaan pengguna Indonesia.",
-    salary: "Rp 8–15 jt/bln",
-    location: "Jakarta / Remote",
-    type: "Full-time",
-    skills: ["React", "Next.js", "Tailwind"],
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-    companies: {
-      name: "PT Teknologi Indonesia",
-      logo_url: null,
-      company_size: "200–500 karyawan",
-    },
-    color: "#10b981",
-  },
-  {
-    id: "1",
-    title: "Fullstack Developer",
-    description:
-      "Kami mencari engineer berpengalaman untuk membangun fitur-fitur baru pada platform SaaS B2B kami.",
-    salary: "Rp 12–20 jt/bln",
-    location: "Remote",
-    type: "Full-time",
-    skills: ["Node.js", "React", "PostgreSQL"],
-    created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
-    companies: {
-      name: "Startup Digital Nusantara",
-      logo_url: null,
-      company_size: "50–100 karyawan",
-    },
-    color: "#06b6d4",
-  },
-  {
-    id: "2",
-    title: "Backend Engineer",
-    description:
-      "Kembangkan infrastruktur backend untuk platform pembayaran yang memproses jutaan transaksi per hari.",
-    salary: "Rp 10–18 jt/bln",
-    location: "Bandung / Hybrid",
-    type: "Full-time",
-    skills: ["Go", "PostgreSQL", "Docker"],
-    created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-    companies: {
-      name: "Fintech Maju Bersama",
-      logo_url: null,
-      company_size: "200–500 karyawan",
-    },
-    color: "#8b5cf6",
-  },
-  {
-    id: "3",
-    title: "UI/UX Designer",
-    description:
-      "Rancang pengalaman pengguna yang indah dan intuitif untuk klien-klien enterprise kami.",
-    salary: "Rp 6–10 jt/bln",
-    location: "Jakarta",
-    type: "Contract",
-    skills: ["Figma", "Prototyping", "Research"],
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-    companies: {
-      name: "Creative Agency Jakarta",
-      logo_url: null,
-      company_size: "11–50 karyawan",
-    },
-    color: "#f59e0b",
-  },
-];
-
 export const FILTERS = [
   "Semua",
   "Remote",
@@ -118,3 +45,34 @@ export const statusConfig: Record<
     border: "rgba(239,68,68,0.25)",
   },
 };
+
+export const EMPTY_FORM = {
+  title: "",
+  description: "",
+  requirements: "",
+  salary: "",
+  location: "",
+  type: "Full-time",
+  skills: "",
+  benefits: "",
+  deadline: "",
+};
+
+export const PALETTES = [
+  { accent: "#10b981" },
+  { accent: "#3b82f6" },
+  { accent: "#8b5cf6" },
+  { accent: "#f59e0b" },
+  { accent: "#ef4444" },
+  { accent: "#ec4899" },
+];
+
+export const getPalette = (i: number) => PALETTES[i % PALETTES.length];
+
+export const LOCATION_FILTERS = [
+  "Semua",
+  "Jakarta",
+  "Bandung",
+  "Surabaya",
+  "Remote",
+];

@@ -10,7 +10,7 @@ const isAuthRoute = (p: string) =>
 const isHRRoute = (p: string) => p.startsWith("/dashboard/hr");
 const isCandidateRoute = (p: string) => p.startsWith("/dashboard/candidate");
 const getDashboard = (role: string) =>
-  role === "hr" ? "/dashboard/hr/overview" : "/dashboard/candidate";
+  role === "hr" ? "/dashboard/hr" : "/dashboard/candidate";
 
 export async function proxy(req: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: req });
@@ -36,15 +36,26 @@ export async function proxy(req: NextRequest) {
     },
   );
 
-  // getSession() cukup untuk middleware — tidak perlu network call ke Supabase
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!session;
-  const role: "hr" | "candidate" =
-    session?.user?.user_metadata?.role === "hr" ? "hr" : "candidate";
+
+  // Ambil role dari database, bukan dari user_metadata
+  let role: "hr" | "candidate" = "candidate"; // default fallback
+  if (isLoggedIn && session?.user?.id) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", session.user.id)
+      .single();
+
+    if (userData?.role === "hr") {
+      role = "hr";
+    }
+  }
 
   if (isLoggedIn && isAuthRoute(pathname)) {
     return NextResponse.redirect(new URL(getDashboard(role), req.url));
@@ -57,7 +68,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isLoggedIn && role === "hr" && isCandidateRoute(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard/hr/overview", req.url));
+    return NextResponse.redirect(new URL("/dashboard/hr", req.url));
   }
 
   if (isLoggedIn && role === "candidate" && isHRRoute(pathname)) {

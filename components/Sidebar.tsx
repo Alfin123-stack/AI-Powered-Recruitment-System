@@ -1,10 +1,7 @@
 "use client";
-
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, Building2 } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 import { getInitials } from "@/app/(role)/dashboard/candidate/_components/shared";
 
 export type SidebarNavItem = {

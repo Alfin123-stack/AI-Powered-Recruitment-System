@@ -37,10 +37,36 @@ export const formatDeadline = (d: string | null) =>
       })
     : "—";
 
-export const parseRequirements = (raw: string) =>
-  raw
-    ? raw
-        .split("\n")
-        .map((s) => s.trim())
-        .filter(Boolean)
-    : [];
+export function parseRequirements(
+  raw: string | string[] | null | undefined,
+): string[] {
+  if (!raw) return [];
+
+  // kalau sudah array
+  if (Array.isArray(raw)) {
+    return raw.map((s) => s.trim()).filter(Boolean);
+  }
+
+  // kalau string
+  return raw
+    .split(/\\n|\n/)
+    .map((s) => s.trim().replace(/^[-•*–]\s*/, ""))
+    .filter(Boolean);
+}
+
+export const statusMap: Record<string, { label: string; color: string }> = {
+  shortlisted: { label: "Shortlisted", color: "#10b981" },
+  applied: { label: "Applied", color: "#f59e0b" },
+  review: { label: "In Review", color: "#06b6d4" },
+  rejected: { label: "Ditolak", color: "#ef4444" },
+};
+
+export const rankColors = ["#f59e0b", "#94a3b8", "#cd7f32"];
+
+export const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);

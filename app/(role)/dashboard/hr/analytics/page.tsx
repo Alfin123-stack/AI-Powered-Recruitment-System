@@ -23,7 +23,7 @@ import {
   Area,
 } from "recharts";
 import { FadeIn, apiFetch, getColor } from "../_components/shared";
-import { useDashboard } from "../layout";
+import { useDashboard } from "@/app/(role)/layout";
 
 // ── Custom Tooltip ────────────────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label }: any) => {

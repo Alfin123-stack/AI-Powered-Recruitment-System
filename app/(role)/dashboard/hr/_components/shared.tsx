@@ -1,14 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
-
-// ── Supabase client (hanya auth) ──────────────────────────────────────────────
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
-
+import { motion, AnimatePresence } from "framer-motion";
+import { X, AlertCircle, Info } from "lucide-react";
 // ── API base URL ──────────────────────────────────────────────────────────────
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -54,6 +47,28 @@ export type Candidate = {
   appliedDate: string;
   color: string;
   cv_url: string | null;
+};
+
+export type Application = {
+  id: string;
+  candidate_name?: string;
+  job_title?: string;
+  job_id: string;
+
+  resume_score?: number;
+  matching_score?: number;
+
+  extracted_skills?: Array<
+    | string
+    | {
+        name?: string;
+      }
+  >;
+
+  status: string;
+  created_at: string;
+
+  cv_url?: string | null;
 };
 
 export type JobSummary = {
@@ -175,5 +190,128 @@ export function IconButton({
   );
 }
 
+// ── inputCls ──────────────────────────────────────────────────────────────────
 export const inputCls =
-  "w-full bg-[#141f19] border border-emerald-500/15 rounded-[10px] px-4 py-[10px] text-[0.88rem] text-[#e8f0ec] placeholder:text-[#7a9585] outline-none focus:border-emerald-500/40 transition-colors";
+  "w-full bg-[#0a120d] border border-emerald-500/20 rounded-[10px] px-3 py-[10px] text-[0.85rem] text-[#e8f0ec] placeholder:text-[#3d5c49] focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 transition-all";
+
+export const inputErrorCls =
+  "w-full bg-[#0a120d] border border-red-500/50 rounded-[10px] px-3 py-[10px] text-[0.85rem] text-[#e8f0ec] placeholder:text-[#3d5c49] focus:outline-none focus:border-red-500/70 focus:ring-2 focus:ring-red-500/10 transition-all";
+// ── Field ─────────────────────────────────────────────────────────────────────
+export function Field({
+  label,
+  children,
+  error,
+  hint,
+  icon,
+  required,
+}: {
+  label: string;
+  children: React.ReactNode;
+  error?: string;
+  hint?: string;
+  icon?: React.ReactNode;
+  required?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-[6px]">
+      <label className="flex items-center gap-[6px] text-[0.72rem] font-semibold text-[#7a9585] tracking-[0.07em] uppercase">
+        {icon && <span className="opacity-70 flex items-center">{icon}</span>}
+        {label}
+        {required && (
+          <span className="text-red-400 text-[0.75rem] leading-none">*</span>
+        )}
+      </label>
+
+      <div className="relative">{children}</div>
+
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            transition={{ duration: 0.18 }}
+            className="flex items-center gap-[5px] text-[0.73rem] text-red-400 font-medium">
+            <AlertCircle size={11} className="flex-shrink-0" />
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!error && hint && (
+        <div className="flex items-center gap-[5px] text-[0.72rem] text-[#4d7060]">
+          <Info size={10} className="flex-shrink-0" />
+          {hint}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ModalShell ────────────────────────────────────────────────────────────────
+export function ModalShell({
+  title,
+  subtitle,
+  onClose,
+  maxWidth = "max-w-[640px]",
+  zIndex = "z-[100]",
+  icon,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  onClose: () => void;
+  maxWidth?: string;
+  zIndex?: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`fixed inset-0 ${zIndex} flex items-center justify-center bg-black/75 backdrop-blur-[6px] p-4`}>
+      <div className="absolute inset-0" onClick={onClose} />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 10 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        className={`relative bg-[#0d1810] border border-emerald-500/20 rounded-[22px] w-full ${maxWidth} max-h-[92vh] overflow-y-auto shadow-[0_24px_80px_rgba(0,0,0,0.6)]`}
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse at top left, rgba(16,185,129,0.04) 0%, transparent 60%)",
+        }}>
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+
+        <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-emerald-500/10">
+          <div className="flex items-center gap-3">
+            {icon && (
+              <div className="w-10 h-10 rounded-[11px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                {icon}
+              </div>
+            )}
+            <div>
+              <h2 className="font-syne font-extrabold text-[1.05rem] text-[#e8f0ec]">
+                {title}
+              </h2>
+              {subtitle && (
+                <p className="text-[#5a8070] text-[0.76rem] mt-[2px]">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          </div>
+          <button
+            title="close"
+            onClick={onClose}
+            className="w-9 h-9 rounded-[9px] bg-[#111a14] border border-emerald-500/15 flex items-center justify-center text-[#5a8070] hover:text-[#e8f0ec] hover:border-emerald-500/35 hover:bg-[#1a2d1f] transition-all cursor-pointer">
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="px-7 py-6 flex flex-col gap-5">{children}</div>
+      </motion.div>
+    </div>
+  );
+}

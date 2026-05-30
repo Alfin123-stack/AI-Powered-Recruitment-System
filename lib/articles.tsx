@@ -1,15 +1,3 @@
-// lib/articles.tsx
-// Shared data — import di blog/page.tsx DAN blog/[slug]/page.tsx
-
-import {
-  Target,
-  TrendingUp,
-  FileText,
-  Brain,
-  BookOpen,
-  Zap,
-} from "lucide-react";
-
 export type Article = {
   slug: string;
   title: string;

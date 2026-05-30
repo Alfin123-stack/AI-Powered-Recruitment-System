@@ -1,13 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-);
-
+import { supabase } from "@/lib/supabase";
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export const  apiFetch = async (

@@ -1,47 +1,45 @@
-"use client";
+import { Suspense } from "react";
+import JobHero from "@/components/jobs/JobHero";
+import JobsContainer from "@/components/jobs/JobsContainer";
+import JobsSkeleton from "@/components/jobs/JobsSkeleton";
+import { getJobs, type Job } from "@/lib/jobs";
 
-import JobHero from "./_components/JobHero";
-import JobToolbar from "./_components/JobToolbar";
-import JobList from "./_components/JobList";
-import { useJobs } from "@/hooks/useJobs";
+export const revalidate = 60;
 
-export type Job = {
-  id: string;
-  title: string;
-  description: string;
-  salary: string;
-  location: string;
-  type: string;
-  skills: string[];
-  created_at: string;
-  companies: { name: string; logo_url: string | null; company_size: string };
-  color: string;
+export const metadata = {
+  title: "Lowongan Kerja | Karir AI-Powered",
+  description:
+    "Temukan ribuan lowongan dari perusahaan terpercaya. Lamar langsung dan ukur kecocokan CV Anda dengan analisis AI.",
 };
 
-// ── Job Card ──────────────────────────────────────────────────────────────────
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-export default function JobsPage() {
-  const { jobs, loading, search, setSearch, filter, setFilter, filtered } =
-    useJobs();
+export default async function JobsPage() {
+  const jobsPromise = getJobs();
 
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
       <main className="pt-16">
-        {/* HERO */}
-        <JobHero jobs={jobs} loading={loading} />
+        <Suspense fallback={<JobHero jobs={[]} loading={true} />}>
+          <JobHeroServer jobsPromise={jobsPromise} />
+        </Suspense>
 
-        {/* TOOLBAR */}
-        <JobToolbar
-          search={search}
-          setSearch={setSearch}
-          filter={filter}
-          setFilter={setFilter}
-        />
-
-        {/* JOBS GRID */}
-        <JobList filtered={filtered} search={search} loading={loading} />
+        <Suspense fallback={<JobsSkeleton />}>
+          <JobsContainerServer jobsPromise={jobsPromise} />
+        </Suspense>
       </main>
     </div>
   );
+}
+
+async function JobHeroServer({ jobsPromise }: { jobsPromise: Promise<Job[]> }) {
+  const jobs = await jobsPromise;
+  return <JobHero jobs={jobs} loading={false} />;
+}
+
+async function JobsContainerServer({
+  jobsPromise,
+}: {
+  jobsPromise: Promise<Job[]>;
+}) {
+  const jobs = await jobsPromise;
+  return <JobsContainer initialJobs={jobs} />;
 }

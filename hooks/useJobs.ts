@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { getColor } from "@/lib/utils";
-import { DEMO_JOBS } from "@/lib/constants";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -33,7 +32,6 @@ export function useJobs() {
           })),
         );
       } catch {
-        setJobs(DEMO_JOBS);
       } finally {
         setLoading(false);
       }
@@ -51,7 +49,7 @@ export function useJobs() {
 
     fetchJobs();
     checkSession();
-  }, [API, DEMO_JOBS, getColor]);
+  }, [API, getColor]);
 
   // filter logic dipindah ke sini
   const filtered = jobs.filter((j) => {

@@ -97,6 +97,34 @@ const POPUP_LIMIT = 4;
 
 const PROFILE_HREF = "/profile";
 
+// ── Logout Spinner ─────────────────────────────────────────────────────────────
+function LogoutSpinner() {
+  return (
+    <svg
+      className="animate-spin"
+      width="13"
+      height="13"
+      viewBox="0 0 13 13"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <circle
+        cx="6.5"
+        cy="6.5"
+        r="5"
+        stroke="currentColor"
+        strokeOpacity="0.25"
+        strokeWidth="2"
+      />
+      <path
+        d="M11.5 6.5a5 5 0 0 0-5-5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 // ── Notification Popup ────────────────────────────────────────────────────────
 function NotifPopup({
   notifs,
@@ -121,8 +149,7 @@ function NotifPopup({
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
     .slice(0, POPUP_LIMIT);
-  const fullHref =
-    role === "hr" ? "/notifications/hr" : "/notifications/candidate";
+  const fullHref = "/notifications";
 
   return (
     <motion.div
@@ -293,11 +320,22 @@ function UserDropdown({
   onClose: () => void;
 }) {
   const router = useRouter();
+  // ── TAMBAHAN: state loading logout ──
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    onClose();
-    await supabase.auth.signOut();
-    router.push("/");
+    // Cegah double-click
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    try {
+      await supabase.auth.signOut();
+      onClose();
+      router.push("/");
+    } catch {
+      // Jika gagal, kembalikan tombol ke state normal
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -364,24 +402,64 @@ function UserDropdown({
         {/* Divider */}
         <div className="h-px bg-[rgba(52,211,153,0.08)] mx-1 my-1" />
 
-        {/* Keluar */}
+        {/* ── Keluar — dengan spinner logout ── */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-[9px] rounded-[10px]
-            hover:bg-red-500/[0.07] transition-colors group cursor-pointer">
-          <div className="w-7 h-7 rounded-[7px] bg-red-500/[0.06] border border-red-500/[0.12] flex items-center justify-center text-[#5a3535] group-hover:text-red-400 group-hover:border-red-500/25 transition-colors flex-shrink-0">
-            <LogOut size={13} />
+          disabled={isLoggingOut}
+          className={`w-full flex items-center gap-3 px-3 py-[9px] rounded-[10px] transition-colors group
+            ${
+              isLoggingOut
+                ? "opacity-70 cursor-not-allowed bg-red-500/[0.04]"
+                : "hover:bg-red-500/[0.07] cursor-pointer"
+            }`}>
+          {/* Icon area — ikon LogOut atau spinner */}
+          <div
+            className={`w-7 h-7 rounded-[7px] border flex items-center justify-center transition-colors flex-shrink-0
+              ${
+                isLoggingOut
+                  ? "bg-red-500/[0.10] border-red-500/25 text-red-400"
+                  : "bg-red-500/[0.06] border-red-500/[0.12] text-[#5a3535] group-hover:text-red-400 group-hover:border-red-500/25"
+              }`}>
+            {isLoggingOut ? <LogoutSpinner /> : <LogOut size={13} />}
           </div>
+
+          {/* Label */}
           <div className="flex-1 text-left">
-            <p className="text-[0.82rem] font-semibold text-[#7a5555] group-hover:text-red-400 transition-colors leading-none mb-[3px]">
-              Keluar
+            <p
+              className={`text-[0.82rem] font-semibold leading-none mb-[3px] transition-colors
+                ${isLoggingOut ? "text-red-400" : "text-[#7a5555] group-hover:text-red-400"}`}>
+              {isLoggingOut ? "Keluar..." : "Keluar"}
             </p>
             <p className="text-[0.68rem] text-[#3a2525] leading-none">
-              Logout dari sesi ini
+              {isLoggingOut ? "Mohon tunggu sebentar" : "Logout dari sesi ini"}
             </p>
           </div>
+
+          {/* Progress dots saat loading */}
+          {isLoggingOut && (
+            <div className="flex items-center gap-[3px] flex-shrink-0">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="w-[3px] h-[3px] rounded-full bg-red-400/60"
+                  style={{
+                    animation: "logoutDot 1.2s ease-in-out infinite",
+                    animationDelay: `${i * 0.2}s`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </button>
       </div>
+
+      {/* Keyframe untuk dot animation — inject sekali via style tag */}
+      <style>{`
+        @keyframes logoutDot {
+          0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+          40% { opacity: 1; transform: scale(1.2); }
+        }
+      `}</style>
     </motion.div>
   );
 }
