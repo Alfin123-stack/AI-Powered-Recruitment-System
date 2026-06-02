@@ -7,11 +7,18 @@
 //   • ISR  : revalidate setiap 60 detik (company info, job list)
 //   • CSR  : semua interaksi (status update, filter, modal) di HRDashboardClient
 //   • Suspense + Skeleton : fallback saat server fetch lambat
+//
+// Auth strategy (UPDATED):
+//   • Sebelumnya: baca "auth_token" dari cookies manual
+//   • Sekarang   : Supabase SSR via createServerClient — konsisten dengan
+//     halaman interviews. access_token dari Supabase session dipakai sebagai
+//     Bearer pada semua API call.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createServerClient } from "@supabase/ssr";
 import { HRDashboardClient } from "@/components/hr/dashboard/HRDashboardClient";
 import { HRDashboardSkeleton } from "@/components/hr/dashboard/DashboardSkeleton";
 import {
@@ -22,6 +29,8 @@ import {
 import { getColor, getInitials } from "@/components/hr/dashboard/helpers";
 
 // ── ISR: revalidate setiap 60 detik (company info bersifat semi-static)
+// Catatan: halaman ini masih boleh ISR karena sebagian data (company) semi-static.
+// Untuk data kandidat & interview, fetch individual pakai cache: "no-store".
 export const revalidate = 60;
 
 // ── Tipe untuk raw API response ──────────────────────────────────────────────
@@ -38,6 +47,34 @@ interface RawApplication {
   cv_url?: string;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SUPABASE SESSION — SSR-safe, baca cookies dari request
+// Pola identik dengan halaman interviews/page.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+async function getSupabaseSession() {
+  const cookieStore = await cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        // Server Component tidak bisa set cookie — no-op
+        setAll() {},
+      },
+    },
+  );
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  return session;
+}
+
 // ── Server-side data fetching ─────────────────────────────────────────────────
 async function fetchDashboardData(token: string): Promise<{
   candidates: CandidateExtended[];
@@ -51,15 +88,25 @@ async function fetchDashboardData(token: string): Promise<{
     "Content-Type": "application/json",
   };
 
-  // Paralel fetch — SSR, data segar setiap request
+  // Paralel fetch — tidak ada waterfall
   const [appsRes, ivsRes, companyRes] = await Promise.allSettled([
-    fetch(`${BASE}/api/applications/hr`, { headers, next: { revalidate: 0 } }),
-    fetch(`${BASE}/api/interviews`, { headers, next: { revalidate: 0 } }),
+    // Kandidat & interview: selalu fresh karena data volatile + user-specific
+    fetch(`${BASE}/api/applications/hr`, {
+      headers,
+      cache: "no-store",
+    }),
+    fetch(`${BASE}/api/interviews`, {
+      headers,
+      cache: "no-store",
+    }),
     // Company info: ISR — cache 60 detik cukup karena jarang berubah
-    fetch(`${BASE}/api/company`, { headers, next: { revalidate: 60 } }),
+    fetch(`${BASE}/api/company`, {
+      headers,
+      next: { revalidate: 60 },
+    }),
   ]);
 
-  // Applications
+  // ── Applications → CandidateExtended[] ──────────────────────────────────
   let candidates: CandidateExtended[] = [];
   if (appsRes.status === "fulfilled" && appsRes.value.ok) {
     const raw: RawApplication[] = await appsRes.value.json();
@@ -87,14 +134,14 @@ async function fetchDashboardData(token: string): Promise<{
     );
   }
 
-  // Interviews
+  // ── Interviews ────────────────────────────────────────────────────────────
   let interviews: Interview[] = [];
   if (ivsRes.status === "fulfilled" && ivsRes.value.ok) {
     const raw = await ivsRes.value.json();
     interviews = Array.isArray(raw) ? raw : [];
   }
 
-  // Company
+  // ── Company ───────────────────────────────────────────────────────────────
   let company: CompanyInfo | null = null;
   if (companyRes.status === "fulfilled" && companyRes.value.ok) {
     company = await companyRes.value.json();
@@ -104,16 +151,19 @@ async function fetchDashboardData(token: string): Promise<{
 }
 
 // ── Async Server Component (inner) ───────────────────────────────────────────
-// Dipisah agar Suspense bisa wrapping di atas-nya
+// Dipisah agar <Suspense> bisa wrapping di atasnya dan skeleton tampil segera
 async function HRDashboardServer() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
+  // ── Auth via Supabase SSR ─────────────────────────────────────────────────
+  const session = await getSupabaseSession();
 
-  // Auth guard di server — redirect jika tidak ada token
-  if (!token) {
-    redirect("/auth/login");
+  // Guard: belum login → redirect ke halaman login
+  if (!session?.access_token) {
+    redirect("/login");
   }
 
+  const token = session.access_token;
+
+  // ── Fetch data dengan Supabase access_token ───────────────────────────────
   const { candidates, interviews, company } = await fetchDashboardData(token);
 
   return (

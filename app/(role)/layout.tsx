@@ -14,7 +14,6 @@ import {
   Users,
   TrendingUp,
   Calendar,
-  Settings,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
@@ -29,11 +28,33 @@ export type DashboardUser = {
   role: "candidate" | "hr";
 };
 
+export type Company = {
+  id: string;
+  name: string;
+  logo_url?: string | null;
+  industry?: string | null;
+  location?: string | null;
+  website?: string | null;
+  description?: string | null;
+};
+
+type NavItem = {
+  href: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  matchPrefix?: boolean;
+};
+
+type NavSection = {
+  heading: string;
+  items: NavItem[];
+};
+
 type DashboardContextType = {
   user: DashboardUser | null;
   token: string;
-  company: any | null;
-  setCompany: (c: any) => void;
+  company: Company | null;
+  setCompany: (c: Company) => void;
 };
 
 // ── Context ───────────────────────────────────────────────────────────────────
@@ -47,7 +68,7 @@ export const DashboardContext = createContext<DashboardContextType>({
 export const useDashboard = () => useContext(DashboardContext);
 
 // ── Nav sections ──────────────────────────────────────────────────────────────
-const CANDIDATE_SECTIONS = [
+const CANDIDATE_SECTIONS: NavSection[] = [
   {
     heading: "Menu",
     items: [
@@ -91,7 +112,7 @@ const CANDIDATE_SECTIONS = [
   },
 ];
 
-const HR_SECTIONS = [
+const HR_SECTIONS: NavSection[] = [
   {
     heading: "Menu",
     items: [
@@ -149,7 +170,7 @@ const HR_TITLES: Record<string, string> = {
   "/dashboard/hr/candidates": "Candidates",
   "/dashboard/hr/analytics": "Analytics",
   "/dashboard/hr/interviews": "Interviews",
-  "/dashboard/hr/calendar": "calendar",
+  "/dashboard/hr/calendar": "Calendar",
 };
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -161,9 +182,9 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const [user, setUser] = useState<DashboardUser | null>(null);
-  const [token, setToken] = useState("");
-  const [company, setCompany] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string>("");
+  const [company, setCompany] = useState<Company | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   // null = belum dicek | false = tidak punya company | true = punya company
   const [hasCompany, setHasCompany] = useState<boolean | null>(null);
 
@@ -180,7 +201,7 @@ export default function DashboardLayout({
         .from("users")
         .select("role, full_name")
         .eq("id", session.user.id)
-        .single();
+        .single<{ role: string; full_name: string }>();
 
       const role: "candidate" | "hr" =
         userData?.role === "hr" ? "hr" : "candidate";
@@ -192,7 +213,7 @@ export default function DashboardLayout({
         email: session.user.email ?? "",
         full_name:
           userData?.full_name ??
-          session.user.user_metadata?.full_name ??
+          (session.user.user_metadata?.full_name as string | undefined) ??
           session.user.email ??
           "User",
         role,
@@ -209,32 +230,28 @@ export default function DashboardLayout({
           );
 
           if (res.ok) {
-            const companyData = await res.json();
+            const companyData: Company | null =
+              (await res.json()) as Company | null;
             if (companyData) {
-              // HR sudah punya company
               setCompany(companyData);
               setHasCompany(true);
             } else {
-              // API mengembalikan null → belum punya company
               setHasCompany(false);
             }
           } else {
-            // Respons error → anggap belum punya company, tampilkan modal
             setHasCompany(false);
           }
         } catch {
-          // Network error → tetap tampilkan modal agar HR bisa setup
           setHasCompany(false);
         }
       } else {
-        // Candidate tidak perlu cek company
         setHasCompany(true);
       }
 
       setLoading(false);
     };
 
-    init();
+    void init();
   }, []);
 
   // ── Loading state ───────────────────────────────────────────────────────────
@@ -253,8 +270,8 @@ export default function DashboardLayout({
 
   // ── Derive UI from role ─────────────────────────────────────────────────────
   const isHR = user?.role === "hr";
-  const sections = isHR ? HR_SECTIONS : CANDIDATE_SECTIONS;
-  const titleMap = isHR ? HR_TITLES : CANDIDATE_TITLES;
+  const sections: NavSection[] = isHR ? HR_SECTIONS : CANDIDATE_SECTIONS;
+  const titleMap: Record<string, string> = isHR ? HR_TITLES : CANDIDATE_TITLES;
   const roleLabel = isHR ? "HR Manager" : "Kandidat";
 
   const pageTitle =
@@ -268,7 +285,7 @@ export default function DashboardLayout({
       {isHR && hasCompany === false && (
         <CompanySetupModal
           token={token}
-          onDone={(c) => {
+          onDone={(c: Company) => {
             setCompany(c);
             setHasCompany(true);
           }}
