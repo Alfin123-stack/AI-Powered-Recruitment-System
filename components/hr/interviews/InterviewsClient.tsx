@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
+import { Calendar } from "lucide-react";
 import { apiFetch, FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
 import { ScheduleModal } from "./InterviewModals";
 import InterviewsToolbar from "./InterviewsToolbar";
@@ -16,8 +17,16 @@ import {
   applySort,
 } from "./types";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TOKENS
+// ─────────────────────────────────────────────────────────────────────────────
+const T = {
+  emerald: "#10b981",
+  textPrimary: "#e8f5ee",
+  textSecondary: "#7a9585",
+};
+
 type Props = {
-  /** Initial data streamed from the server component */
   initialInterviews: Interview[];
   initialShortlisted: ShortlistedCandidate[];
   token: string;
@@ -90,8 +99,59 @@ export default function InterviewsClient({
         )}
       </AnimatePresence>
 
-      {/* Toolbar — CSR: owns search, filter, sort, create */}
+      {/* ── Heading — selaras dengan AnalyticsPage ── */}
       <FadeIn>
+        <div style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 4,
+            }}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 9,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(16,185,129,0.15)",
+                color: T.emerald,
+                flexShrink: 0,
+              }}>
+              <Calendar size={15} />
+            </div>
+            <h1
+              style={{
+                fontSize: "1.35rem",
+                fontWeight: 900,
+                letterSpacing: "-0.02em",
+                color: T.textPrimary,
+                margin: 0,
+              }}>
+              Calendar
+            </h1>
+          </div>
+          <p
+            style={{
+              fontSize: "0.75rem",
+              color: T.textSecondary,
+              marginLeft: 44 /* 32px icon + 12px gap */,
+              margin: "0 0 0 44px",
+            }}>
+            Jadwal interview —{" "}
+            <span style={{ color: T.emerald, fontWeight: 700 }}>
+              {interviews.length}
+            </span>{" "}
+            jadwal terdaftar
+          </p>
+        </div>
+      </FadeIn>
+
+      {/* ── Toolbar ── */}
+      <FadeIn delay={0.04}>
         <InterviewsToolbar
           interviews={interviews}
           filter={filter}
@@ -111,8 +171,8 @@ export default function InterviewsClient({
         />
       </FadeIn>
 
-      {/* Table — CSR: row-level mutations re-call fetchData */}
-      <FadeIn delay={0.06}>
+      {/* ── Table ── */}
+      <FadeIn delay={0.08}>
         <InterviewsTable
           interviews={filtered}
           token={token}

@@ -6,8 +6,14 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft, ChevronRight, Calendar,
-  Search, SlidersHorizontal, RefreshCw, Plus,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  Search,
+  SlidersHorizontal,
+  RefreshCw,
+  Plus,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -39,17 +45,19 @@ export function CalendarClient({
 }) {
   const [interviews] = useState<Interview[]>(initialInterviews);
   const [viewMode, setViewMode] = useState<ViewMode>("week");
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(
+    null,
+  );
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const today = useMemo(() => new Date(), []);
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
   // Filter interviews berdasarkan search query
-  const filteredInterviews = useMemo(() => {
+  const filteredInterviews = useMemo<Interview[]>(() => {
     if (!searchQuery.trim()) return interviews;
     const q = searchQuery.toLowerCase();
     return interviews.filter(
@@ -74,7 +82,7 @@ export function CalendarClient({
   };
 
   // Label header berdasarkan view
-  const headerLabel = useMemo(() => {
+  const headerLabel = useMemo<string>(() => {
     if (viewMode === "month") return `${MONTHS_EN[month]} ${year}`;
     if (viewMode === "week") {
       const days = getWeekDays(currentDate);
@@ -97,56 +105,63 @@ export function CalendarClient({
         )}
       </AnimatePresence>
 
-      <div
-        className="flex h-[calc(100vh-80px)] rounded-[18px] overflow-hidden"
-        style={{
-          background: "#0d1810",
-          border: "1px solid rgba(16,185,129,0.12)",
-        }}
-      >
-        {/* ── LEFT SIDEBAR ────────────────────────────────────────────────── */}
+      {/* ── Page header ─────────────────────────────────────────────────── */}
+      <div className="mb-4">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-emerald-500/15 text-emerald-500">
+            <Calendar size={15} />
+          </div>
+          <h1 className="text-[1.35rem] font-black tracking-tight text-[#e8f5ee]">
+            Calendar
+          </h1>
+        </div>
+        <p className="text-[0.75rem] ml-11 text-[#7a9585]">
+          Jadwal interview — {interviews.length} jadwal terdaftar
+        </p>
+      </div>
+
+      {/* ── Main calendar card ───────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="flex h-[calc(100vh-148px)] rounded-[18px] overflow-hidden relative bg-[#0b1410] border border-emerald-500/[0.13]">
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[18px] pointer-events-none z-10 bg-gradient-to-r from-emerald-500 via-cyan-400/60 to-transparent" />
+
+        {/* ── LEFT SIDEBAR ──────────────────────────────────────────────── */}
         <div
-          className="cal-scroll flex-shrink-0 flex flex-col overflow-y-auto overflow-x-hidden"
-          style={{ width: 240, borderRight: "1px solid rgba(16,185,129,0.1)" }}
-        >
+          className="cal-scroll flex-shrink-0 flex flex-col overflow-y-auto overflow-x-hidden border-r border-emerald-500/10"
+          style={{ width: 240 }}>
           {/* Add schedule button */}
-          <div className="px-4 pt-5 pb-4">
+          <div className="px-4 pt-6 pb-4">
             <Link href="/dashboard/hr/interviews">
-              <button
-                className="w-full flex items-center justify-center gap-[6px] rounded-full font-semibold text-[12.5px] transition-all hover:brightness-110"
-                style={{
-                  padding: "9px 0",
-                  background: "rgba(99,102,241,0.08)",
-                  border: "1.5px solid rgba(99,102,241,0.25)",
-                  color: "#a5b4fc",
-                }}
-              >
-                <Plus size={14} /> Add Schedule
-              </button>
+              <motion.button
+                whileHover={{ y: -1, transition: { duration: 0.15 } }}
+                type="button"
+                title="Tambah jadwal interview"
+                className="w-full flex items-center justify-center gap-[6px] rounded-[11px] font-semibold text-[12.5px] transition-all py-[9px] bg-emerald-500/10 border border-emerald-500/[0.28] text-emerald-500 hover:bg-emerald-500/20 cursor-pointer">
+                <Plus size={14} />
+                Add Schedule
+              </motion.button>
             </Link>
           </div>
 
           {/* Mini calendar */}
           <div className="px-4 pb-4">
-            <div
-              className="rounded-[16px] p-4"
-              style={{
-                background: "#0f1612",
-                border: "1px solid rgba(16,185,129,0.1)",
-              }}
-            >
+            <div className="rounded-[16px] p-4 bg-[#0f1612] border border-emerald-500/10">
               <MiniCalendar
                 year={year}
                 month={month}
                 today={today}
                 selectedDate={selectedDate}
                 interviews={filteredInterviews}
-                onSelectDate={(d) => {
+                onSelectDate={(d: Date) => {
                   setSelectedDate(d);
                   setCurrentDate(d);
                   if (viewMode === "month") setViewMode("day");
                 }}
-                onChangeMonth={(dir) => {
+                onChangeMonth={(dir: -1 | 1) => {
                   const d = new Date(currentDate);
                   d.setMonth(d.getMonth() + dir);
                   setCurrentDate(d);
@@ -160,9 +175,8 @@ export function CalendarClient({
             <div className="flex items-center">
               {interviews.slice(0, 3).map((iv, i) => (
                 <div
-                  key={i}
-                  style={{ marginLeft: i === 0 ? 0 : -8, zIndex: 3 - i }}
-                >
+                  key={iv.candidate_name + i}
+                  style={{ marginLeft: i === 0 ? 0 : -8, zIndex: 3 - i }}>
                   <Avatar
                     name={iv.candidate_name}
                     src={iv.interviewer_avatar}
@@ -172,76 +186,59 @@ export function CalendarClient({
               ))}
               {interviews.length > 3 && (
                 <div
-                  className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[9px] font-bold"
-                  style={{
-                    marginLeft: -8,
-                    zIndex: 0,
-                    background: "rgba(16,185,129,0.12)",
-                    color: "#10b981",
-                    border: "1px solid rgba(16,185,129,0.2)",
-                  }}
-                >
+                  className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[9px] font-bold bg-emerald-500/[0.12] text-emerald-500 border border-emerald-500/[0.22]"
+                  style={{ marginLeft: -8, zIndex: 0 }}>
                   +{interviews.length - 3}
                 </div>
               )}
             </div>
             <button
-              className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-emerald-500/10 transition-colors"
-              style={{
-                border: "1px solid rgba(16,185,129,0.15)",
-                color: "#4d7060",
-              }}
-            >
+              title="Refresh interviews"
+              type="button"
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-colors border border-emerald-500/10 text-[#7a9585] bg-transparent hover:bg-emerald-500/[0.08] hover:text-emerald-500 cursor-pointer">
               <RefreshCw size={12} />
             </button>
           </div>
         </div>
 
-        {/* ── CENTER MAIN AREA ─────────────────────────────────────────────── */}
+        {/* ── CENTER MAIN AREA ─────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
           {/* Toolbar */}
-          <div
-            className="flex items-center gap-3 px-5 py-[14px] flex-shrink-0"
-            style={{ borderBottom: "1px solid rgba(16,185,129,0.1)" }}
-          >
-            <h2 className="font-bold text-[17px] text-[#e8f0ec] whitespace-nowrap">
+          <div className="flex items-center gap-3 px-5 py-[13px] flex-shrink-0 border-b border-emerald-500/10 bg-emerald-500/[0.015]">
+            {/* Header label */}
+            <h2 className="font-black text-[17px] whitespace-nowrap tracking-tight text-[#e8f5ee]">
               {headerLabel}
             </h2>
+
+            {/* Activity icon button */}
             <button
-              className="w-7 h-7 rounded-[7px] flex items-center justify-center hover:bg-emerald-500/10 transition-colors flex-shrink-0"
-              style={{
-                color: "#5a8070",
-                border: "1px solid rgba(16,185,129,0.12)",
-              }}
-            >
-              <Calendar size={13} />
+              type="button"
+              title="Change view mode"
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center transition-colors flex-shrink-0 text-[#7a9585] bg-emerald-500/[0.06] border border-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/[0.28] cursor-pointer">
+              <Activity size={12} />
             </button>
 
             {/* Prev / Today / Next */}
-            <div className="flex items-center gap-[4px]">
+            <div className="flex items-center gap-[3px]">
               <button
+                type="button"
+                title="Periode sebelumnya"
                 onClick={() => navigate(-1)}
-                className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-emerald-500/10 transition-colors"
-                style={{ color: "#5a8070" }}
-              >
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-colors text-[#7a9585] hover:bg-emerald-500/[0.08] hover:text-emerald-500 cursor-pointer">
                 <ChevronLeft size={15} />
               </button>
               <button
+                type="button"
+                title="Kembali ke hari ini"
                 onClick={goToday}
-                className="px-3 py-[4px] rounded-full text-[11.5px] font-semibold transition-all hover:bg-emerald-500/10 whitespace-nowrap"
-                style={{
-                  color: "#a8c5b2",
-                  border: "1px solid rgba(16,185,129,0.18)",
-                }}
-              >
+                className="px-3 py-[4px] rounded-full text-[11.5px] font-semibold transition-all whitespace-nowrap text-[#7a9585] border border-emerald-500/10 bg-transparent hover:bg-emerald-500/[0.08] hover:text-emerald-500 hover:border-emerald-500/[0.28] cursor-pointer">
                 Today
               </button>
               <button
+                type="button"
+                title="Periode berikutnya"
                 onClick={() => navigate(1)}
-                className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-emerald-500/10 transition-colors"
-                style={{ color: "#5a8070" }}
-              >
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-colors text-[#7a9585] hover:bg-emerald-500/[0.08] hover:text-emerald-500 cursor-pointer">
                 <ChevronRight size={15} />
               </button>
             </div>
@@ -249,57 +246,52 @@ export function CalendarClient({
             <div className="flex-1 min-w-0" />
 
             {/* Search */}
-            <div
-              className="flex items-center gap-2 px-3 py-[6px] rounded-full flex-shrink-0"
-              style={{
-                background: "#0f1612",
-                border: "1px solid rgba(16,185,129,0.12)",
-                minWidth: 150,
-              }}
-            >
-              <Search size={11} className="text-[#4d7060] flex-shrink-0" />
+            <div className="flex items-center gap-2 px-3 py-[6px] rounded-full flex-shrink-0 bg-[#0f1612] border border-emerald-500/10 min-w-[150px]">
+              <Search
+                size={11}
+                className="text-[rgba(122,149,133,0.55)] flex-shrink-0"
+              />
               <input
+                type="search"
+                title="Cari candidate atau posisi"
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="bg-transparent text-[11px] text-[#a8c5b2] placeholder-[#3d5c49] outline-none w-full"
+                className="bg-transparent outline-none w-full text-[11px] text-[#7a9585] placeholder:text-[rgba(122,149,133,0.55)]"
               />
             </div>
 
             {/* View mode toggle */}
-            <div
-              className="flex items-center rounded-full p-[3px] gap-[2px] flex-shrink-0"
-              style={{
-                background: "#0f1612",
-                border: "1px solid rgba(16,185,129,0.12)",
-              }}
-            >
-              {(["month", "week", "day"] as ViewMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className="px-3 py-[5px] rounded-full text-[11px] font-semibold transition-all capitalize"
-                  style={{
-                    background:
-                      viewMode === mode
-                        ? "rgba(99,102,241,0.2)"
-                        : "transparent",
-                    color: viewMode === mode ? "#a5b4fc" : "#5a8070",
-                  }}
-                >
-                  {mode === "month" ? "Month" : mode === "week" ? "Week" : "Day"}
-                </button>
-              ))}
+            <div className="flex items-center rounded-[12px] p-[3px] gap-[2px] flex-shrink-0 bg-white/[0.03] border border-white/[0.06]">
+              {(["month", "week", "day"] as ViewMode[]).map((mode) => {
+                const isActive = viewMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    title={`Tampilan ${mode}`}
+                    onClick={() => setViewMode(mode)}
+                    className={[
+                      "px-3 py-[5px] rounded-[9px] text-[11px] font-semibold transition-all capitalize cursor-pointer",
+                      isActive
+                        ? "bg-emerald-500/[0.18] text-emerald-500 border border-emerald-500/30"
+                        : "bg-transparent text-[#7a9585] border border-transparent",
+                    ].join(" ")}>
+                    {mode === "month"
+                      ? "Month"
+                      : mode === "week"
+                        ? "Week"
+                        : "Day"}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Filter button */}
             <button
-              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-500/10 transition-colors flex-shrink-0"
-              style={{
-                color: "#5a8070",
-                border: "1px solid rgba(16,185,129,0.12)",
-              }}
-            >
+              type="button"
+              title="Filter interviews"
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors flex-shrink-0 text-[#7a9585] border border-emerald-500/10 bg-transparent hover:bg-emerald-500/[0.08] hover:text-emerald-500 hover:border-emerald-500/[0.28] cursor-pointer">
               <SlidersHorizontal size={13} />
             </button>
           </div>
@@ -314,8 +306,7 @@ export function CalendarClient({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="h-full"
-                >
+                  className="h-full">
                   <WeekView
                     currentDate={currentDate}
                     today={today}
@@ -332,15 +323,14 @@ export function CalendarClient({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="h-full"
-                >
+                  className="h-full">
                   <MonthView
                     year={year}
                     month={month}
                     today={today}
                     interviews={filteredInterviews}
                     selectedDate={selectedDate}
-                    onSelectDate={(d) => {
+                    onSelectDate={(d: Date) => {
                       setSelectedDate(d);
                       setSelectedInterview(null);
                     }}
@@ -356,8 +346,7 @@ export function CalendarClient({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="h-full"
-                >
+                  className="h-full">
                   <DayView
                     currentDate={currentDate}
                     today={today}
@@ -369,7 +358,7 @@ export function CalendarClient({
             </AnimatePresence>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

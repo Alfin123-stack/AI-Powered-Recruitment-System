@@ -1,41 +1,47 @@
 // @/components/hr/calendar/CalendarSkeleton.tsx
 // Semua skeleton UI untuk Calendar Page dalam satu file
+// Style diselaraskan dengan JobsSkeleton (Tailwind + framer-motion)
 
-function Pulse({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      className={`animate-pulse rounded ${className ?? ""}`}
-      style={{ background: "rgba(16,185,129,0.08)", ...style }}
-    />
-  );
-}
+"use client";
 
-// ─── Skeleton: Mini Calendar (sidebar) ───────────────────────────────────────
+import { motion } from "framer-motion";
+
+// ─── pulse animation class helper ─────────────────────────────────────────────
+const pulse = "animate-pulse rounded bg-emerald-500/[0.07]";
+const pulseStrong = "animate-pulse rounded bg-emerald-500/[0.10]";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MINI CALENDAR (sidebar)
+// ─────────────────────────────────────────────────────────────────────────────
 function MiniCalendarSkeleton() {
   return (
-    <div
-      className="rounded-[16px] p-4"
-      style={{ background: "#0f1612", border: "1px solid rgba(16,185,129,0.1)" }}
-    >
+    <div className="bg-[#0f1612] border border-emerald-500/[0.13] rounded-[16px] p-4">
       {/* Header month nav */}
       <div className="flex items-center justify-between mb-3">
-        <Pulse style={{ width: 16, height: 16, borderRadius: 8 }} />
-        <Pulse style={{ width: 100, height: 14, borderRadius: 6 }} />
-        <Pulse style={{ width: 16, height: 16, borderRadius: 8 }} />
+        <div className={`${pulse} w-4 h-4 rounded-full`} />
+        <div className={`${pulse} w-[100px] h-[14px] rounded-[6px]`} />
+        <div className={`${pulse} w-4 h-4 rounded-full`} />
       </div>
 
       {/* Day labels */}
-      <div className="grid grid-cols-7 mb-1 gap-1">
+      <div className="grid grid-cols-7 gap-1 mb-1">
         {Array.from({ length: 7 }).map((_, i) => (
-          <Pulse key={i} style={{ height: 10, borderRadius: 4 }} />
+          <div
+            key={i}
+            className={`${pulse} h-[10px] rounded`}
+            style={{ animationDelay: `${i * 20}ms` }}
+          />
         ))}
       </div>
 
       {/* Date grid */}
-      <div className="grid grid-cols-7 gap-y-[2px]">
+      <div className="grid grid-cols-7" style={{ rowGap: 2 }}>
         {Array.from({ length: 35 }).map((_, i) => (
           <div key={i} className="flex items-center justify-center h-[26px]">
-            <Pulse style={{ width: 20, height: 20, borderRadius: 10 }} />
+            <div
+              className={`${i === 10 ? pulseStrong : pulse} w-5 h-5 rounded-full`}
+              style={{ animationDelay: `${i * 10}ms` }}
+            />
           </div>
         ))}
       </div>
@@ -43,16 +49,15 @@ function MiniCalendarSkeleton() {
   );
 }
 
-// ─── Skeleton: Sidebar ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SIDEBAR
+// ─────────────────────────────────────────────────────────────────────────────
 function SidebarSkeleton() {
   return (
-    <div
-      className="flex-shrink-0 flex flex-col"
-      style={{ width: 240, borderRight: "1px solid rgba(16,185,129,0.1)" }}
-    >
+    <div className="w-[240px] flex-shrink-0 flex flex-col border-r border-emerald-500/[0.08]">
       {/* Add Schedule btn */}
       <div className="px-4 pt-5 pb-4">
-        <Pulse style={{ height: 36, borderRadius: 99 }} />
+        <div className={`${pulseStrong} h-9 w-full rounded-full`} />
       </div>
 
       {/* Mini calendar */}
@@ -64,111 +69,124 @@ function SidebarSkeleton() {
       <div className="mt-auto px-4 pb-5 flex items-center justify-between">
         <div className="flex">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Pulse
+            <div
               key={i}
+              className={`${pulseStrong} w-[30px] h-[30px] rounded-full`}
               style={{
-                width: 30,
-                height: 30,
-                borderRadius: 15,
                 marginLeft: i === 0 ? 0 : -8,
+                animationDelay: `${i * 60}ms`,
               }}
             />
           ))}
         </div>
-        <Pulse style={{ width: 28, height: 28, borderRadius: 14 }} />
+        <div className={`${pulseStrong} w-7 h-7 rounded-full`} />
       </div>
     </div>
   );
 }
 
-// ─── Skeleton: Toolbar ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// TOOLBAR
+// ─────────────────────────────────────────────────────────────────────────────
 function ToolbarSkeleton() {
   return (
-    <div
-      className="flex items-center gap-3 px-5 py-[14px] flex-shrink-0"
-      style={{ borderBottom: "1px solid rgba(16,185,129,0.1)" }}
-    >
-      <Pulse style={{ width: 160, height: 22, borderRadius: 8 }} />
-      <Pulse style={{ width: 28, height: 28, borderRadius: 7 }} />
+    <div className="flex items-center gap-3 px-5 py-[14px] flex-shrink-0 border-b border-emerald-500/[0.08]">
+      <div className={`${pulse} w-[160px] h-[22px] rounded-[8px]`} />
+      <div
+        className={`${pulse} w-7 h-7 rounded-[7px]`}
+        style={{ animationDelay: "40ms" }}
+      />
       <div className="flex items-center gap-1">
-        <Pulse style={{ width: 28, height: 28, borderRadius: 14 }} />
-        <Pulse style={{ width: 60, height: 26, borderRadius: 13 }} />
-        <Pulse style={{ width: 28, height: 28, borderRadius: 14 }} />
+        <div
+          className={`${pulse} w-7 h-7 rounded-full`}
+          style={{ animationDelay: "60ms" }}
+        />
+        <div
+          className={`${pulse} w-[60px] h-[26px] rounded-[13px]`}
+          style={{ animationDelay: "80ms" }}
+        />
+        <div
+          className={`${pulse} w-7 h-7 rounded-full`}
+          style={{ animationDelay: "100ms" }}
+        />
       </div>
       <div className="flex-1" />
-      <Pulse style={{ width: 160, height: 32, borderRadius: 99 }} />
-      <Pulse style={{ width: 170, height: 32, borderRadius: 99 }} />
-      <Pulse style={{ width: 32, height: 32, borderRadius: 16 }} />
+      <div
+        className={`${pulseStrong} w-[160px] h-8 rounded-full`}
+        style={{ animationDelay: "120ms" }}
+      />
+      <div
+        className={`${pulseStrong} w-[170px] h-8 rounded-full`}
+        style={{ animationDelay: "150ms" }}
+      />
+      <div
+        className={`${pulse} w-8 h-8 rounded-full`}
+        style={{ animationDelay: "180ms" }}
+      />
     </div>
   );
 }
 
-// ─── Skeleton: Week View ──────────────────────────────────────────────────────
-function WeekViewSkeleton() {
+// ─────────────────────────────────────────────────────────────────────────────
+// WEEK VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+export function WeekViewSkeleton() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Day headers */}
-      <div
-        className="flex flex-shrink-0"
-        style={{ borderBottom: "1px solid rgba(16,185,129,0.1)" }}
-      >
-        <div style={{ width: 72, borderRight: "1px solid rgba(16,185,129,0.08)" }} />
+      <div className="flex flex-shrink-0 border-b border-emerald-500/[0.08]">
+        <div className="w-[72px] border-r border-emerald-500/[0.08]" />
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="flex-1 flex flex-col items-center py-[10px] gap-[6px]"
-            style={{ borderRight: "1px solid rgba(16,185,129,0.06)" }}
-          >
-            <Pulse style={{ width: 24, height: 10, borderRadius: 4 }} />
-            <Pulse style={{ width: 40, height: 40, borderRadius: 10 }} />
+            className="flex-1 flex flex-col items-center py-[10px] gap-[6px] border-r border-emerald-500/[0.06]">
+            <div
+              className={`${pulse} w-6 h-[10px] rounded`}
+              style={{ animationDelay: `${i * 30}ms` }}
+            />
+            <div
+              className={`${pulseStrong} w-10 h-10 rounded-[10px]`}
+              style={{ animationDelay: `${i * 30}ms` }}
+            />
           </div>
         ))}
       </div>
 
-      {/* Grid rows */}
+      {/* Grid */}
       <div className="flex flex-1 overflow-hidden">
         {/* Hour labels */}
-        <div
-          className="flex-shrink-0 pt-2 flex flex-col gap-[12px]"
-          style={{ width: 72, borderRight: "1px solid rgba(16,185,129,0.08)" }}
-        >
+        <div className="w-[72px] flex-shrink-0 pt-2 flex flex-col gap-3 border-r border-emerald-500/[0.08]">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex justify-end pr-3">
-              <Pulse style={{ width: 44, height: 10, borderRadius: 4 }} />
+              <div
+                className={`${pulse} w-11 h-[10px] rounded`}
+                style={{ animationDelay: `${i * 40}ms` }}
+              />
             </div>
           ))}
         </div>
 
-        {/* Column cells with fake events */}
+        {/* Columns with fake events */}
         {Array.from({ length: 6 }).map((_, col) => (
           <div
             key={col}
-            className="flex-1 relative"
-            style={{ borderRight: "1px solid rgba(16,185,129,0.06)" }}
-          >
-            {/* Fake event cards */}
+            className="flex-1 relative border-r border-emerald-500/[0.06]">
             {col % 2 === 0 && (
-              <Pulse
-                style={{
-                  position: "absolute",
-                  top: 60 + col * 20,
-                  left: 4,
-                  right: 4,
-                  height: 72,
-                  borderRadius: 12,
-                }}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: col * 0.05 }}
+                className={`${pulseStrong} absolute left-1 right-1 h-[72px] rounded-[12px]`}
+                style={{ top: 60 + col * 20 }}
               />
             )}
             {col % 3 === 0 && (
-              <Pulse
-                style={{
-                  position: "absolute",
-                  top: 200,
-                  left: 4,
-                  right: 4,
-                  height: 56,
-                  borderRadius: 12,
-                }}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: col * 0.07 }}
+                className={`${pulse} absolute left-1 right-1 h-14 rounded-[12px]`}
+                style={{ top: 200 }}
               />
             )}
           </div>
@@ -178,38 +196,45 @@ function WeekViewSkeleton() {
   );
 }
 
-// ─── Skeleton: Month View ─────────────────────────────────────────────────────
-function MonthViewSkeleton() {
+// ─────────────────────────────────────────────────────────────────────────────
+// MONTH VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+export function MonthViewSkeleton() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Day header */}
-      <div
-        className="grid grid-cols-7"
-        style={{ borderBottom: "1px solid rgba(16,185,129,0.1)" }}
-      >
+      <div className="grid grid-cols-7 border-b border-emerald-500/[0.08]">
         {Array.from({ length: 7 }).map((_, i) => (
           <div key={i} className="py-2 flex justify-center">
-            <Pulse style={{ width: 24, height: 10, borderRadius: 4 }} />
+            <div
+              className={`${pulse} w-6 h-[10px] rounded`}
+              style={{ animationDelay: `${i * 25}ms` }}
+            />
           </div>
         ))}
       </div>
+
       {/* Grid cells */}
       <div className="flex-1 grid grid-cols-7" style={{ gridAutoRows: "1fr" }}>
         {Array.from({ length: 35 }).map((_, i) => (
           <div
             key={i}
-            className="p-2 flex flex-col gap-1"
-            style={{
-              borderRight: "1px solid rgba(16,185,129,0.06)",
-              borderBottom: "1px solid rgba(16,185,129,0.06)",
-            }}
-          >
-            <Pulse style={{ width: 22, height: 22, borderRadius: 11 }} />
+            className="p-2 flex flex-col gap-1 border-r border-emerald-500/[0.06] border-b border-emerald-500/[0.06]">
+            <div
+              className={`${i === 10 ? pulseStrong : pulse} w-[22px] h-[22px] rounded-full`}
+              style={{ animationDelay: `${i * 8}ms` }}
+            />
             {i % 4 === 0 && (
-              <Pulse style={{ height: 18, borderRadius: 5 }} />
+              <div
+                className={`${pulse} h-[18px] w-full rounded-[5px]`}
+                style={{ animationDelay: `${i * 12}ms` }}
+              />
             )}
             {i % 7 === 0 && (
-              <Pulse style={{ height: 18, borderRadius: 5, opacity: 0.6 }} />
+              <div
+                className={`${pulse} h-[18px] w-full rounded-[5px] opacity-60`}
+                style={{ animationDelay: `${i * 16}ms` }}
+              />
             )}
           </div>
         ))}
@@ -218,41 +243,59 @@ function MonthViewSkeleton() {
   );
 }
 
-// ─── Skeleton: Day View ───────────────────────────────────────────────────────
-function DayViewSkeleton() {
+// ─────────────────────────────────────────────────────────────────────────────
+// DAY VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+export function DayViewSkeleton() {
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex flex-1">
-        <div
-          className="flex-shrink-0 pt-2 flex flex-col gap-[20px]"
-          style={{ width: 72, borderRight: "1px solid rgba(16,185,129,0.08)" }}
-        >
+        {/* Hour labels */}
+        <div className="w-[72px] flex-shrink-0 pt-2 flex flex-col gap-5 border-r border-emerald-500/[0.08]">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="flex justify-end pr-3">
-              <Pulse style={{ width: 44, height: 10, borderRadius: 4 }} />
+              <div
+                className={`${pulse} w-11 h-[10px] rounded`}
+                style={{ animationDelay: `${i * 40}ms` }}
+              />
             </div>
           ))}
         </div>
-        <div className="flex-1 relative p-2 flex flex-col gap-4">
-          <Pulse style={{ height: 80, borderRadius: 12, marginTop: 40 }} />
-          <Pulse style={{ height: 56, borderRadius: 12 }} />
-          <Pulse style={{ height: 96, borderRadius: 12 }} />
+
+        {/* Event column */}
+        <div className="flex-1 p-2 flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0 }}
+            className={`${pulseStrong} h-20 w-full rounded-[12px] mt-10`}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.06 }}
+            className={`${pulse} h-14 w-full rounded-[12px]`}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.12 }}
+            className={`${pulseStrong} h-24 w-full rounded-[12px]`}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-// ─── MAIN EXPORT: Full Calendar Page Skeleton ─────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// FULL PAGE SKELETON
+// ─────────────────────────────────────────────────────────────────────────────
 export function CalendarPageSkeleton() {
   return (
     <div
-      className="flex h-[calc(100vh-80px)] rounded-[18px] overflow-hidden"
-      style={{
-        background: "#0d1810",
-        border: "1px solid rgba(16,185,129,0.12)",
-      }}
-    >
+      className="flex bg-[#0d1810] border border-emerald-500/[0.13] rounded-[18px] overflow-hidden"
+      style={{ height: "calc(100vh - 80px)" }}>
       <SidebarSkeleton />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <ToolbarSkeleton />
@@ -264,5 +307,4 @@ export function CalendarPageSkeleton() {
   );
 }
 
-// Named exports untuk reuse skeleton per view jika dibutuhkan
-export { MiniCalendarSkeleton, WeekViewSkeleton, MonthViewSkeleton, DayViewSkeleton };
+export { MiniCalendarSkeleton };
