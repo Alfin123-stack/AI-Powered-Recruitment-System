@@ -1,15 +1,12 @@
 "use client";
 
-// Wajib client karena mengelola activeTab state (useState).
-// Hanya bagian tabs + konten di bawahnya yang perlu interaktivitas.
-// CompanyDetailHeader tetap server, client boundary dimulai di sini.
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, Layers } from "lucide-react";
-import type { Company, Job } from "./types";
+import type { Company } from "@/types/company";
 import JobGrid from "./JobGrid";
 import CompanyAbout from "./CompanyAbout";
+import { Job } from "@/types/jobs";
 
 type CompanyDetailTabsProps = {
   company: Company;
@@ -38,16 +35,14 @@ export default function CompanyDetailTabs({
                   ? "text-[#e8f0ec] border-b-current"
                   : "text-[#5d7a6a] border-transparent hover:text-[#a0b8a8]"
               }`}
-              style={activeTab === tab ? { borderBottomColor: accent } : {}}
-            >
+              style={activeTab === tab ? { borderBottomColor: accent } : {}}>
               {tab === "jobs" ? (
                 <span className="flex items-center gap-[5px]">
                   <Briefcase size={12} />
                   Lowongan
                   <span
                     className="text-[0.62rem] px-[5px] py-[1px] rounded-full font-semibold"
-                    style={{ background: `${accent}20`, color: accent }}
-                  >
+                    style={{ background: `${accent}20`, color: accent }}>
                     {jobs.length}
                   </span>
                 </span>
@@ -71,8 +66,7 @@ export default function CompanyDetailTabs({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
+                transition={{ duration: 0.2 }}>
                 <JobGrid jobs={jobs} accent={accent} />
               </motion.div>
             ) : (
@@ -81,8 +75,7 @@ export default function CompanyDetailTabs({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
+                transition={{ duration: 0.2 }}>
                 <CompanyAbout
                   company={company}
                   jobCount={jobs.length}

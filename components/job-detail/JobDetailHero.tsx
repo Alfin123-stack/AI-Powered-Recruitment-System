@@ -1,11 +1,8 @@
-// Server Component — tidak ada "use client"
-// Dirender di server, data sudah di-pass sebagai props dari page.tsx
-
 import React from "react";
 import Link from "next/link";
 import { MapPin, Clock, Briefcase, Building2, ArrowLeft } from "lucide-react";
 import FadeIn from "./FadeIn";
-import { Job } from "./types";
+import type { Job } from "@/types/jobs";
 import { timeAgo } from "@/lib/utils";
 
 export default function JobDetailHero({
@@ -59,11 +56,12 @@ export default function JobDetailHero({
             <div
               className="w-16 h-16 rounded-[14px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
               style={{ background: `${color}18`, color }}>
+              {/* FIX: double optional chaining untuk companies yang nullable */}
               {job.companies?.logo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={job.companies.logo_url}
-                  alt={job.companies.name}
+                  alt={job.companies?.name ?? "Company"}
                   className="w-full h-full object-cover rounded-[14px]"
                 />
               ) : (
@@ -77,8 +75,12 @@ export default function JobDetailHero({
                 style={{ fontSize: "clamp(1.9rem,4vw,2.8rem)" }}>
                 {job.title}
               </h1>
+
+              {/* FIX: render companies.name hanya jika ada */}
               <div className="text-[#7a9585] text-[0.95rem] mb-4">
-                {job.companies?.name} · {job.location}
+                {job.companies?.name
+                  ? `${job.companies.name} · ${job.location}`
+                  : job.location}
               </div>
 
               {/* Meta chips */}
@@ -107,7 +109,7 @@ export default function JobDetailHero({
 
               {/* Skill tags */}
               <div className="flex flex-wrap gap-[7px]">
-                {(job.skills || []).map((s) => (
+                {(job.skills ?? []).map((s) => (
                   <span
                     key={s}
                     className="bg-white/[0.04] border border-white/[0.09] text-[#e8f0ec] px-3 py-[5px] rounded-[7px] text-[0.78rem] font-medium font-mono hover:border-emerald-500/35 hover:text-emerald-400 transition-all cursor-default">

@@ -1,32 +1,16 @@
 "use client";
 
-// components/profile/TabCompany.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: CSR
-//
-// Form profil perusahaan untuk HR.
-//
-// initialCompany sudah di-fetch di server (page.tsx)
-// dan di-pass sebagai props — tidak ada fetch di client.
-// Update tetap di client karena butuh token dari
-// browser session (Authorization header).
-//
-// API: PUT /api/companies/update (backend Express/Flask)
-// ─────────────────────────────────────────────
-
 import { useState } from "react";
 import { Field, SaveBtn, ErrorBanner, inputCls } from "./ui";
 import type { ToastType } from "./Toast";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+import type { CompanyData } from "@/types/profile"; // ✅ import shared type
+
 interface TabCompanyProps {
   token: string;
-  initialCompany: {
-    name: string;
-    description: string;
-    company_size: string;
-  } | null;
+  initialCompany: CompanyData | null; // ✅ Fix: description & company_size sudah | null
   addToast: (type: ToastType, message: string) => void;
 }
 
@@ -37,9 +21,9 @@ export function TabCompany({
 }: TabCompanyProps) {
   // Initial value dari server props — tanpa fetch di client
   const [form, setForm] = useState({
-    name: initialCompany?.name || "",
-    description: initialCompany?.description || "",
-    company_size: initialCompany?.company_size || "",
+    name: initialCompany?.name ?? "",
+    description: initialCompany?.description ?? "", // ✅ null → ""
+    company_size: initialCompany?.company_size ?? "", // ✅ null → ""
   });
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);

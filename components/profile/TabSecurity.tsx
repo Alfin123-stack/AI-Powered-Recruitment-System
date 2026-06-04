@@ -1,17 +1,5 @@
 "use client";
 
-// components/profile/TabSecurity.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: CSR
-//
-// Tab keamanan — ganti password.
-// Shared antara role candidate dan HR.
-//
-// supabase.auth.updateUser({ password }) hanya bisa
-// dipanggil di client karena butuh aktif browser session.
-// Tidak ada data dari server yang perlu di-fetch.
-// ─────────────────────────────────────────────
-
 import { useState } from "react";
 import { Shield } from "lucide-react";
 import { supabase } from "@/lib/supabase";

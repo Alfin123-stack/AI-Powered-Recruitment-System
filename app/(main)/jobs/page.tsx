@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import JobHero from "@/components/jobs/JobHero";
 import JobsContainer from "@/components/jobs/JobsContainer";
 import JobsSkeleton from "@/components/jobs/JobsSkeleton";
-import { getJobs, type Job } from "@/lib/jobs";
+import { getJobs } from "@/lib/fetchers/jobs";
+import { Job } from "@/types/jobs";
 
 export const revalidate = 60;
 

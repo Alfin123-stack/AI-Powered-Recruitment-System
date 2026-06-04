@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2 } from "lucide-react";
-import type { Company } from "./types";
+import type { Company } from "@/types/company";
 import CompanyCard from "./CompanyCard";
 import CompanyToolbar from "./CompanyToolbar";
 
@@ -15,7 +15,9 @@ type CompanyListClientProps = {
   companies: Company[];
 };
 
-export default function CompanyListClient({ companies }: CompanyListClientProps) {
+export default function CompanyListClient({
+  companies,
+}: CompanyListClientProps) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Semua");
 
@@ -46,8 +48,7 @@ export default function CompanyListClient({ companies }: CompanyListClientProps)
                 key="empty"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-24 text-[#4a6456]"
-              >
+                className="text-center py-24 text-[#4a6456]">
                 <Building2 size={40} className="mx-auto mb-4 opacity-30" />
                 <div className="text-[#e8f0ec] text-[1rem] font-semibold mb-2">
                   Tidak ada perusahaan ditemukan
@@ -60,8 +61,9 @@ export default function CompanyListClient({ companies }: CompanyListClientProps)
               <div
                 key="grid"
                 className="grid gap-[10px]"
-                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}
-              >
+                style={{
+                  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                }}>
                 {filtered.map((company) => (
                   <CompanyCard
                     key={company.id}

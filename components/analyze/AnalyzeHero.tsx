@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, Eye, Loader2 } from "lucide-react";
-import type { AnalysisData } from "./analyze";
+import type { AnalysisData } from "@/types/analyze";
 
 // ─── ANALYZE HERO ─────────────────────────────────────────────────────────────
 // CSR: reacts to live upload/analysis state passed down from parent

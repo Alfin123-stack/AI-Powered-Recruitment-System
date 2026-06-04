@@ -1,6 +1,8 @@
-// ─── ANALYZE HELPERS (pure, no React) ────────────────────────────────────────
-import type { AnalysisData } from "./analyze";
-
+import { AnalysisData } from "@/types/analyze";
+import type {
+  TextItem,
+  TextMarkedContent,
+} from "pdfjs-dist/types/src/display/api";
 export function gradeLabel(score: number): string {
   if (score >= 90) return "A+";
   if (score >= 80) return "A";
@@ -58,16 +60,21 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     "pdfjs-dist/build/pdf.worker.mjs",
     import.meta.url,
   ).toString();
+
   const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() })
     .promise;
   let fullText = "";
+
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
     fullText +=
       content.items
-        .map((item: any) => ("str" in item ? item.str : ""))
+        .map((item: TextItem | TextMarkedContent) =>
+          "str" in item ? item.str : "",
+        )
         .join(" ") + "\n";
   }
+
   return fullText.trim();
 }

@@ -1,27 +1,29 @@
 "use client";
-
-// components/blog/DevToClient.tsx
-// Client Component — menangani:
-//   • filter search (prop dari BlogSearchClient via URL atau prop drilling)
-//   • pagination state
-//   • refresh button (re-fetch via router.refresh())
-//
-// TIDAK ada fetch di sini. Data sudah tersedia dari DevToSection (Server Component).
-
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Globe, Clock, Heart, ExternalLink,
-  RefreshCw, AlertCircle, User, Tag,
+  Globe,
+  Clock,
+  Heart,
+  ExternalLink,
+  RefreshCw,
+  AlertCircle,
+  User,
+  Tag,
 } from "lucide-react";
 import { FadeIn } from "./blog-components";
 import Pagination from "@/components/Pagination";
-import type { DevToArticle } from "./DevToSection";
-
-const ARTICLES_PER_PAGE = 6;
+import { DevToArticle } from "@/types/blogs";
+import { ARTICLES_PER_PAGE } from "@/constants/blogs";
 
 // ── Card ───────────────────────────────────────────────────────────────────────
-function DevToCard({ article, index }: { article: DevToArticle; index: number }) {
+function DevToCard({
+  article,
+  index,
+}: {
+  article: DevToArticle;
+  index: number;
+}) {
   const cleanDesc = article.description
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, " ")
@@ -32,7 +34,9 @@ function DevToCard({ article, index }: { article: DevToArticle; index: number })
 
   const formattedDate = article.pubDate
     ? new Date(article.pubDate).toLocaleDateString("id-ID", {
-        day: "numeric", month: "short", year: "numeric",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
       })
     : "";
 
@@ -41,7 +45,11 @@ function DevToCard({ article, index }: { article: DevToArticle; index: number })
 
   return (
     <FadeIn delay={index * 0.05}>
-      <a href={article.link} target="_blank" rel="noopener noreferrer" className="no-underline block h-full">
+      <a
+        href={article.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="no-underline block h-full">
         <article className="h-full bg-[#080d0b] border border-emerald-500/10 rounded-[16px] overflow-hidden flex flex-col transition-all duration-300 hover:border-emerald-500/25 hover:-translate-y-[3px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.5)] group cursor-pointer">
           {article.thumbnail ? (
             <div className="relative h-[140px] overflow-hidden bg-[#0f1612] flex-shrink-0">
@@ -66,13 +74,19 @@ function DevToCard({ article, index }: { article: DevToArticle; index: number })
             <div className="flex items-center gap-2">
               {article.authorImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={article.authorImage} alt={authorName} className="w-5 h-5 rounded-full object-cover ring-1 ring-emerald-500/20" />
+                <img
+                  src={article.authorImage}
+                  alt={authorName}
+                  className="w-5 h-5 rounded-full object-cover ring-1 ring-emerald-500/20"
+                />
               ) : (
                 <div className="w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                   <User size={10} className="text-emerald-500/60" />
                 </div>
               )}
-              <span className="text-[0.68rem] text-[#5a7a68] font-medium truncate max-w-[160px]">{authorName}</span>
+              <span className="text-[0.68rem] text-[#5a7a68] font-medium truncate max-w-[160px]">
+                {authorName}
+              </span>
               {!article.thumbnail && (
                 <span className="ml-auto inline-flex items-center gap-1 bg-[#0f1612] border border-emerald-500/15 text-emerald-400/70 px-[7px] py-[2px] rounded-full text-[0.58rem] font-bold tracking-[0.08em] uppercase">
                   <Globe size={7} /> dev.to
@@ -86,7 +100,8 @@ function DevToCard({ article, index }: { article: DevToArticle; index: number })
 
             {cleanDesc && (
               <p className="text-[#4a6b58] text-[0.80rem] leading-[1.6] line-clamp-2 flex-1">
-                {cleanDesc}{cleanDesc.length >= 130 ? "…" : ""}
+                {cleanDesc}
+                {cleanDesc.length >= 130 ? "…" : ""}
               </p>
             )}
 
@@ -94,7 +109,9 @@ function DevToCard({ article, index }: { article: DevToArticle; index: number })
               <div className="flex items-center gap-1 flex-wrap">
                 <Tag size={9} className="text-emerald-500/30" />
                 {visibleTags.map((t) => (
-                  <span key={t} className="text-[0.60rem] text-emerald-500/50 bg-emerald-500/[0.05] border border-emerald-500/10 px-[6px] py-[1px] rounded-full">
+                  <span
+                    key={t}
+                    className="text-[0.60rem] text-emerald-500/50 bg-emerald-500/[0.05] border border-emerald-500/10 px-[6px] py-[1px] rounded-full">
                     {t}
                   </span>
                 ))}
@@ -104,12 +121,20 @@ function DevToCard({ article, index }: { article: DevToArticle; index: number })
             <div className="flex items-center justify-between pt-2 border-t border-emerald-500/[0.07] mt-auto">
               <div className="flex items-center gap-3 text-[#3a5545] text-[0.70rem]">
                 {article.readTime && (
-                  <span className="flex items-center gap-1"><Clock size={10} />{article.readTime} min</span>
+                  <span className="flex items-center gap-1">
+                    <Clock size={10} />
+                    {article.readTime} min
+                  </span>
                 )}
                 {typeof article.reactions === "number" && (
-                  <span className="flex items-center gap-1"><Heart size={10} />{article.reactions}</span>
+                  <span className="flex items-center gap-1">
+                    <Heart size={10} />
+                    {article.reactions}
+                  </span>
                 )}
-                {formattedDate && <span className="hidden sm:inline">{formattedDate}</span>}
+                {formattedDate && (
+                  <span className="hidden sm:inline">{formattedDate}</span>
+                )}
               </div>
               <span className="flex items-center gap-1 text-cyan-500/50 group-hover:text-cyan-400 transition-colors text-[0.70rem]">
                 Baca <ExternalLink size={10} />
@@ -131,7 +156,11 @@ interface DevToClientProps {
   search?: string;
 }
 
-export default function DevToClient({ articles, topicTags, search: externalSearch }: DevToClientProps) {
+export default function DevToClient({
+  articles,
+  topicTags,
+  search: externalSearch,
+}: DevToClientProps) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -171,7 +200,9 @@ export default function DevToClient({ articles, topicTags, search: externalSearc
   };
 
   return (
-    <section id="devto-section" className="bg-[#060b09] py-[80px] pb-[100px] border-t border-emerald-500/[0.07]">
+    <section
+      id="devto-section"
+      className="bg-[#060b09] py-[80px] pb-[100px] border-t border-emerald-500/[0.07]">
       <div className="max-w-[1180px] mx-auto px-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-10 flex-wrap">
@@ -180,7 +211,9 @@ export default function DevToClient({ articles, topicTags, search: externalSearc
               <div className="w-6 h-6 rounded-[6px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                 <Globe size={12} className="text-emerald-400" />
               </div>
-              <span className="font-syne font-bold text-[1rem] text-[#e8f0ec]">Dari Komunitas Global</span>
+              <span className="font-syne font-bold text-[1rem] text-[#e8f0ec]">
+                Dari Komunitas Global
+              </span>
               <span className="inline-flex items-center gap-1 bg-emerald-500/[0.07] border border-emerald-500/15 text-emerald-400/70 px-[8px] py-[2px] rounded-full text-[0.6rem] font-bold tracking-[0.07em] uppercase">
                 dev.to
               </span>
@@ -204,7 +237,10 @@ export default function DevToClient({ articles, topicTags, search: externalSearc
               onClick={handleRefresh}
               disabled={isRefreshing}
               className="flex items-center gap-[6px] text-[#4a6b58] hover:text-emerald-400 transition-colors text-[0.75rem] cursor-pointer disabled:opacity-40 border border-emerald-500/10 hover:border-emerald-500/25 px-3 py-[6px] rounded-[8px]">
-              <RefreshCw size={11} className={isRefreshing ? "animate-spin" : ""} />
+              <RefreshCw
+                size={11}
+                className={isRefreshing ? "animate-spin" : ""}
+              />
               Refresh
             </button>
           </div>
@@ -213,10 +249,14 @@ export default function DevToClient({ articles, topicTags, search: externalSearc
         {/* Stats */}
         {filtered.length > 0 && (
           <div className="flex items-center gap-4 mb-6 flex-wrap">
-            <span className="text-[#3a5545] text-[0.75rem]">{filtered.length} artikel ditemukan</span>
+            <span className="text-[#3a5545] text-[0.75rem]">
+              {filtered.length} artikel ditemukan
+            </span>
             <div className="flex items-center gap-2 flex-wrap">
               {topicTags.map((t) => (
-                <span key={t} className="text-[0.62rem] text-emerald-500/40 bg-emerald-500/[0.04] border border-emerald-500/[0.08] px-[8px] py-[2px] rounded-full">
+                <span
+                  key={t}
+                  className="text-[0.62rem] text-emerald-500/40 bg-emerald-500/[0.04] border border-emerald-500/[0.08] px-[8px] py-[2px] rounded-full">
                   #{t}
                 </span>
               ))}
@@ -243,19 +283,19 @@ export default function DevToClient({ articles, topicTags, search: externalSearc
           </>
         ) : (
           <div className="text-center py-10 text-[#4a6b58] text-[0.875rem]">
-            {search
-              ? "Tidak ada artikel dev.to yang cocok dengan pencarian kamu."
-              : (
-                <div className="py-16">
-                  <AlertCircle size={32} className="mx-auto mb-3 opacity-40" />
-                  <p className="mb-4">Gagal memuat artikel. Coba refresh.</p>
-                  <button
-                    onClick={handleRefresh}
-                    className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 px-5 py-[9px] rounded-[8px] text-[0.82rem] hover:bg-emerald-500/[0.06] transition-colors cursor-pointer">
-                    <RefreshCw size={13} /> Coba Lagi
-                  </button>
-                </div>
-              )}
+            {search ? (
+              "Tidak ada artikel dev.to yang cocok dengan pencarian kamu."
+            ) : (
+              <div className="py-16">
+                <AlertCircle size={32} className="mx-auto mb-3 opacity-40" />
+                <p className="mb-4">Gagal memuat artikel. Coba refresh.</p>
+                <button
+                  onClick={handleRefresh}
+                  className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 px-5 py-[9px] rounded-[8px] text-[0.82rem] hover:bg-emerald-500/[0.06] transition-colors cursor-pointer">
+                  <RefreshCw size={13} /> Coba Lagi
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -264,7 +304,8 @@ export default function DevToClient({ articles, topicTags, search: externalSearc
           <div className="mt-8 flex items-center justify-center gap-2">
             <div className="h-[1px] w-16 bg-emerald-500/[0.07]" />
             <p className="text-[#1e3028] text-[0.70rem] text-center">
-              Konten di atas adalah milik penulis aslinya di dev.to. RecruitAI hanya menampilkan ringkasan & tautan ke artikel original.
+              Konten di atas adalah milik penulis aslinya di dev.to. RecruitAI
+              hanya menampilkan ringkasan & tautan ke artikel original.
             </p>
             <div className="h-[1px] w-16 bg-emerald-500/[0.07]" />
           </div>

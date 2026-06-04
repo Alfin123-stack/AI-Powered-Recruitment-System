@@ -1,14 +1,8 @@
 "use client";
 
-// components/blog/BlogSearchClient.tsx
-// Client Component — holds ONLY the interactive state:
-//   • search string
-//   • active category
-// Everything else (card rendering) stays in Server Components passed as children.
-
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
-import { EditorialArticle } from "./blog-types";
+import { EditorialArticle } from "@/types/blogs";
 import EditorialSection from "./EditorialSection";
 
 interface BlogSearchClientProps {

@@ -1,16 +1,8 @@
-// SERVER COMPONENT — page ini di-render di server
-//
-// Strategi rendering:
-//  - ISR: revalidate setiap 60 detik
-//  - generateStaticParams: SSG untuk job populer saat build time
-//  - Sidebar (apply/save) → CSR via Client Component
-//  - Skeleton via Suspense boundary
-
 import { Suspense } from "react";
 import Link from "next/link";
 
 import { getColor, parseRequirements } from "@/lib/utils";
-import { Job } from "@/lib/jobs";
+import { getJob, getPopularJobIds } from "@/lib/fetchers/jobs";
 import JobDetailHero from "@/components/job-detail/JobDetailHero";
 import JobDetailBody from "@/components/job-detail/JobDetailBody";
 import JobDetailSidebar from "@/components/job-detail/JobDetailSidebar";
@@ -20,82 +12,29 @@ import {
   JobDetailSidebarSkeleton,
 } from "@/components/job-detail/JobDetailSkeleton";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-// ── ISR ───────────────────────────────────────────────────────────────────────
 export const revalidate = 60;
 
-// ── SSG params ────────────────────────────────────────────────────────────────
+type PageParams = { params: Promise<{ id: string }> };
+
 export async function generateStaticParams() {
-  try {
-    const res = await fetch(`${API}/api/jobs?limit=20&sort=popular`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return [];
-    const jobs: Job[] = await res.json();
-    return jobs.map((job) => ({ id: String(job.id) }));
-  } catch {
-    return [];
-  }
+  return getPopularJobIds();
 }
 
-// ── Metadata ──────────────────────────────────────────────────────────────────
-// Next.js 15: params adalah Promise, harus di-await
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export async function generateMetadata({ params }: PageParams) {
   const { id } = await params;
-  try {
-    const res = await fetch(`${API}/api/jobs/${id}`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return { title: "Lowongan" };
-    const job: Job = await res.json();
-    return {
-      title: `${job.title} — ${job.companies.name}`,
-      description: job.description?.slice(0, 155),
-    };
-  } catch {
-    return { title: "Lowongan" };
-  }
+  const job = await getJob(id);
+
+  if (!job) return { title: "Lowongan" };
+
+  return {
+    // FIX: guard companies karena bisa null
+    title: `${job.title}${job.companies ? ` — ${job.companies.name}` : ""}`,
+    description: job.description?.slice(0, 155),
+  };
 }
 
-// ── Data fetching ─────────────────────────────────────────────────────────────
-async function getJob(id: string): Promise<Job | null> {
-  try {
-    const res = await fetch(`${API}/api/jobs/${id}`, {
-      next: { revalidate: 60 },
-      // Tambahan: pastikan tidak pakai cache stale saat dev
-      cache: process.env.NODE_ENV === "development" ? "no-store" : "default",
-    });
-
-    if (res.status === 404) return null;
-
-    // Log status di dev supaya mudah debug
-    if (!res.ok) {
-      console.error(`[getJob] HTTP ${res.status} for id=${id}`);
-      return null;
-    }
-
-    return res.json();
-  } catch (err) {
-    console.error(`[getJob] Fetch error for id=${id}:`, err);
-    return null;
-  }
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-// Next.js 15: params adalah Promise, harus di-await
-export default async function JobDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  // ⚠️ Ini root cause bug "tidak ditemukan": di Next.js 15, params harus di-await
+export default async function JobDetailPage({ params }: PageParams) {
   const { id } = await params;
-
   const job = await getJob(id);
 
   if (!job) {

@@ -79,7 +79,11 @@ function JobToolbarSkeleton() {
           {/* Filter chips */}
           <div className="flex gap-[6px]">
             {[80, 72, 90, 68, 76].map((w, i) => (
-              <Pulse key={i} className="h-8 rounded-[8px]" style={{ width: w }} />
+              <Pulse
+                key={i}
+                className="h-8 rounded-[8px]"
+                style={{ width: w }}
+              />
             ))}
           </div>
         </div>
@@ -116,8 +120,7 @@ export default function JobsSkeleton({ count = 9 }: { count?: number }) {
             className="grid gap-4"
             style={{
               gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
-            }}
-          >
+            }}>
             {Array.from({ length: count }).map((_, i) => (
               <JobCardSkeleton key={i} />
             ))}

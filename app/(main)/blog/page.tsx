@@ -1,12 +1,9 @@
-// app/(main)/blog/page.tsx
-// Server Component — SSG (statically generated at build time)
-
 import { Suspense } from "react";
 import BlogHero from "@/components/blog/BlogHero";
 import BlogSearchClient from "@/components/blog/BlogSearchClient";
 import DevToSection from "@/components/blog/DevToSection";
 import DevToSkeleton from "@/components/blog/DevToSkeleton";
-import { EDITORIAL_ARTICLES } from "@/components/blog/blog-types";
+import { EDITORIAL_ARTICLES } from "@/constants/blogs";
 
 export const revalidate = false;
 
@@ -17,13 +14,6 @@ export default function BlogPage() {
         {/* Server Component — pure markup, no JS */}
         <BlogHero />
 
-        {/*
-          BlogSearchClient (Client Component) owns:
-            - search state
-            - activeCategory state
-          It internally renders EditorialSection with filtered articles.
-          JANGAN render <EditorialSection> di sini — cukup pass articles ke BlogSearchClient.
-        */}
         <BlogSearchClient articles={EDITORIAL_ARTICLES} />
 
         {/* DevToSection = async Server Component (ISR 1 jam) */}

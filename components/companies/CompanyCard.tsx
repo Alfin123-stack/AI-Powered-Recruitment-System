@@ -5,7 +5,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight, Building2 } from "lucide-react";
-import type { Company } from "./types";
+import type { Company } from "@/types/company";
 import CompanyLogo from "./CompanyLogo";
 import CompanyMeta from "./CompanyMeta";
 import CompanyLocation from "./CompanyLocation";

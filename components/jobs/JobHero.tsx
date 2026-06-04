@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Briefcase, Building2, MapPin, Sparkles } from "lucide-react";
-import type { Job } from "@/lib/jobs";
+import type { Job } from "@/types/jobs";
 
 export default function JobHero({
   jobs,
@@ -19,7 +19,7 @@ export default function JobHero({
     ? false
     : jobs.some(
         (j) =>
-          j.location?.toLowerCase().includes("remote") || j.type === "Remote"
+          j.location?.toLowerCase().includes("remote") || j.type === "Remote",
       );
 
   const stats = [
@@ -62,37 +62,35 @@ export default function JobHero({
       />
       <div
         className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
-        style={{ background: "linear-gradient(to bottom, transparent, #0a0f0d)" }}
+        style={{
+          background: "linear-gradient(to bottom, transparent, #0a0f0d)",
+        }}
       />
 
       <motion.div
         className="relative max-w-[680px] mx-auto px-6 flex flex-col items-center"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      >
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="inline-flex items-center gap-2 bg-emerald-500/[0.08] border border-emerald-500/25 text-emerald-400 px-4 py-[6px] rounded-full text-[0.7rem] font-semibold tracking-[0.1em] uppercase mb-6"
-        >
+          className="inline-flex items-center gap-2 bg-emerald-500/[0.08] border border-emerald-500/25 text-emerald-400 px-4 py-[6px] rounded-full text-[0.7rem] font-semibold tracking-[0.1em] uppercase mb-6">
           <Sparkles size={11} />
           Lowongan Terbaru · AI-Powered Matching
         </motion.div>
 
         <h1
           className="font-syne font-extrabold leading-[1.08] tracking-tight mb-5 text-[#e8f0ec]"
-          style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}
-        >
+          style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}>
           Temukan Karir yang{" "}
           <span
             style={{
               background: "linear-gradient(135deg, #34d399, #22d3ee)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-            }}
-          >
+            }}>
             Tepat untuk Anda
           </span>
         </h1>
@@ -106,16 +104,14 @@ export default function JobHero({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.45 }}
-          className="flex items-center bg-[#0d1610] border border-emerald-500/15 rounded-[14px] overflow-hidden"
-        >
+          className="flex items-center bg-[#0d1610] border border-emerald-500/15 rounded-[14px] overflow-hidden">
           {stats.map(({ icon: Icon, value, label, color }, i) => (
             <div key={label} className="flex items-center">
               {i > 0 && <div className="w-px h-9 bg-emerald-500/10" />}
               <div className="flex items-center gap-3 px-6 py-4">
                 <div
                   className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${color}15`, color }}
-                >
+                  style={{ background: `${color}15`, color }}>
                   <Icon size={14} />
                 </div>
                 <div className="text-left">

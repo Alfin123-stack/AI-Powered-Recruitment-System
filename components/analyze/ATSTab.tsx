@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { CheckCheck, XCircle, Info } from "lucide-react";
 import AnimatedBar from "./AnimatedBar";
 import { scoreColor, scoreColorBg, scoreColorBorder } from "./analyze-helpers";
-import type { ATSCheck } from "./analyze";
+import type { ATSCheck } from "@/types/analyze";
 
 // ─── EMPTY STATE (local, reused in tab files) ─────────────────────────────────
 function EmptyTabState({ message }: { message: string }) {

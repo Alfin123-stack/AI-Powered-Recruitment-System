@@ -12,7 +12,7 @@ import { CheckCircle2, Bookmark, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ApplyModal } from "./ApplyModal";
-import { Job } from "./types";
+import { Job } from "@/types/jobs";
 import { statusConfig } from "@/lib/constants";
 import { formatDeadline } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function JobDetailSidebar({
   job,
-  color,
+
 }: {
   job: Job;
   color: string;

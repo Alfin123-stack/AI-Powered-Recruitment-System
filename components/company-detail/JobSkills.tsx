@@ -1,6 +1,3 @@
-// SERVER Component — tidak ada directive "use client".
-// Render daftar skill sebagai badge. Pure HTML statis.
-
 type JobSkillsProps = {
   skills: string[];
 };
@@ -16,8 +13,7 @@ export default function JobSkills({ skills }: JobSkillsProps) {
       {visible.map((skill) => (
         <span
           key={skill}
-          className="bg-white/[0.035] border border-white/[0.07] text-[#8aaa96] px-[7px] py-[2px] rounded-[4px] text-[0.65rem]"
-        >
+          className="bg-white/[0.035] border border-white/[0.07] text-[#8aaa96] px-[7px] py-[2px] rounded-[4px] text-[0.65rem]">
           {skill}
         </span>
       ))}

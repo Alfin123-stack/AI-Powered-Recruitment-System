@@ -24,7 +24,7 @@ import { TabHRProfile } from "@/components/profile/TabHRProfile";
 import { TabCompany } from "@/components/profile/TabCompany";
 import { TabSecurity } from "@/components/profile/TabSecurity";
 import { ToastContainer, useToast } from "@/components/profile/Toast";
-import { ServerProfileData } from "@/app/(main)/profile/page";
+import { ServerProfileData } from "@/types/profile";
 
 type Tab = "profile" | "company" | "security";
 
@@ -53,10 +53,10 @@ export function ProfileShell({ data }: { data: ServerProfileData }) {
 
   // Tab state — client only
   const [activeTab, setActiveTab] = useState<Tab>("profile");
-
-  // Derived display values
-  const displayName =
-    user.user_metadata?.full_name || user.email.split("@")[0] || "User";
+  const displayName: string =
+    (user.user_metadata?.full_name as string | undefined) ??
+    user.email.split("@")[0] ??
+    "User";
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

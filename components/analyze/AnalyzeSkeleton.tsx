@@ -4,7 +4,13 @@
 // Exports: AnalyzeSkeleton (full page), ScoreBlockSkeleton, OverviewTabSkeleton,
 //          ATSTabSkeleton, FeedbackTabSkeleton, WritingTabSkeleton
 
-function Shimmer({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function Shimmer({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   return (
     <div
       className={className}
@@ -31,7 +37,9 @@ export function ScoreBlockSkeleton({ primary = false }: { primary?: boolean }) {
       }}>
       <Shimmer style={{ height: 10, width: 60, marginBottom: 12 }} />
       <div className="flex items-end gap-2 mb-3">
-        <Shimmer style={{ height: primary ? 40 : 28, width: primary ? 80 : 56 }} />
+        <Shimmer
+          style={{ height: primary ? 40 : 28, width: primary ? 80 : 56 }}
+        />
         <Shimmer style={{ height: 12, width: 30, marginBottom: 4 }} />
       </div>
       <Shimmer style={{ height: primary ? 5 : 3, width: "100%" }} />
@@ -97,7 +105,14 @@ export function ATSTabSkeleton() {
               border: "1px solid rgba(255,255,255,0.07)",
               background: "rgba(255,255,255,0.02)",
             }}>
-            <Shimmer style={{ height: 13, width: 13, borderRadius: "50%", flexShrink: 0 }} />
+            <Shimmer
+              style={{
+                height: 13,
+                width: 13,
+                borderRadius: "50%",
+                flexShrink: 0,
+              }}
+            />
             <Shimmer style={{ height: 12, flex: 1 }} />
             <Shimmer style={{ height: 20, width: 40, borderRadius: 999 }} />
           </div>
@@ -113,7 +128,10 @@ export function FeedbackTabSkeleton() {
     <div>
       <div className="flex gap-[5px] mb-5">
         {[0, 1, 2, 3].map((i) => (
-          <Shimmer key={i} style={{ height: 28, width: 72, borderRadius: 999 }} />
+          <Shimmer
+            key={i}
+            style={{ height: 28, width: 72, borderRadius: 999 }}
+          />
         ))}
       </div>
       <div className="space-y-[7px]">
@@ -126,13 +144,25 @@ export function FeedbackTabSkeleton() {
               border: "1px solid rgba(255,255,255,0.07)",
             }}>
             <div className="flex items-start gap-3">
-              <Shimmer style={{ height: 13, width: 13, borderRadius: "50%", marginTop: 2, flexShrink: 0 }} />
+              <Shimmer
+                style={{
+                  height: 13,
+                  width: 13,
+                  borderRadius: "50%",
+                  marginTop: 2,
+                  flexShrink: 0,
+                }}
+              />
               <div style={{ flex: 1 }}>
                 <div className="flex gap-2 mb-[6px]">
                   <Shimmer style={{ height: 20, width: 60, borderRadius: 4 }} />
-                  <Shimmer style={{ height: 20, width: 80, borderRadius: 999 }} />
+                  <Shimmer
+                    style={{ height: 20, width: 80, borderRadius: 999 }}
+                  />
                 </div>
-                <Shimmer style={{ height: 13, width: "70%", marginBottom: 5 }} />
+                <Shimmer
+                  style={{ height: 13, width: "70%", marginBottom: 5 }}
+                />
                 <Shimmer style={{ height: 12, width: "90%" }} />
               </div>
             </div>
@@ -153,7 +183,9 @@ export function WritingTabSkeleton() {
           background: "rgba(255,255,255,0.025)",
           border: "1px solid rgba(255,255,255,0.07)",
         }}>
-        <Shimmer style={{ height: 14, width: 14, flexShrink: 0, marginTop: 1 }} />
+        <Shimmer
+          style={{ height: 14, width: 14, flexShrink: 0, marginTop: 1 }}
+        />
         <div style={{ flex: 1 }}>
           <Shimmer style={{ height: 12, width: "90%", marginBottom: 6 }} />
           <Shimmer style={{ height: 12, width: "70%" }} />
@@ -161,7 +193,10 @@ export function WritingTabSkeleton() {
       </div>
       <div className="flex gap-[5px] mb-5">
         {[0, 1, 2].map((i) => (
-          <Shimmer key={i} style={{ height: 28, width: 72, borderRadius: 999 }} />
+          <Shimmer
+            key={i}
+            style={{ height: 28, width: 72, borderRadius: 999 }}
+          />
         ))}
       </div>
       <div className="space-y-[10px]">
@@ -180,12 +215,16 @@ export function WritingTabSkeleton() {
             </div>
             <div className="p-4">
               <Shimmer style={{ height: 10, width: 50, marginBottom: 6 }} />
-              <Shimmer style={{ height: 52, width: "100%", marginBottom: 10 }} />
+              <Shimmer
+                style={{ height: 52, width: "100%", marginBottom: 10 }}
+              />
               <div className="flex justify-center mb-3">
                 <Shimmer style={{ height: 14, width: 14 }} />
               </div>
               <Shimmer style={{ height: 10, width: 80, marginBottom: 6 }} />
-              <Shimmer style={{ height: 52, width: "100%", marginBottom: 10 }} />
+              <Shimmer
+                style={{ height: 52, width: "100%", marginBottom: 10 }}
+              />
               <Shimmer style={{ height: 12, width: "80%" }} />
             </div>
           </div>
@@ -211,12 +250,34 @@ export default function AnalyzeSkeleton() {
           className="pt-[90px] pb-10 text-center"
           style={{ background: "#090d0b" }}>
           <div className="max-w-[600px] mx-auto px-6">
-            <Shimmer style={{ height: 26, width: 160, borderRadius: 999, margin: "0 auto 16px" }} />
-            <Shimmer style={{ height: 44, width: "70%", margin: "0 auto 12px" }} />
-            <Shimmer style={{ height: 44, width: "50%", margin: "0 auto 20px" }} />
-            <Shimmer style={{ height: 14, width: "60%", margin: "0 auto 6px" }} />
-            <Shimmer style={{ height: 14, width: "45%", margin: "0 auto 20px" }} />
-            <Shimmer style={{ height: 30, width: 180, borderRadius: 999, margin: "0 auto" }} />
+            <Shimmer
+              style={{
+                height: 26,
+                width: 160,
+                borderRadius: 999,
+                margin: "0 auto 16px",
+              }}
+            />
+            <Shimmer
+              style={{ height: 44, width: "70%", margin: "0 auto 12px" }}
+            />
+            <Shimmer
+              style={{ height: 44, width: "50%", margin: "0 auto 20px" }}
+            />
+            <Shimmer
+              style={{ height: 14, width: "60%", margin: "0 auto 6px" }}
+            />
+            <Shimmer
+              style={{ height: 14, width: "45%", margin: "0 auto 20px" }}
+            />
+            <Shimmer
+              style={{
+                height: 30,
+                width: 180,
+                borderRadius: 999,
+                margin: "0 auto",
+              }}
+            />
           </div>
         </section>
 
@@ -285,7 +346,12 @@ export default function AnalyzeSkeleton() {
               {[0, 1, 2, 3].map((i) => (
                 <Shimmer
                   key={i}
-                  style={{ height: 34, width: i === 0 ? 80 : i === 3 ? 130 : 90, borderRadius: 6, margin: "0 2px" }}
+                  style={{
+                    height: 34,
+                    width: i === 0 ? 80 : i === 3 ? 130 : 90,
+                    borderRadius: 6,
+                    margin: "0 2px",
+                  }}
                 />
               ))}
             </div>

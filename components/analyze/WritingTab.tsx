@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
-import type { WritingSuggestion } from "./analyze";
+import type { WritingSuggestion } from "@/types/analyze";
 
 // ─── EMPTY STATE ──────────────────────────────────────────────────────────────
 function EmptyTabState({ message }: { message: string }) {
@@ -28,11 +28,19 @@ export default function WritingTab({ suggestions }: Props) {
   const [active, setActive] = useState("All");
 
   if (!suggestions || suggestions.length === 0) {
-    return <EmptyTabState message="Data saran penulisan tidak tersedia untuk analisis ini." />;
+    return (
+      <EmptyTabState message="Data saran penulisan tidak tersedia untuk analisis ini." />
+    );
   }
 
-  const sections = ["All", ...Array.from(new Set(suggestions.map((s) => s.section)))];
-  const visible = active === "All" ? suggestions : suggestions.filter((s) => s.section === active);
+  const sections = [
+    "All",
+    ...Array.from(new Set(suggestions.map((s) => s.section))),
+  ];
+  const visible =
+    active === "All"
+      ? suggestions
+      : suggestions.filter((s) => s.section === active);
 
   return (
     <div>
@@ -42,10 +50,17 @@ export default function WritingTab({ suggestions }: Props) {
           background: "rgba(255,255,255,0.025)",
           border: "1px solid rgba(255,255,255,0.07)",
         }}>
-        <Sparkles size={14} className="flex-shrink-0 mt-[1px]" style={{ color: "rgba(255,255,255,0.35)" }} />
-        <p className="text-[12px] leading-[1.65]" style={{ color: "rgba(255,255,255,0.38)" }}>
-          AI menulis ulang kalimat-kalimat lemah di CV kamu menjadi versi yang lebih kuat,
-          spesifik, dan berorientasi hasil. Salin dan sesuaikan dengan konteks kamu.
+        <Sparkles
+          size={14}
+          className="flex-shrink-0 mt-[1px]"
+          style={{ color: "rgba(255,255,255,0.35)" }}
+        />
+        <p
+          className="text-[12px] leading-[1.65]"
+          style={{ color: "rgba(255,255,255,0.38)" }}>
+          AI menulis ulang kalimat-kalimat lemah di CV kamu menjadi versi yang
+          lebih kuat, spesifik, dan berorientasi hasil. Salin dan sesuaikan
+          dengan konteks kamu.
         </p>
       </div>
 
@@ -90,7 +105,10 @@ export default function WritingTab({ suggestions }: Props) {
               }}>
               <span
                 className="text-[10px] font-bold uppercase tracking-wide px-[6px] py-[2px] rounded-[4px]"
-                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)" }}>
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  color: "rgba(255,255,255,0.3)",
+                }}>
                 {s.section}
               </span>
             </div>
@@ -112,7 +130,10 @@ export default function WritingTab({ suggestions }: Props) {
                 </div>
               </div>
               <div className="flex justify-center mb-3">
-                <ArrowRight size={14} style={{ color: "rgba(255,255,255,0.15)" }} />
+                <ArrowRight
+                  size={14}
+                  style={{ color: "rgba(255,255,255,0.15)" }}
+                />
               </div>
               <div className="mb-3">
                 <div

@@ -1,8 +1,6 @@
 "use client";
 
-// Wajib client karena menggunakan framer-motion (motion.div) untuk animasi
-// entrance setiap card muncul ke layar.
-
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -12,7 +10,7 @@ import {
   DollarSign,
   CalendarDays,
 } from "lucide-react";
-import type { Job } from "./types";
+import type { Job } from "@/types/jobs";
 import TypeBadge from "./TypeBadge";
 import JobSkills from "./JobSkills";
 import JobBenefits from "./JobBenefits";
@@ -24,8 +22,11 @@ type JobCardProps = {
 };
 
 export default function JobCard({ job, accent, index }: JobCardProps) {
-  const daysAgo = Math.floor(
-    (Date.now() - new Date(job.created_at).getTime()) / 86400000,
+  // ✅ Fix 1: Pindahkan ke useMemo agar tidak impure saat render
+  const daysAgo = useMemo(
+    () =>
+      Math.floor((Date.now() - new Date(job.created_at).getTime()) / 86400000),
+    [job.created_at],
   );
 
   return (
@@ -89,11 +90,10 @@ export default function JobCard({ job, accent, index }: JobCardProps) {
         )}
       </div>
 
-      {/* Skills */}
-      <JobSkills skills={job.skills} />
+      {/* ✅ Fix 2: Gunakan ?? [] untuk handle null */}
+      <JobSkills skills={job.skills ?? []} />
 
-      {/* Benefits */}
-      <JobBenefits benefits={job.benefits} accent={accent} />
+      <JobBenefits benefits={job.benefits ?? []} accent={accent} />
 
       {/* CTA */}
       <div className="flex gap-[6px] mt-auto pt-1">

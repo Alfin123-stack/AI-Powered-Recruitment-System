@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Job } from "./types";
+import { Job } from "@/types/jobs";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -145,7 +145,7 @@ export function ApplyModal({
               Apply Lowongan
             </h2>
             <p className="text-[#7a9585] text-[0.78rem] mt-[3px]">
-              {job.title} · {job.companies.name}
+              {job.title} · {job.companies?.name}
             </p>
           </div>
           <button
@@ -304,7 +304,7 @@ export function ApplyModal({
                 </div>
                 <p className="text-[#7a9585] text-[0.82rem] leading-relaxed mb-6">
                   CV kamu sudah dianalisis AI dan lamaran telah dikirim ke{" "}
-                  {job.companies.name}. Pantau status di dashboard kamu.
+                  {job.companies?.name}. Pantau status di dashboard kamu.
                 </p>
                 <div className="flex gap-3">
                   <Button

@@ -1,19 +1,5 @@
 "use client";
 
-// components/profile/AvatarCard.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: CSR
-//
-// Kenapa CSR?
-// - Ada interaksi upload avatar (FileReader, onClick)
-// - State avatarPreview berubah saat user pilih file
-// - Tidak ada data yang perlu di-pre-render di server
-//
-// Data awal (applicationCount, savedCount, company) sudah
-// di-fetch di server (page.tsx) dan di-pass sebagai props.
-// Tidak perlu fetch ulang di client.
-// ─────────────────────────────────────────────
-
 import { useState, useRef } from "react";
 import Image from "next/image";
 import {
@@ -26,6 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { ToastType } from "@/components/profile/Toast";
+import { CompanyData } from "@/types/profile";
 
 const getInitials = (name: string) =>
   (name || "U")
@@ -52,7 +39,7 @@ interface AvatarCardProps {
   displayName: string;
   applicationCount: number;
   savedCount: number;
-  company: { name: string; company_size: string } | null;
+  company: CompanyData | null; // ✅ Fix: pakai shared type (description & company_size sudah | null)
   token: string;
   addToast: (type: ToastType, message: string) => void;
 }

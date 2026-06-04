@@ -3,7 +3,7 @@
 // JobCard (client). Server component bisa render client component di dalamnya.
 
 import { Briefcase } from "lucide-react";
-import type { Job } from "./types";
+import type { Job } from "@/types/jobs";
 import JobCard from "./JobCard";
 
 type JobGridProps = {
@@ -29,8 +29,7 @@ export default function JobGrid({ jobs, accent }: JobGridProps) {
   return (
     <div
       className="grid gap-[10px]"
-      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" }}
-    >
+      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" }}>
       {jobs.map((job, i) => (
         <JobCard key={job.id} job={job} accent={accent} index={i} />
       ))}

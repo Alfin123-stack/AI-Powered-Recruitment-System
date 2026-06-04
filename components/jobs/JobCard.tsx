@@ -3,7 +3,7 @@
 import { getColor, timeAgo } from "@/lib/utils";
 import { Briefcase, Building2, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
-import type { Job } from "@/lib/jobs";
+import type { Job } from "@/types/jobs";
 
 const TYPE_STYLES: Record<
   string,

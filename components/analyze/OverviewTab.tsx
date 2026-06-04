@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import AnimatedBar from "./AnimatedBar";
 import { scoreColor } from "./analyze-helpers";
-import type { AnalysisData } from "./analyze";
+import type { AnalysisData } from "@/types/analyze";
 
 // ─── OVERVIEW TAB ─────────────────────────────────────────────────────────────
 type Props = { data: AnalysisData };

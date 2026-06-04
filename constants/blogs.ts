@@ -7,35 +7,9 @@ import {
   BookOpen,
   Zap,
 } from "lucide-react";
+import { EditorialArticle } from "@/types/blogs";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export type EditorialArticle = {
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  readTime: string;
-  date: string;
-  featured?: boolean;
-  tag: string;
-  icon: React.ReactNode;
-};
-
-export type DevToArticle = {
-  title: string;
-  link: string;
-  pubDate: string;
-  description: string;
-  source: string;
-  thumbnail?: string;
-  author?: string;
-  authorImage?: string;
-  readTime?: number;
-  reactions?: number;
-  tags?: string[];
-};
-
+export const ARTICLES_PER_PAGE = 6;
 // ── Static data ───────────────────────────────────────────────────────────────
 
 export const EDITORIAL_ARTICLES: EditorialArticle[] = [
@@ -120,7 +94,8 @@ export const EDITORIAL_ARTICLES: EditorialArticle[] = [
   },
   {
     slug: "bangun-personal-branding-linkedin",
-    title: "Membangun Personal Branding di LinkedIn untuk Karier yang Lebih Baik",
+    title:
+      "Membangun Personal Branding di LinkedIn untuk Karier yang Lebih Baik",
     excerpt:
       "LinkedIn bukan sekadar CV online — ini platform di mana rekruter aktif mencari kandidat. Pelajari cara mengoptimalkan profil dan membangun jaringan yang bermakna.",
     category: "Karier",

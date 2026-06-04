@@ -50,8 +50,7 @@ export default function CompanyToolbar({
                   filter === f
                     ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
                     : "bg-transparent border-white/[0.07] text-[#5d7a6a] hover:border-white/[0.13] hover:text-[#e8f0ec]"
-                }`}
-              >
+                }`}>
                 {f}
               </button>
             ))}

@@ -1,7 +1,7 @@
 // SERVER Component — tidak ada directive "use client".
 
 import { Building2, Users, MapPin, Briefcase } from "lucide-react";
-import { Company } from "./types";
+import { Company } from "@/types/company";
 type CompanyAboutProps = {
   company: Company;
   jobCount: number;

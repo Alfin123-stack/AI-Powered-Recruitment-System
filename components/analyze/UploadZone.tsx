@@ -38,6 +38,7 @@ export default function UploadZone({ onFileSelect, isLoading }: Props) {
         opacity: isLoading ? 0.6 : 1,
       }}>
       <input
+        title="Upload CV file (PDF only)"
         ref={inputRef}
         type="file"
         accept=".pdf"

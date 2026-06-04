@@ -1,8 +1,3 @@
-// app/(main)/blog/[slug]/page.tsx
-// Server Component — SSG via generateStaticParams.
-// Semua artikel di-pre-render saat build (tidak ada runtime fetch).
-// notFound() tetap bekerja di Server Component.
-
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
@@ -13,12 +8,10 @@ import RelatedArticles from "@/components/blog-detail/RelatedArticles";
 import BlogDetailSkeleton from "@/components/blog-detail/BlogDetailSkeleton";
 import { ARTICLE_MAP } from "@/lib/articles";
 
-// Beri tahu Next.js semua slug yang valid → fully static, no runtime rendering
 export function generateStaticParams() {
   return Object.keys(ARTICLE_MAP).map((slug) => ({ slug }));
 }
 
-// Revalidate = false → pure SSG, tidak di-rebuild kecuali di-deploy ulang
 export const revalidate = false;
 
 // Metadata per artikel (SEO)
@@ -54,11 +47,6 @@ export default async function BlogDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
       <main className="pt-16">
-        {/*
-          Suspense membungkus seluruh konten artikel.
-          Saat SSG sudah selesai ini tidak akan menampilkan fallback,
-          tapi tetap disertakan sebagai best practice untuk streaming SSR.
-        */}
         <Suspense fallback={<BlogDetailSkeleton />}>
           <ArticleHeader article={article} />
           <ArticleBody article={article} />

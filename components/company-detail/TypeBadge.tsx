@@ -1,15 +1,9 @@
-// SERVER Component — tidak ada directive "use client".
-// Pure render badge tipe pekerjaan (Full-time, Part-time, dsb).
-// Tidak ada hooks atau browser API.
-
-import { TYPE_COLORS } from "./detailConstants";
-
 type TypeBadgeProps = {
-  type: string;
+  type: string | null;
 };
 
 export default function TypeBadge({ type }: TypeBadgeProps) {
-  const color = TYPE_COLORS[type] || "#5d7a6a";
+  const color = "#5d7a6a";
 
   return (
     <span
@@ -18,8 +12,7 @@ export default function TypeBadge({ type }: TypeBadgeProps) {
         background: `${color}18`,
         color,
         border: `0.5px solid ${color}35`,
-      }}
-    >
+      }}>
       {type}
     </span>
   );

@@ -1,15 +1,8 @@
 // SERVER Component — tidak ada directive "use client".
 
 import Link from "next/link";
-import {
-  Building2,
-  Users,
-  MapPin,
-  Briefcase,
-  ArrowLeft,
-  Tag,
-} from "lucide-react";
-import type { Company } from "./types";
+import { Building2, Users, MapPin, ArrowLeft, Tag } from "lucide-react";
+import type { Company } from "@/types/company";
 
 type CompanyDetailHeaderProps = {
   company: Company;

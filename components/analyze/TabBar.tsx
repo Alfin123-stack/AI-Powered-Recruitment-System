@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { BarChart3, ShieldCheck, Layers, Pencil } from "lucide-react";
-import type { Tab } from "./analyze";
+import type { Tab } from "@/types/analyze";
 
 // ─── TAB BAR ─────────────────────────────────────────────────────────────────
 type Props = {

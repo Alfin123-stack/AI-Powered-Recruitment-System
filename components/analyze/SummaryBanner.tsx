@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
-import type { AnalysisData } from "./analyze";
+import type { AnalysisData } from "@/types/analyze";
 import { buildAISummary } from "./analyze-helpers";
 
 // ─── AI SUMMARY BANNER ────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
-import type { LineFeedback } from "./analyze";
+import type { LineFeedback } from "@/types/analyze";
 
 // ─── EMPTY STATE ──────────────────────────────────────────────────────────────
 function EmptyTabState({ message }: { message: string }) {

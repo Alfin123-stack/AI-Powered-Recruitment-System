@@ -1,18 +1,5 @@
 "use client";
 
-// components/profile/Toast.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: CSR
-//
-// Toast system — pure client karena:
-// - useState untuk list toasts
-// - useCallback untuk addToast/removeToast
-// - AnimatePresence untuk animasi masuk/keluar
-//
-// Export useToast hook agar bisa dipakai ProfileShell
-// dan pass addToast ke child components.
-// ─────────────────────────────────────────────
-
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, XCircle, X } from "lucide-react";

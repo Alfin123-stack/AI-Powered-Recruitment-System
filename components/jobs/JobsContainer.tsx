@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import JobCard from "@/components/jobs/JobCard";
 import Pagination from "@/components/Pagination";
 import { FILTERS } from "@/lib/constants";
-import type { Job } from "@/lib/jobs";
+import type { Job } from "@/types/jobs";
 
 const JOBS_PER_PAGE = 9;
 

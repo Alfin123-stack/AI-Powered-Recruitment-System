@@ -12,7 +12,7 @@ import ATSTab from "./ATSTab";
 import FeedbackTab from "./FeedbackTab";
 import WritingTab from "./WritingTab";
 import { scoreColor } from "./analyze-helpers";
-import type { AnalysisData, Tab } from "./analyze";
+import type { AnalysisData, Tab } from "@/types/analyze";
 
 // ─── ANALYSIS RESULT ─────────────────────────────────────────────────────────
 type Props = {
@@ -73,6 +73,7 @@ export default function AnalyzeResult({ data, onReanalyze, isLoading }: Props) {
                 <Download size={12} /> Export PDF
               </button>
               <input
+                title="Reanalyze with a different CV file"
                 ref={inputRef}
                 type="file"
                 accept=".pdf"

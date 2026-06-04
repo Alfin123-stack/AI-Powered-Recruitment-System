@@ -1,15 +1,9 @@
-"use client";
-
-// components/blog/EditorialSection.tsx
-// NOTE: masih "use client" karena menerima onCategoryChange (event handler)
-// dan CATEGORIES filter buttons butuh onClick.
-// Alternatif: pisahkan CategoryFilterClient sendiri untuk make ini pure Server Component.
-// Untuk sekarang ini adalah Client Component yang minimal — tidak ada fetch, tidak ada effect.
-
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Search, Brain } from "lucide-react";
-import { EditorialArticle, CATEGORIES } from "./blog-types";
+
 import { FadeIn } from "./blog-components";
+import { EditorialArticle } from "@/types/blogs";
+import { CATEGORIES } from "@/constants/blogs";
 
 // ── Editorial card ─────────────────────────────────────────────────────────────
 function EditorialCard({

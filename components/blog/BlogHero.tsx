@@ -1,6 +1,4 @@
-// components/blog/BlogHero.tsx
-// Server Component — no "use client", no useState, no useEffect
-// Motion animations replaced with CSS — no JS bundle cost
+
 
 import { BookOpen } from "lucide-react";
 

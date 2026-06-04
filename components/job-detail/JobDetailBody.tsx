@@ -4,7 +4,7 @@
 import React from "react";
 import { CheckCircle2, Building2 } from "lucide-react";
 import FadeIn from "./FadeIn";
-import { Job } from "@/lib/jobs";
+import { Job } from "@/types/jobs";
 
 function Card({
   children,
@@ -79,7 +79,7 @@ export default function JobDetailBody({
           <Card>
             <CardTitle>Benefit & Fasilitas</CardTitle>
             <div className="grid grid-cols-2 gap-2">
-              {job.benefits.map((b, i) => (
+              {job.benefits?.map((b, i) => (
                 <div
                   key={i}
                   className="bg-emerald-500/[0.06] border border-emerald-500/15 rounded-[9px] px-[14px] py-[10px] text-[0.8rem] text-[#e8f0ec] flex items-center gap-[7px]">

@@ -1,7 +1,3 @@
-// SERVER Component — tidak ada directive "use client".
-// Ditampilkan sebagai fallback <Suspense> saat CompanyDetailPage
-// sedang fetch data di server. Pure HTML dengan animasi pulse CSS.
-
 export default function CompanyDetailSkeleton() {
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
@@ -54,13 +50,13 @@ export default function CompanyDetailSkeleton() {
           <div className="max-w-[900px] mx-auto px-6">
             <div
               className="grid gap-[10px] animate-pulse"
-              style={{ gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" }}
-            >
+              style={{
+                gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+              }}>
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex flex-col gap-[10px] rounded-[12px] border border-white/[0.07] bg-[#0f1612] p-[16px]"
-                >
+                  className="flex flex-col gap-[10px] rounded-[12px] border border-white/[0.07] bg-[#0f1612] p-[16px]">
                   <div className="flex justify-between gap-2">
                     <div className="flex flex-col gap-[6px]">
                       <div className="h-[16px] w-[180px] rounded-[4px] bg-white/[0.06]" />
@@ -72,7 +68,11 @@ export default function CompanyDetailSkeleton() {
                   <div className="h-[10px] w-[75%] rounded-[4px] bg-white/[0.04]" />
                   <div className="flex gap-[4px]">
                     {[44, 52, 40, 56].map((w, j) => (
-                      <div key={j} className="h-[18px] rounded-[4px] bg-white/[0.04]" style={{ width: w }} />
+                      <div
+                        key={j}
+                        className="h-[18px] rounded-[4px] bg-white/[0.04]"
+                        style={{ width: w }}
+                      />
                     ))}
                   </div>
                   <div className="h-[32px] rounded-[8px] bg-white/[0.04] mt-auto" />
