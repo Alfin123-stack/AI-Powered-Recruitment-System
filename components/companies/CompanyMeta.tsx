@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { Users, Briefcase } from "lucide-react";
+import type { Company } from "@/types/company";
 
 type CompanyMetaProps = {
   id: string;
   name: string;
-  companySize: string;
-  openJobs: number;
-  accent: string;
+  companySize: Company["company_size"]; // ✅ ambil tipe dari Company, nama prop bebas
+  openJobs: Company["openJobs"];
+  accent: string | undefined;
 };
 
 export default function CompanyMeta({
@@ -23,8 +24,7 @@ export default function CompanyMeta({
       <div className="flex-1 min-w-0">
         <Link
           href={`/companies/${id}`}
-          className="no-underline font-semibold text-[0.9rem] text-[#e8f0ec] truncate leading-tight hover:underline decoration-white/30 underline-offset-2 transition-colors hover:text-white block"
-        >
+          className="no-underline font-semibold text-[0.9rem] text-[#e8f0ec] truncate leading-tight hover:underline decoration-white/30 underline-offset-2 transition-colors hover:text-white block">
           {name}
         </Link>
         <div className="flex items-center gap-[4px] text-[0.72rem] text-[#5d7a6a] mt-[2px]">
@@ -39,8 +39,7 @@ export default function CompanyMeta({
           background: `${accent}14`,
           color: accent,
           border: `0.5px solid ${accent}35`,
-        }}
-      >
+        }}>
         <Briefcase size={10} />
         {openJobs} lowongan
       </div>

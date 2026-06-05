@@ -1,18 +1,4 @@
-// components/blog-detail/ArticleBody.tsx
-// Server Component — TIDAK ada "use client".
-// PROSE_STYLES dihapus — styling langsung via Tailwind className pada elemen konten.
-//
-// Karena article.content adalah ReactNode (JSX), kita tidak bisa
-// menambahkan className ke elemen dalamnya dari sini.
-// Solusi: bungkus dalam <div> dengan Tailwind prose classes,
-// dan ubah article.content agar menggunakan Tailwind langsung (lihat catatan di bawah).
-//
-// Jika article.content adalah JSX yang sudah pakai className sendiri,
-// pendekatan ini membuat parent wrapper menyediakan rhythm/spacing dasar
-// via Tailwind typography utilities.
-
-import type { ArticleContent } from "@/components/blog-detail/types";
-
+import type { ArticleContent } from "@/types/blogs";
 interface ArticleBodyProps {
   article: ArticleContent;
 }
@@ -36,8 +22,7 @@ export default function ArticleBody({ article }: ArticleBodyProps) {
         [&_em]:text-[#9ab5a5] [&_em]:italic
         [&_a]:text-[#34d399] [&_a]:underline
       "
-      style={{ animation: "fadeInUp 0.6s 0.1s ease-out both" }}
-    >
+      style={{ animation: "fadeInUp 0.6s 0.1s ease-out both" }}>
       {article.content}
 
       <style>{`

@@ -14,25 +14,17 @@ import {
   Search,
   Trash2,
   Sparkles,
-  TrendingUp,
   AlertCircle,
-  Zap,
   Brain,
-  BarChart2,
-  Star,
-  X,
-  Filter,
-  SortAsc,
-  ChevronDown,
-  ExternalLink,
-  CheckCircle2,
-  Timer,
   Award,
   Target,
   Eye,
+  ChevronDown,
+  Timer,
+  X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useDashboard } from "@/app/(role)/layout";
+import { useDashboard } from "@/context/DashboardContext";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -42,9 +34,9 @@ type SavedJob = {
   saved_at: string;
   id: string;
   title: string;
-  salary: string;
-  location: string;
-  type: string;
+  salary: string | null;
+  location: string | null;
+  type: string | null;
   skills: string[];
   deadline: string | null;
   created_at: string;
@@ -56,6 +48,13 @@ type SavedJob = {
 
 type SortOption = "saved_at" | "deadline" | "matching_score" | "title";
 
+type InsightType = "tip" | "warning" | "success";
+
+type Insight = {
+  type: InsightType;
+  text: string;
+};
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const COLORS = [
   "#10b981",
@@ -65,9 +64,10 @@ const COLORS = [
   "#ef4444",
   "#ec4899",
 ];
-const getColor = (i: number) => COLORS[i % COLORS.length];
 
-const timeAgo = (dateStr: string) => {
+const getColor = (i: number): string => COLORS[i % COLORS.length];
+
+const timeAgo = (dateStr: string): string => {
   const days = Math.floor(
     (Date.now() - new Date(dateStr).getTime()) / 86400000,
   );
@@ -83,16 +83,20 @@ const daysUntilDeadline = (deadline: string | null): number | null => {
   return Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000);
 };
 
-const isDeadlineSoon = (deadline: string | null) => {
+const isDeadlineSoon = (deadline: string | null): boolean => {
   const d = daysUntilDeadline(deadline);
   return d !== null && d >= 0 && d <= 7;
 };
 
-const isExpired = (deadline: string | null) => {
+const isExpired = (deadline: string | null): boolean => {
   if (!deadline) return false;
   return new Date(deadline).getTime() < Date.now();
 };
 
+// ── Raw API response type ─────────────────────────────────────────────────────
+type SavedJobRaw = Omit<SavedJob, "color">;
+
+// ── FadeIn ────────────────────────────────────────────────────────────────────
 function FadeIn({
   children,
   delay = 0,
@@ -141,11 +145,9 @@ function SavedJobCardSkeleton() {
                 <SkeletonPulse className="h-3 w-28" />
               </div>
               <div className="flex gap-2 mb-4">
-                {Array(3)
-                  .fill(0)
-                  .map((_, i) => (
-                    <SkeletonPulse key={i} className="h-5 w-16 rounded-[4px]" />
-                  ))}
+                {[0, 1, 2].map((i) => (
+                  <SkeletonPulse key={i} className="h-5 w-16 rounded-[4px]" />
+                ))}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
@@ -171,42 +173,44 @@ function StatsBar({ jobs }: { jobs: SavedJob[] }) {
   const expired = jobs.filter((j) => isExpired(j.deadline)).length;
   const highMatch = jobs.filter((j) => (j.matching_score ?? 0) >= 75).length;
 
+  const stats = [
+    {
+      label: "Tersimpan",
+      value: total,
+      Icon: Bookmark,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/8",
+      border: "border-emerald-500/12",
+    },
+    {
+      label: "Segera Expired",
+      value: expiring,
+      Icon: Timer,
+      color: "text-amber-400",
+      bg: "bg-amber-500/8",
+      border: "border-amber-500/12",
+    },
+    {
+      label: "High Match",
+      value: highMatch,
+      Icon: Target,
+      color: "text-violet-400",
+      bg: "bg-violet-500/8",
+      border: "border-violet-500/12",
+    },
+    {
+      label: "Sudah Expired",
+      value: expired,
+      Icon: AlertCircle,
+      color: "text-red-400",
+      bg: "bg-red-500/8",
+      border: "border-red-500/12",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-      {[
-        {
-          label: "Tersimpan",
-          value: total,
-          Icon: Bookmark,
-          color: "text-emerald-400",
-          bg: "bg-emerald-500/8",
-          border: "border-emerald-500/12",
-        },
-        {
-          label: "Segera Expired",
-          value: expiring,
-          Icon: Timer,
-          color: "text-amber-400",
-          bg: "bg-amber-500/8",
-          border: "border-amber-500/12",
-        },
-        {
-          label: "High Match",
-          value: highMatch,
-          Icon: Target,
-          color: "text-violet-400",
-          bg: "bg-violet-500/8",
-          border: "border-violet-500/12",
-        },
-        {
-          label: "Sudah Expired",
-          value: expired,
-          Icon: AlertCircle,
-          color: "text-red-400",
-          bg: "bg-red-500/8",
-          border: "border-red-500/12",
-        },
-      ].map(({ label, value, Icon, color, bg, border }) => (
+      {stats.map(({ label, value, Icon, color, bg, border }) => (
         <div
           key={label}
           className={`bg-[#0a0f0c] border ${border} rounded-[14px] p-4`}>
@@ -225,39 +229,37 @@ function StatsBar({ jobs }: { jobs: SavedJob[] }) {
   );
 }
 
-// ── AI Insight for a job ──────────────────────────────────────────────────────
-function getJobInsights(
-  job: SavedJob,
-): { type: "tip" | "warning" | "success"; text: string }[] {
-  const insights = [];
+// ── AI Insights ───────────────────────────────────────────────────────────────
+function getJobInsights(job: SavedJob): Insight[] {
+  const insights: Insight[] = [];
   const days = daysUntilDeadline(job.deadline);
 
   if (days !== null && days >= 0 && days <= 3) {
     insights.push({
-      type: "warning" as const,
+      type: "warning",
       text: `Deadline ${days === 0 ? "hari ini" : `${days} hari lagi`}! Segera apply sebelum terlambat.`,
     });
   }
   if ((job.matching_score ?? 0) >= 80) {
     insights.push({
-      type: "success" as const,
+      type: "success",
       text: "Profil kamu sangat cocok untuk posisi ini. Peluang lolos lebih tinggi!",
     });
   } else if ((job.matching_score ?? 0) >= 60) {
     insights.push({
-      type: "tip" as const,
+      type: "tip",
       text: "Match lumayan bagus. Highlight pengalaman yang relevan di cover letter.",
     });
   }
   if ((job.resume_score ?? 0) >= 85) {
     insights.push({
-      type: "success" as const,
+      type: "success",
       text: "CV kamu sudah kuat untuk posisi ini berdasarkan analisis ATS.",
     });
   }
   if (!job.salary) {
     insights.push({
-      type: "tip" as const,
+      type: "tip",
       text: "Riset kisaran gaji posisi ini di Glassdoor/LinkedIn sebelum negosiasi.",
     });
   }
@@ -265,7 +267,7 @@ function getJobInsights(
   return insights.slice(0, 2);
 }
 
-// ── Deadline Urgency Bar ──────────────────────────────────────────────────────
+// ── Deadline Bar ──────────────────────────────────────────────────────────────
 function DeadlineBar({ deadline }: { deadline: string | null }) {
   if (!deadline) return null;
   const days = daysUntilDeadline(deadline);
@@ -293,6 +295,35 @@ function DeadlineBar({ deadline }: { deadline: string | null }) {
 }
 
 // ── Saved Job Card ────────────────────────────────────────────────────────────
+const INSIGHT_CONFIG: Record<
+  InsightType,
+  {
+    color: string;
+    bg: string;
+    border: string;
+    Icon: React.ComponentType<{ size?: number; className?: string }>;
+  }
+> = {
+  tip: {
+    color: "text-violet-400",
+    bg: "bg-violet-500/[0.06]",
+    border: "border-violet-500/15",
+    Icon: Brain,
+  },
+  warning: {
+    color: "text-amber-400",
+    bg: "bg-amber-500/[0.06]",
+    border: "border-amber-500/15",
+    Icon: AlertCircle,
+  },
+  success: {
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/[0.06]",
+    border: "border-emerald-500/15",
+    Icon: Sparkles,
+  },
+};
+
 function SavedJobCard({
   job,
   index,
@@ -324,7 +355,6 @@ function SavedJobCard({
               ? "border-amber-500/20 hover:border-amber-500/32 hover:shadow-[0_0_20px_rgba(245,158,11,0.06)]"
               : "border-emerald-500/12 hover:border-emerald-500/28 hover:-translate-y-[1px] hover:shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         }`}>
-      {/* Top accent stripe */}
       {!expired && (
         <div
           className={`h-[2px] w-full ${
@@ -336,7 +366,6 @@ function SavedJobCard({
       )}
 
       <div className="flex">
-        {/* Left color bar */}
         <div
           className="w-[3px] flex-shrink-0"
           style={{
@@ -348,7 +377,6 @@ function SavedJobCard({
 
         <div className="flex-1 p-5">
           <div className="flex items-start gap-4">
-            {/* Icon */}
             <div
               className="w-11 h-11 rounded-[10px] flex items-center justify-center flex-shrink-0 border border-white/[0.07]"
               style={{ background: `${job.color}14`, color: job.color }}>
@@ -377,19 +405,21 @@ function SavedJobCard({
                       ⚡ Segera!
                     </span>
                   )}
-                  <span
-                    className="px-[8px] py-[2px] rounded-[5px] text-[0.63rem] font-semibold"
-                    style={{
-                      background: `${job.color}15`,
-                      color: job.color,
-                      border: `1px solid ${job.color}25`,
-                    }}>
-                    {job.type}
-                  </span>
+                  {job.type && (
+                    <span
+                      className="px-[8px] py-[2px] rounded-[5px] text-[0.63rem] font-semibold"
+                      style={{
+                        background: `${job.color}15`,
+                        color: job.color,
+                        border: `1px solid ${job.color}25`,
+                      }}>
+                      {job.type}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Deadline urgency bar */}
+              {/* Deadline bar */}
               {!expired && job.deadline && (
                 <div className="mb-2">
                   <DeadlineBar deadline={job.deadline} />
@@ -473,7 +503,7 @@ function SavedJobCard({
               )}
 
               {/* Skills */}
-              {(job.skills || []).length > 0 && (
+              {job.skills.length > 0 && (
                 <div className="flex flex-wrap gap-[5px] mb-3">
                   {job.skills.slice(0, 5).map((s) => (
                     <span
@@ -490,7 +520,7 @@ function SavedJobCard({
                 </div>
               )}
 
-              {/* AI Insight toggle */}
+              {/* AI Insights */}
               {insights.length > 0 && (
                 <div className="mb-3">
                   <button
@@ -512,26 +542,7 @@ function SavedJobCard({
                         className="overflow-hidden">
                         <div className="pt-2 space-y-1.5">
                           {insights.map((ins, i) => {
-                            const cfg = {
-                              tip: {
-                                color: "text-violet-400",
-                                bg: "bg-violet-500/[0.06]",
-                                border: "border-violet-500/15",
-                                Icon: Brain,
-                              },
-                              warning: {
-                                color: "text-amber-400",
-                                bg: "bg-amber-500/[0.06]",
-                                border: "border-amber-500/15",
-                                Icon: AlertCircle,
-                              },
-                              success: {
-                                color: "text-emerald-400",
-                                bg: "bg-emerald-500/[0.06]",
-                                border: "border-emerald-500/15",
-                                Icon: Sparkles,
-                              },
-                            }[ins.type];
+                            const cfg = INSIGHT_CONFIG[ins.type];
                             return (
                               <div
                                 key={i}
@@ -591,30 +602,31 @@ function SavedJobCard({
   );
 }
 
-// ── Sort & Filter Bar ─────────────────────────────────────────────────────────
+// ── Filter Sort Bar ───────────────────────────────────────────────────────────
+type FilterValue = "all" | "active" | "expiring" | "expired";
+
+const FILTER_OPTIONS: { val: FilterValue; label: string }[] = [
+  { val: "all", label: "Semua" },
+  { val: "active", label: "Aktif" },
+  { val: "expiring", label: "⚡ Segera Expired" },
+  { val: "expired", label: "Expired" },
+];
+
 function FilterSortBar({
   filter,
   setFilter,
   sortBy,
   setSortBy,
-  total,
 }: {
-  filter: string;
-  setFilter: (v: string) => void;
+  filter: FilterValue;
+  setFilter: (v: FilterValue) => void;
   sortBy: SortOption;
   setSortBy: (v: SortOption) => void;
-  total: number;
 }) {
   return (
     <div className="flex items-center gap-3 mb-5 flex-wrap">
-      {/* Filter chips */}
       <div className="flex gap-2 flex-wrap">
-        {[
-          { val: "all", label: "Semua" },
-          { val: "active", label: "Aktif" },
-          { val: "expiring", label: "⚡ Segera Expired" },
-          { val: "expired", label: "Expired" },
-        ].map(({ val, label }) => (
+        {FILTER_OPTIONS.map(({ val, label }) => (
           <button
             key={val}
             onClick={() => setFilter(val)}
@@ -633,9 +645,9 @@ function FilterSortBar({
         ))}
       </div>
 
-      {/* Sort */}
       <div className="ml-auto">
         <select
+          title="Sortir berdasarkan"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortOption)}
           className="bg-[#0a0f0c] border border-emerald-500/15 text-[#7a9585] text-[0.76rem] rounded-[8px] px-3 py-[6px] cursor-pointer focus:outline-none focus:border-emerald-500/30 transition-all">
@@ -681,31 +693,35 @@ export default function SavedJobsPage() {
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<FilterValue>("all");
   const [sortBy, setSortBy] = useState<SortOption>("saved_at");
 
   useEffect(() => {
     if (!token) return;
-    (async () => {
+
+    const fetchSaved = async () => {
       try {
         const res = await fetch(`${API}/api/saved-jobs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = await res.json();
+        const data: SavedJobRaw[] = await res.json();
         setSavedJobs(
-          (Array.isArray(data) ? data : []).map((j: any, i: number) => ({
+          (Array.isArray(data) ? data : []).map((j, i) => ({
             ...j,
             color: getColor(i),
           })),
         );
       } catch {
+        // silent
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    void fetchSaved();
   }, [token]);
 
-  const handleUnsave = async (jobId: string) => {
+  const handleUnsave = async (jobId: string): Promise<void> => {
     setRemovingId(jobId);
     try {
       await fetch(`${API}/api/saved-jobs/${jobId}`, {
@@ -714,12 +730,12 @@ export default function SavedJobsPage() {
       });
       setSavedJobs((prev) => prev.filter((j) => j.id !== jobId));
     } catch {
+      // silent
     } finally {
       setRemovingId(null);
     }
   };
 
-  // Filter
   const afterFilter = savedJobs.filter((j) => {
     const q = search.toLowerCase();
     const matchSearch =
@@ -733,7 +749,6 @@ export default function SavedJobsPage() {
     return true;
   });
 
-  // Sort
   const sorted = [...afterFilter].sort((a, b) => {
     if (sortBy === "saved_at")
       return new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime();
@@ -748,44 +763,33 @@ export default function SavedJobsPage() {
     return 0;
   });
 
-  // ── Loading skeleton ───────────────────────────────────────────────────────
   if (loading) {
     return (
       <div>
-        {/* Stats skeleton */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-          {Array(4)
-            .fill(0)
-            .map((_, i) => (
-              <div
-                key={i}
-                className="bg-[#0a0f0c] border border-emerald-500/10 rounded-[14px] p-4">
-                <SkeletonPulse className="w-8 h-8 rounded-[8px] mb-3" />
-                <SkeletonPulse className="h-7 w-10 mb-1" />
-                <SkeletonPulse className="h-3 w-20" />
-              </div>
-            ))}
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-[#0a0f0c] border border-emerald-500/10 rounded-[14px] p-4">
+              <SkeletonPulse className="w-8 h-8 rounded-[8px] mb-3" />
+              <SkeletonPulse className="h-7 w-10 mb-1" />
+              <SkeletonPulse className="h-3 w-20" />
+            </div>
+          ))}
         </div>
-        {/* Header skeleton */}
         <div className="flex items-center justify-between mb-5">
           <SkeletonPulse className="h-5 w-40" />
           <SkeletonPulse className="h-9 w-52 rounded-[9px]" />
         </div>
-        {/* Filter skeleton */}
         <div className="flex gap-2 mb-5">
-          {Array(4)
-            .fill(0)
-            .map((_, i) => (
-              <SkeletonPulse key={i} className="h-8 w-20 rounded-[7px]" />
-            ))}
+          {[0, 1, 2, 3].map((i) => (
+            <SkeletonPulse key={i} className="h-8 w-20 rounded-[7px]" />
+          ))}
         </div>
-        {/* Cards skeleton */}
         <div className="flex flex-col gap-3">
-          {Array(3)
-            .fill(0)
-            .map((_, i) => (
-              <SavedJobCardSkeleton key={i} />
-            ))}
+          {[0, 1, 2].map((i) => (
+            <SavedJobCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
@@ -793,14 +797,12 @@ export default function SavedJobsPage() {
 
   return (
     <div>
-      {/* ── Stats Bar ── */}
       {savedJobs.length > 0 && (
         <FadeIn>
           <StatsBar jobs={savedJobs} />
         </FadeIn>
       )}
 
-      {/* ── Header + Search ── */}
       <FadeIn delay={0.02}>
         <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
           <div>
@@ -823,6 +825,7 @@ export default function SavedJobsPage() {
               />
               {search && (
                 <button
+                  title="Clear search"
                   onClick={() => setSearch("")}
                   className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[#7a9585] hover:text-[#e8f0ec] transition-colors cursor-pointer">
                   <X size={13} />
@@ -833,23 +836,19 @@ export default function SavedJobsPage() {
         </div>
       </FadeIn>
 
-      {/* ── Empty ── */}
       {savedJobs.length === 0 ? (
         <EmptyState />
       ) : (
         <>
-          {/* ── Filter + Sort ── */}
           <FadeIn delay={0.04}>
             <FilterSortBar
               filter={filter}
               setFilter={setFilter}
               sortBy={sortBy}
               setSortBy={setSortBy}
-              total={sorted.length}
             />
           </FadeIn>
 
-          {/* ── No results ── */}
           {sorted.length === 0 ? (
             <div className="text-center py-16 text-[#7a9585]">
               <div className="text-[2rem] mb-3 opacity-20">🔍</div>
@@ -867,11 +866,9 @@ export default function SavedJobsPage() {
             </div>
           ) : (
             <>
-              {/* Result count */}
               <div className="text-[0.72rem] text-[#7a9585] mb-3">
                 Menampilkan {sorted.length} lowongan
               </div>
-
               <div className="flex flex-col gap-3">
                 <AnimatePresence>
                   {sorted.map((job, i) => (
@@ -888,7 +885,6 @@ export default function SavedJobsPage() {
             </>
           )}
 
-          {/* ── CTA ── */}
           <div className="mt-7 text-center">
             <Link
               href="/jobs"

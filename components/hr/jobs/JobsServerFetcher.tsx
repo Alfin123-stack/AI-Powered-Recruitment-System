@@ -1,23 +1,11 @@
-// @/components/hr/jobs/JobsServerFetcher.tsx
-// Server Component — fetch data di server (SSR + ISR revalidate 60s)
-// Auth: Supabase SSR — baca session dari cookies, gunakan access_token
-// Tidak ada "use client" — murni server
-
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { JobsPageClient } from "./JobsPageClient";
 import type { RawApplication } from "./types";
 import type { Job } from "@/app/(role)/dashboard/hr/_components/shared";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ISR: data di-revalidate setiap 60 detik (stale-while-revalidate)
-// Mutasi (create/edit/delete) akan trigger refetch di client via apiFetch
-// ─────────────────────────────────────────────────────────────────────────────
 export const revalidate = 60;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Buat Supabase server client (SSR-safe, baca cookies request)
-// ─────────────────────────────────────────────────────────────────────────────
 async function getSupabaseSession() {
   const cookieStore = await cookies();
 

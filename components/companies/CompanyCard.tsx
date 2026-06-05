@@ -42,7 +42,7 @@ export default function CompanyCard({ company, index }: CompanyCardProps) {
           id={company.id}
           name={company.name}
           logoUrl={company.logo_url}
-          accent={accent}
+          accent={company.color ?? "#34d399"}
         />
         <CompanyMeta
           id={company.id}
@@ -59,7 +59,7 @@ export default function CompanyCard({ company, index }: CompanyCardProps) {
       </p>
 
       <CompanyLocation location={company.location} />
-      <CompanyTags tags={company.tags} />
+      <CompanyTags tags={company.tags ?? []} />
 
       {/* CTA */}
       <div className="mt-auto pt-1">

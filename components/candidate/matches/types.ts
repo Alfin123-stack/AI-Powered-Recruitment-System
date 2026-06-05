@@ -10,6 +10,11 @@ export type Job = {
   companies: { name: string; logo_url: string | null };
 };
 
+// components/candidate/matches/types.ts — tambahkan:
+export type Application = {
+  job_id: string;
+};
+
 export type JobWithMatch = Job & {
   matchScore: number;
   matchedSkills: string[];

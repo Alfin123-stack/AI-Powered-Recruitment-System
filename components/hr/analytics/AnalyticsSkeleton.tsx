@@ -1,6 +1,3 @@
-// @/components/hr/analytics/AnalyticsSkeleton.tsx
-// Semua skeleton UI untuk halaman Analytics — SATU FILE, tidak dipisah
-
 const T = {
   card: "#0b1410",
   cardBorder: "rgba(16,185,129,0.13)",
@@ -8,7 +5,6 @@ const T = {
   shimmerHigh: "rgba(16,185,129,0.09)",
 };
 
-// ─── CSS keyframe injected once ─────────────────────────────────────────────
 const SHIMMER_STYLE = `
 @keyframes skeletonShimmer {
   0%   { background-position: -400px 0; }
@@ -155,9 +151,14 @@ export function PipelineFunnelSkeleton() {
         ))}
       </div>
       {/* bottom metrics */}
-      <div className="grid grid-cols-2 gap-2 mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <div
+        className="grid grid-cols-2 gap-2 mt-5 pt-4"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
         {[0, 1].map((i) => (
-          <div key={i} className="text-center py-2 rounded-[10px]" style={{ background: "rgba(255,255,255,0.025)" }}>
+          <div
+            key={i}
+            className="text-center py-2 rounded-[10px]"
+            style={{ background: "rgba(255,255,255,0.025)" }}>
             <SkBox w="40%" h={22} r={5} className="mx-auto mb-1" />
             <SkBox w="55%" h={10} r={4} className="mx-auto" />
           </div>
@@ -190,7 +191,9 @@ export function ScoreGaugesSkeleton() {
         ))}
       </div>
       {/* mini metric rows */}
-      <div className="space-y-3 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <div
+        className="space-y-3 mt-3 pt-3"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
         {[0, 1, 2].map((i) => (
           <div key={i} className="flex justify-between items-center">
             <SkBox w="55%" h={11} />
@@ -220,7 +223,10 @@ export function TopCandidatesSkeleton() {
           <div
             key={i}
             className="flex items-center gap-3 py-2 px-3 rounded-[11px]"
-            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.04)",
+            }}>
             <SkBox w={24} h={24} r={6} />
             <SkBox w={32} h={32} r={10} />
             <div className="flex-1 min-w-0 flex flex-col gap-1">
@@ -257,7 +263,9 @@ export function ConversionListSkeleton() {
           <SkBox w="35%" h={10} />
         </div>
       </div>
-      <div className="flex flex-col divide-y" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+      <div
+        className="flex flex-col divide-y"
+        style={{ borderColor: "rgba(255,255,255,0.04)" }}>
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="flex items-center gap-4 py-3">
             <SkBox w={8} h={8} r={4} />
@@ -281,7 +289,10 @@ export function TabBarSkeleton() {
   return (
     <div
       className="flex items-center gap-1 mb-6 p-1 rounded-[12px] w-fit"
-      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      style={{
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+      }}>
       {[80, 72, 88].map((w, i) => (
         <SkBox key={i} w={w} h={30} r={9} />
       ))}
@@ -323,7 +334,9 @@ export function AnalyticsPageSkeleton() {
       </div>
 
       {/* Row 1: Pipeline + Donut + Gauges */}
-      <div className="grid gap-5 mb-5" style={{ gridTemplateColumns: "1.3fr 1fr 1fr" }}>
+      <div
+        className="grid gap-5 mb-5"
+        style={{ gridTemplateColumns: "1.3fr 1fr 1fr" }}>
         <PipelineFunnelSkeleton />
         <ChartCardSkeleton height={180} />
         <ScoreGaugesSkeleton />

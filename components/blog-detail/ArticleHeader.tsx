@@ -1,10 +1,6 @@
-// components/blog-detail/ArticleHeader.tsx
-// Server Component — tidak ada "use client".
-// framer-motion diganti CSS animation agar tidak ada client bundle overhead.
-
 import Link from "next/link";
 import { Calendar, Clock, ChevronRight, Sparkles } from "lucide-react";
-import type { ArticleContent } from "@/components/blog-detail/types";
+import type { ArticleContent } from "@/types/blogs";
 
 interface ArticleHeaderProps {
   article: ArticleContent;

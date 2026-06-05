@@ -1,11 +1,14 @@
 export type Company = {
   id: string;
   name: string;
-  description: string;
-  company_size: string;
+  description: string | null;
+  company_size: string | null;
   logo_url: string | null;
-  openJobs: number;
-  location: string;
-  tags: string[];
-  color: string; // tidak ada di DB — di-assign dari getPaletteColor() saat fetch
+  industry?: string | null;
+  location?: string | null;
+  website?: string | null;
+  // Field UI-only, di-assign saat fetch, tidak ada di DB
+  openJobs?: number;
+  tags?: string[] | undefined;
+  color?: string;
 };

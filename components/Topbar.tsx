@@ -20,23 +20,33 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-
-import { DashboardUser } from "@/app/(role)/layout";
 import { supabase } from "@/lib/supabase";
+import type { DashboardUser } from "@/types/dashboard";
 
 const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
+type NotifType = "status_update" | "interview" | "general";
+
 type Notif = {
   id: string;
-  type: "status_update" | "interview" | "general";
+  type: NotifType;
   title: string;
   message: string;
   created_at: string;
   read: boolean;
 };
 
-type Company = { name: string; [key: string]: any };
+type NotifRaw = Omit<Notif, "created_at"> & {
+  created_at?: string;
+  time?: string;
+};
+
+type Company = {
+  name: string;
+  id?: string;
+  logo_url?: string | null;
+};
 
 type TopbarProps = {
   title: string;
@@ -49,7 +59,7 @@ type TopbarProps = {
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function getInitials(name: string) {
+function getInitials(name: string): string {
   return name
     .split(" ")
     .map((n) => n[0])
@@ -58,15 +68,25 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-const timeAgo = (dateStr: string) => {
+function timeAgo(dateStr: string): string {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
   if (diff < 60) return "Baru saja";
   if (diff < 3600) return `${Math.floor(diff / 60)}m lalu`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}j lalu`;
   return `${Math.floor(diff / 86400)}h lalu`;
-};
+}
 
-const notifTypeCfg = {
+const NOTIF_TYPE_CFG: Record<
+  NotifType,
+  {
+    bg: string;
+    border: string;
+    dotColor: string;
+    emoji: string;
+    label: string;
+    labelColor: string;
+  }
+> = {
   status_update: {
     bg: "bg-[rgba(52,211,153,0.12)]",
     border: "border-[rgba(52,211,153,0.2)]",
@@ -91,13 +111,12 @@ const notifTypeCfg = {
     label: "Info",
     labelColor: "text-[#c4b5fd]",
   },
-} as const;
+};
 
 const POPUP_LIMIT = 4;
-
 const PROFILE_HREF = "/profile";
 
-// ── Logout Spinner ─────────────────────────────────────────────────────────────
+// ── Logout Spinner ────────────────────────────────────────────────────────────
 function LogoutSpinner() {
   return (
     <svg
@@ -106,7 +125,8 @@ function LogoutSpinner() {
       height="13"
       viewBox="0 0 13 13"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true">
       <circle
         cx="6.5"
         cy="6.5"
@@ -128,7 +148,6 @@ function LogoutSpinner() {
 // ── Notification Popup ────────────────────────────────────────────────────────
 function NotifPopup({
   notifs,
-  role,
   loading,
   onClose,
   onMarkAllRead,
@@ -149,7 +168,6 @@ function NotifPopup({
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
     .slice(0, POPUP_LIMIT);
-  const fullHref = "/notifications";
 
   return (
     <motion.div
@@ -157,6 +175,8 @@ function NotifPopup({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+      role="dialog"
+      aria-label="Panel notifikasi"
       className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[370px] overflow-hidden rounded-2xl
         bg-[#0a0f0c] border border-[rgba(52,211,153,0.15)]
         shadow-[0_24px_64px_rgba(0,0,0,0.75),0_0_0_1px_rgba(52,211,153,0.05)]">
@@ -167,10 +187,15 @@ function NotifPopup({
             Notifikasi
           </span>
           {loading && (
-            <span className="w-[5px] h-[5px] rounded-full animate-pulse bg-[rgba(52,211,153,0.5)]" />
+            <span
+              aria-label="Memuat notifikasi"
+              className="w-[5px] h-[5px] rounded-full animate-pulse bg-[rgba(52,211,153,0.5)]"
+            />
           )}
           {unread > 0 && (
-            <span className="rounded-full font-extrabold bg-[#34d399] text-[#041a0e] py-[1px] px-[7px] text-[10px] shadow-[0_0_8px_rgba(52,211,153,0.5)]">
+            <span
+              aria-label={`${unread} notifikasi belum dibaca`}
+              className="rounded-full font-extrabold bg-[#34d399] text-[#041a0e] py-[1px] px-[7px] text-[10px] shadow-[0_0_8px_rgba(52,211,153,0.5)]">
               {unread}
             </span>
           )}
@@ -179,29 +204,33 @@ function NotifPopup({
           {unread > 0 && (
             <button
               onClick={onMarkAllRead}
+              title="Tandai semua notifikasi sebagai sudah dibaca"
+              aria-label="Tandai semua sebagai sudah dibaca"
               className="flex items-center gap-[5px] text-[11px] font-semibold text-[#34d399] cursor-pointer
                 bg-[rgba(52,211,153,0.08)] hover:bg-[rgba(52,211,153,0.15)]
                 border border-[rgba(52,211,153,0.18)] hover:border-[rgba(52,211,153,0.35)]
                 rounded-[6px] px-[8px] py-[4px] transition-all">
-              <CheckCheck size={11} /> Baca semua
+              <CheckCheck size={11} aria-hidden="true" /> Baca semua
             </button>
           )}
           <button
             onClick={onClose}
+            title="Tutup notifikasi"
+            aria-label="Tutup panel notifikasi"
             className="w-6 h-6 rounded-[7px] flex items-center justify-center cursor-pointer transition-all
               bg-white/[0.04] border border-white/[0.08] text-[#3a5245]
               hover:bg-white/[0.08] hover:text-[#dff0e8]">
-            <X size={12} />
+            <X size={12} aria-hidden="true" />
           </button>
         </div>
       </div>
 
       {/* List */}
-      <div className="overflow-y-auto max-h-[320px]">
+      <div className="overflow-y-auto max-h-[320px]" role="list">
         {notifs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
             <div className="w-10 h-10 rounded-xl bg-[rgba(52,211,153,0.06)] border border-[rgba(52,211,153,0.10)] flex items-center justify-center">
-              <Inbox size={18} className="text-[#1e3028]" />
+              <Inbox size={18} className="text-[#1e3028]" aria-hidden="true" />
             </div>
             <div className="text-center">
               <p className="text-[0.8rem] font-semibold text-[#3d5a4a]">
@@ -214,11 +243,12 @@ function NotifPopup({
           </div>
         ) : (
           preview.map((n, i) => {
-            const cfg = notifTypeCfg[n.type] ?? notifTypeCfg.general;
+            const cfg = NOTIF_TYPE_CFG[n.type] ?? NOTIF_TYPE_CFG.general;
             const isUnread = !n.read;
             return (
               <div
                 key={n.id}
+                role="listitem"
                 onClick={() => isUnread && onMarkOneRead(n.id)}
                 className={`group relative flex gap-3 px-4 py-3 transition-colors
                   ${i < preview.length - 1 ? "border-b border-[rgba(52,211,153,0.06)]" : ""}
@@ -229,6 +259,7 @@ function NotifPopup({
                   }`}>
                 {isUnread && (
                   <div
+                    aria-hidden="true"
                     className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-full"
                     style={{
                       background: cfg.dotColor,
@@ -237,6 +268,7 @@ function NotifPopup({
                   />
                 )}
                 <div
+                  aria-hidden="true"
                   className={`w-8 h-8 rounded-[10px] flex items-center justify-center flex-shrink-0 mt-[1px] text-[0.88rem] border ${cfg.bg} ${cfg.border}`}>
                   {cfg.emoji}
                 </div>
@@ -255,6 +287,7 @@ function NotifPopup({
                     {isUnread && (
                       <div className="relative flex-shrink-0 w-4 h-4 mt-[3px]">
                         <span
+                          aria-hidden="true"
                           className="absolute inset-0 rounded-full group-hover:opacity-0 transition-opacity"
                           style={{
                             background: cfg.dotColor,
@@ -262,6 +295,8 @@ function NotifPopup({
                           }}
                         />
                         <button
+                          title="Tandai notifikasi ini sebagai sudah dibaca"
+                          aria-label={`Tandai "${n.title}" sebagai sudah dibaca`}
                           onClick={(e) => {
                             e.stopPropagation();
                             onMarkOneRead(n.id);
@@ -269,7 +304,11 @@ function NotifPopup({
                           className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity
                             bg-[rgba(52,211,153,0.2)] border border-[rgba(52,211,153,0.4)]
                             flex items-center justify-center hover:bg-[rgba(52,211,153,0.35)]">
-                          <CheckCheck size={9} className="text-[#34d399]" />
+                          <CheckCheck
+                            size={9}
+                            className="text-[#34d399]"
+                            aria-hidden="true"
+                          />
                         </button>
                       </div>
                     )}
@@ -278,7 +317,8 @@ function NotifPopup({
                     {n.message}
                   </p>
                   <span className="flex items-center gap-1 text-[0.64rem] text-[#253b2e]">
-                    <Clock size={8} /> {timeAgo(n.created_at)}
+                    <Clock size={8} aria-hidden="true" />{" "}
+                    {timeAgo(n.created_at)}
                   </span>
                 </div>
               </div>
@@ -297,10 +337,11 @@ function NotifPopup({
               : ""}
         </span>
         <Link
-          href={fullHref}
+          href="/notifications"
           onClick={onClose}
+          aria-label="Lihat semua notifikasi"
           className="flex items-center gap-1 font-semibold no-underline text-[#34d399] text-[11px] transition-colors hover:text-[#6ee7b7]">
-          Lihat semua <ArrowRight size={11} />
+          Lihat semua <ArrowRight size={11} aria-hidden="true" />
         </Link>
       </div>
     </motion.div>
@@ -320,20 +361,16 @@ function UserDropdown({
   onClose: () => void;
 }) {
   const router = useRouter();
-  // ── TAMBAHAN: state loading logout ──
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = async () => {
-    // Cegah double-click
+  const handleLogout = async (): Promise<void> => {
     if (isLoggingOut) return;
-
     setIsLoggingOut(true);
     try {
       await supabase.auth.signOut();
       onClose();
       router.push("/");
     } catch {
-      // Jika gagal, kembalikan tombol ke state normal
       setIsLoggingOut(false);
     }
   };
@@ -344,13 +381,17 @@ function UserDropdown({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+      role="dialog"
+      aria-label="Menu akun pengguna"
       className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[260px] overflow-hidden rounded-2xl
         bg-[#0a0f0c] border border-[rgba(52,211,153,0.15)]
         shadow-[0_24px_64px_rgba(0,0,0,0.75),0_0_0_1px_rgba(52,211,153,0.05)]">
       {/* User info */}
       <div className="px-4 py-4 border-b border-[rgba(52,211,153,0.08)]">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-[10px] bg-[linear-gradient(135deg,#10b981,#06b6d4)] flex items-center justify-center font-black text-[0.9rem] text-black flex-shrink-0">
+          <div
+            aria-hidden="true"
+            className="w-10 h-10 rounded-[10px] bg-[linear-gradient(135deg,#10b981,#06b6d4)] flex items-center justify-center font-black text-[0.9rem] text-black flex-shrink-0">
             {getInitials(user.full_name)}
           </div>
           <div className="flex-1 min-w-0">
@@ -368,7 +409,7 @@ function UserDropdown({
           </span>
           {isHR && company && (
             <span className="inline-flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-2 py-[3px] rounded-full text-[0.62rem] font-medium truncate max-w-[140px]">
-              <Building2 size={9} /> {company.name}
+              <Building2 size={9} aria-hidden="true" /> {company.name}
             </span>
           )}
         </div>
@@ -376,43 +417,46 @@ function UserDropdown({
 
       {/* Actions */}
       <div className="py-2 px-2">
-        {/* Pengaturan */}
         <Link
           href={PROFILE_HREF}
           onClick={onClose}
+          title="Buka halaman pengaturan profil"
+          aria-label="Pengaturan profil, password dan akun"
           className="flex items-center gap-3 px-3 py-[9px] rounded-[10px] no-underline
             hover:bg-[rgba(52,211,153,0.06)] transition-colors group">
           <div className="w-7 h-7 rounded-[7px] bg-[rgba(52,211,153,0.05)] border border-[rgba(52,211,153,0.1)] flex items-center justify-center text-[#3a5245] group-hover:text-emerald-400 group-hover:border-[rgba(52,211,153,0.28)] transition-colors flex-shrink-0">
-            <Settings size={13} />
+            <Settings size={13} aria-hidden="true" />
           </div>
           <div className="flex-1">
             <p className="text-[0.82rem] font-semibold text-[#c5d8cc] group-hover:text-[#dff0e8] transition-colors leading-none mb-[3px]">
               Pengaturan
             </p>
             <p className="text-[0.68rem] text-[#3a5245] leading-none">
-              Profil, password & akun
+              Profil, password &amp; akun
             </p>
           </div>
           <ArrowRight
             size={11}
+            aria-hidden="true"
             className="text-[#253b2e] group-hover:text-[#34d399] group-hover:translate-x-[2px] transition-all flex-shrink-0"
           />
         </Link>
 
-        {/* Divider */}
         <div className="h-px bg-[rgba(52,211,153,0.08)] mx-1 my-1" />
 
-        {/* ── Keluar — dengan spinner logout ── */}
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
+          title={isLoggingOut ? "Sedang keluar..." : "Keluar dari sesi ini"}
+          aria-label={
+            isLoggingOut ? "Sedang proses keluar" : "Keluar dari akun"
+          }
           className={`w-full flex items-center gap-3 px-3 py-[9px] rounded-[10px] transition-colors group
             ${
               isLoggingOut
                 ? "opacity-70 cursor-not-allowed bg-red-500/[0.04]"
                 : "hover:bg-red-500/[0.07] cursor-pointer"
             }`}>
-          {/* Icon area — ikon LogOut atau spinner */}
           <div
             className={`w-7 h-7 rounded-[7px] border flex items-center justify-center transition-colors flex-shrink-0
               ${
@@ -420,10 +464,13 @@ function UserDropdown({
                   ? "bg-red-500/[0.10] border-red-500/25 text-red-400"
                   : "bg-red-500/[0.06] border-red-500/[0.12] text-[#5a3535] group-hover:text-red-400 group-hover:border-red-500/25"
               }`}>
-            {isLoggingOut ? <LogoutSpinner /> : <LogOut size={13} />}
+            {isLoggingOut ? (
+              <LogoutSpinner />
+            ) : (
+              <LogOut size={13} aria-hidden="true" />
+            )}
           </div>
 
-          {/* Label */}
           <div className="flex-1 text-left">
             <p
               className={`text-[0.82rem] font-semibold leading-none mb-[3px] transition-colors
@@ -435,9 +482,10 @@ function UserDropdown({
             </p>
           </div>
 
-          {/* Progress dots saat loading */}
           {isLoggingOut && (
-            <div className="flex items-center gap-[3px] flex-shrink-0">
+            <div
+              className="flex items-center gap-[3px] flex-shrink-0"
+              aria-hidden="true">
               {[0, 1, 2].map((i) => (
                 <span
                   key={i}
@@ -453,7 +501,6 @@ function UserDropdown({
         </button>
       </div>
 
-      {/* Keyframe untuk dot animation — inject sekali via style tag */}
       <style>{`
         @keyframes logoutDot {
           0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
@@ -465,19 +512,15 @@ function UserDropdown({
 }
 
 // ── Icon Button ───────────────────────────────────────────────────────────────
-function IconBtn({
-  onClick,
-  active,
-  children,
-  title,
-  href,
-}: {
+type IconBtnProps = {
   onClick?: () => void;
   active?: boolean;
   children: React.ReactNode;
   title?: string;
   href?: string;
-}) {
+};
+
+function IconBtn({ onClick, active, children, title, href }: IconBtnProps) {
   const cls = `w-[34px] h-[34px] rounded-[9px] border flex items-center justify-center transition-all duration-200 cursor-pointer
     ${
       active
@@ -487,13 +530,17 @@ function IconBtn({
 
   if (href) {
     return (
-      <Link href={href} title={title} className={`${cls} no-underline`}>
+      <Link
+        href={href}
+        title={title}
+        aria-label={title}
+        className={`${cls} no-underline`}>
         {children}
       </Link>
     );
   }
   return (
-    <button onClick={onClick} title={title} className={cls}>
+    <button onClick={onClick} title={title} aria-label={title} className={cls}>
       {children}
     </button>
   );
@@ -522,27 +569,31 @@ export default function Topbar({
   const unreadCount = notifs.filter((n) => !n.read).length;
   const hasUnread = unreadCount > 0;
 
-  const fetchNotifs = async () => {
+  const fetchNotifs = async (): Promise<void> => {
     if (!token) return;
     setLoading(true);
     try {
       const res = await fetch(`${base}/api/notifications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data: NotifRaw[] = await res.json();
       setNotifs(
-        (Array.isArray(data) ? data : []).map((n: any) => ({
+        (Array.isArray(data) ? data : []).map((n) => ({
           ...n,
-          created_at: n.created_at ?? n.time,
+          type: (["status_update", "interview", "general"].includes(n.type)
+            ? n.type
+            : "general") as NotifType,
+          created_at: n.created_at ?? n.time ?? new Date().toISOString(),
         })),
       );
     } catch {
+      // silent
     } finally {
       setLoading(false);
     }
   };
 
-  const handleMarkAllRead = async () => {
+  const handleMarkAllRead = (): void => {
     setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
     if (!token) return;
     fetch(`${base}/api/notifications/read-all`, {
@@ -551,7 +602,7 @@ export default function Topbar({
     }).catch(() => {});
   };
 
-  const handleMarkOneRead = async (id: string) => {
+  const handleMarkOneRead = (id: string): void => {
     setNotifs((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
@@ -563,8 +614,8 @@ export default function Topbar({
   };
 
   useEffect(() => {
-    fetchNotifs();
-    const iv = setInterval(fetchNotifs, 30_000);
+    void fetchNotifs();
+    const iv = setInterval(() => void fetchNotifs(), 30_000);
     return () => clearInterval(iv);
   }, [token]);
 
@@ -580,74 +631,79 @@ export default function Topbar({
   }, []);
 
   return (
-    <div className="sticky top-0 z-40 border-b border-emerald-500/[0.1] px-8 h-[62px] flex items-center justify-between bg-[rgba(10,15,13,0.92)] [backdrop-filter:blur(20px)]">
-      {/* ── Left: Title ── */}
+    <header
+      className="sticky top-0 z-40 border-b border-emerald-500/[0.1] px-8 h-[62px] flex items-center justify-between bg-[rgba(10,15,13,0.92)] [backdrop-filter:blur(20px)]"
+      role="banner">
+      {/* Left: Title */}
       <div>
         <h1 className="font-bold text-[0.95rem] text-[#e8f0ec] leading-none">
           {title}
         </h1>
         {isHR && company && (
           <p className="text-[0.68rem] text-[#3a5245] mt-[4px] flex items-center gap-1">
-            <Building2 size={9} />
+            <Building2 size={9} aria-hidden="true" />
             {company.name}
           </p>
         )}
       </div>
 
-      {/* ── Right: Actions ── */}
-      <div className="flex items-center gap-[6px]">
-        {/* HR: Export */}
+      {/* Right: Actions */}
+      <nav aria-label="Aksi topbar" className="flex items-center gap-[6px]">
         {isHR && (
-          <IconBtn title="Export laporan">
-            <Download size={14} />
+          <IconBtn title="Export laporan HR" onClick={() => {}}>
+            <Download size={14} aria-hidden="true" />
           </IconBtn>
         )}
 
-        {/* HR: Buat Lowongan */}
         {isHR && !isJobsPage && (
-          <Link href="/dashboard/hr/jobs">
-            <Button className="inline-flex items-center gap-[6px] bg-emerald-500 hover:bg-emerald-400 hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)] text-black font-bold text-[0.8rem] px-4 h-[34px] rounded-[9px] transition-all">
-              <Plus size={13} /> Buat Lowongan
+          <Link href="/dashboard/hr/jobs" title="Buat lowongan baru">
+            <Button
+              aria-label="Buat lowongan baru"
+              className="inline-flex items-center gap-[6px] bg-emerald-500 hover:bg-emerald-400 hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)] text-black font-bold text-[0.8rem] px-4 h-[34px] rounded-[9px] transition-all">
+              <Plus size={13} aria-hidden="true" /> Buat Lowongan
             </Button>
           </Link>
         )}
 
-        {/* Candidate: Analisis CV shortcut */}
         {!isHR && (
           <Link
             href="/analyze"
-            title="Upload & analisis CV kamu"
+            title="Upload dan analisis CV kamu"
+            aria-label="Analisis CV — Upload dan analisis CV kamu"
             className="hidden sm:inline-flex items-center gap-[6px] h-[34px] px-[14px] rounded-[9px]
               bg-[rgba(16,185,129,0.06)] border border-[rgba(16,185,129,0.15)]
               text-[#34d399] text-[0.78rem] font-semibold no-underline
               hover:bg-[rgba(16,185,129,0.11)] hover:border-[rgba(16,185,129,0.3)] transition-all">
-            <FileText size={13} /> Analisis CV
+            <FileText size={13} aria-hidden="true" /> Analisis CV
           </Link>
         )}
 
-        {/* Visual divider */}
-        <div className="w-px h-5 bg-[rgba(52,211,153,0.08)] mx-[2px]" />
+        <div
+          aria-hidden="true"
+          className="w-px h-5 bg-[rgba(52,211,153,0.08)] mx-[2px]"
+        />
 
         {/* Bell */}
         <div className="relative" ref={notifRef}>
           <IconBtn
             active={showNotif}
-            title="Notifikasi"
+            title="Lihat notifikasi"
             onClick={() => {
               setShowNotif((v) => !v);
               setShowProfile(false);
-              if (!showNotif) fetchNotifs();
+              if (!showNotif) void fetchNotifs();
             }}>
-            <Bell size={15} />
+            <Bell size={15} aria-hidden="true" />
           </IconBtn>
           {hasUnread && (
             <span
+              aria-label={`${unreadCount} notifikasi belum dibaca`}
               className="absolute -top-[5px] -right-[5px] min-w-[16px] h-4 rounded-full
-              bg-[#34d399] text-[#041a0e] text-[9px] font-extrabold
-              flex items-center justify-center px-[3px]
-              ring-2 ring-[#0a0f0c]
-              shadow-[0_0_8px_rgba(52,211,153,0.65)]
-              pointer-events-none">
+                bg-[#34d399] text-[#041a0e] text-[9px] font-extrabold
+                flex items-center justify-center px-[3px]
+                ring-2 ring-[#0a0f0c]
+                shadow-[0_0_8px_rgba(52,211,153,0.65)]
+                pointer-events-none">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
@@ -672,20 +728,26 @@ export default function Topbar({
               setShowProfile((v) => !v);
               setShowNotif(false);
             }}
+            title="Buka menu akun"
+            aria-label="Buka menu akun pengguna"
+            aria-expanded={showProfile}
             className={`flex items-center gap-[7px] h-[34px] pl-[4px] pr-[10px] rounded-[10px] border transition-all duration-200 cursor-pointer
               ${
                 showProfile
                   ? "bg-[rgba(52,211,153,0.08)] border-[rgba(52,211,153,0.32)]"
                   : "bg-[#0f1612] border-emerald-500/15 hover:border-emerald-500/25 hover:bg-[rgba(52,211,153,0.03)]"
               }`}>
-            <div className="w-[26px] h-[26px] rounded-[7px] bg-[linear-gradient(135deg,#10b981,#06b6d4)] flex items-center justify-center font-black text-[0.65rem] text-black flex-shrink-0 select-none">
+            <div
+              aria-hidden="true"
+              className="w-[26px] h-[26px] rounded-[7px] bg-[linear-gradient(135deg,#10b981,#06b6d4)] flex items-center justify-center font-black text-[0.65rem] text-black flex-shrink-0 select-none">
               {user ? getInitials(user.full_name) : "U"}
             </div>
             <span className="hidden md:block text-[0.78rem] font-semibold text-[#c5d8cc] max-w-[90px] truncate">
-              {user?.full_name?.split(" ")[0] || "User"}
+              {user?.full_name?.split(" ")[0] ?? "User"}
             </span>
             <ChevronDown
               size={11}
+              aria-hidden="true"
               className={`text-[#3a5245] transition-transform duration-200 flex-shrink-0 ${showProfile ? "rotate-180" : ""}`}
             />
           </button>
@@ -701,7 +763,7 @@ export default function Topbar({
             )}
           </AnimatePresence>
         </div>
-      </div>
-    </div>
+      </nav>
+    </header>
   );
 }

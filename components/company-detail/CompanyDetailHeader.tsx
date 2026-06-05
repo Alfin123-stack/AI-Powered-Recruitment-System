@@ -77,9 +77,9 @@ export default function CompanyDetailHeader({
               )}
             </div>
 
-            {company.tags?.length > 0 && (
+            {(company.tags ?? []).length > 0 && (
               <div className="flex flex-wrap gap-[5px]">
-                {company.tags.map((tag) => (
+                {(company.tags ?? []).map((tag) => (
                   <span
                     key={tag}
                     className="flex items-center gap-[3px] bg-white/[0.04] border border-white/[0.07] text-[#8aaa96] px-[8px] py-[3px] rounded-[5px] text-[0.67rem]">

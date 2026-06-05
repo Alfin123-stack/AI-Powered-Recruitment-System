@@ -1,13 +1,38 @@
 import { createElement } from "react";
+
+import { EditorialArticle } from "@/types/blogs";
+
 import {
+  Bot,
+  Laptop,
+  Cpu,
+  ShoppingCart,
+  CreditCard,
+  Palette,
+  Building2,
   Target,
   TrendingUp,
   FileText,
   Brain,
   BookOpen,
   Zap,
+  type LucideIcon,
 } from "lucide-react";
-import { EditorialArticle } from "@/types/blogs";
+
+export const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  "1": Bot,
+  "2": Laptop,
+  "3": Cpu,
+  "4": ShoppingCart,
+  "5": CreditCard,
+  "6": Palette,
+};
+
+export const DEFAULT_ICON: LucideIcon = Building2;
+
+export function getCategoryIcon(id: string): LucideIcon {
+  return CATEGORY_ICONS[id] ?? DEFAULT_ICON;
+}
 
 export const ARTICLES_PER_PAGE = 6;
 // ── Static data ───────────────────────────────────────────────────────────────
@@ -109,3 +134,27 @@ export const EDITORIAL_ARTICLES: EditorialArticle[] = [
 export const CATEGORIES = ["Semua", "Tips CV", "Tren Industri", "Karier"];
 
 export const DEVTO_TOPIC_TAGS = ["career", "productivity", "ai", "programming"];
+
+// Palette warna dipakai untuk assign accent color per index company.
+// Warna tidak disimpan di DB — di-generate di sisi server saat fetch.
+
+const PALETTES = [
+  "#10b981",
+  "#3b82f6",
+  "#8b5cf6",
+  "#f59e0b",
+  "#ef4444",
+  "#ec4899",
+];
+
+export const getPaletteColor = (i: number): string =>
+  PALETTES[i % PALETTES.length];
+
+// Filter lokasi untuk toolbar — UI concern, bukan dari DB
+export const LOCATION_FILTERS = [
+  "Semua",
+  "Jakarta",
+  "Bandung",
+  "Surabaya",
+  "Remote",
+];

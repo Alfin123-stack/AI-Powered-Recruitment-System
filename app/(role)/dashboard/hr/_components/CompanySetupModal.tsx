@@ -19,8 +19,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { apiFetch, Company } from "./shared";
+import { apiFetch } from "./shared";
 import { createPortal } from "react-dom";
+import { Company } from "@/types/company";
 
 const COMPANY_SIZES = ["1–10", "11–50", "51–200", "201–500", "500+"] as const;
 type CompanySize = (typeof COMPANY_SIZES)[number];

@@ -17,11 +17,11 @@ import {
   type Job,
   type Candidate,
 } from "@/app/(role)/dashboard/hr/_components/shared";
-import { useDashboard } from "@/app/(role)/layout";
 import { JobCard } from "./JobCard";
 import { JobsSummaryStats } from "./JobsSummaryStats";
 import { JobFormSkeleton } from "./JobsSkeleton";
 import type { JobWithStats, JobsSummaryData, RawApplication } from "./types";
+import { useDashboard } from "@/context/DashboardContext";
 
 // ─── Lazy load modal — berat, hanya diload saat user klik "Post job" ──────────
 const JobFormModal = dynamic(

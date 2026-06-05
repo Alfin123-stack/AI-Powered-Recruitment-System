@@ -1,10 +1,7 @@
-// SERVER Component — tidak ada directive "use client".
-// website dihapus karena kolom tidak ada di DB.
-
 import { MapPin } from "lucide-react";
 
 type CompanyLocationProps = {
-  location?: string;
+  location?: string | null;
 };
 
 export default function CompanyLocation({ location }: CompanyLocationProps) {

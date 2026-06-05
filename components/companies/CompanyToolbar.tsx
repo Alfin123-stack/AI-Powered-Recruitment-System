@@ -5,7 +5,7 @@
 
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { LOCATION_FILTERS } from "./constants";
+import { LOCATION_FILTERS } from "@/constants/blogs";
 
 type CompanyToolbarProps = {
   search: string;

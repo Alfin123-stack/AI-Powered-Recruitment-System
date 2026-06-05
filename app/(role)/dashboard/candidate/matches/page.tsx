@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useDashboard } from "@/app/(role)/layout";
+import { useDashboard } from "@/context/DashboardContext";
 import type {
   Job,
   JobWithMatch,
   CvAnalysis,
+  Application,
 } from "../../../../../components/candidate/matches/types";
 import {
   calcMatchScore,
@@ -13,10 +14,6 @@ import {
 } from "../../../../../components/candidate/matches/helpers";
 import JobMatchList from "../../../../../components/candidate/matches/JobMatchList";
 import NoCvState from "../../../../../components/candidate/matches/NoCvState";
-
-// Import skeleton langsung — bukan dari loading.tsx
-// karena loading.tsx hanya bekerja untuk server component + Suspense,
-// bukan untuk client component yang fetch pakai useEffect.
 import MatchesLoading from "../../../../../components/candidate/matches/MatchesLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -58,8 +55,9 @@ export default function MatchesPage() {
         const appsRes = await fetch(`${API}/api/applications/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const myApps = await appsRes.json();
-        const appliedJobIds = new Set((myApps || []).map((a: any) => a.job_id));
+
+        const myApps: Application[] = (await appsRes.json()) ?? [];
+        const appliedJobIds = new Set(myApps.map((a) => a.job_id)); // ✅ tidak ada any
 
         const jobsWithMatch: JobWithMatch[] = allJobs.map((job, i) => {
           const { score, matched, missing } = calcMatchScore(
@@ -90,13 +88,11 @@ export default function MatchesPage() {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [token]);
 
-  // ✅ Tampilkan skeleton saat masih loading
   if (loading) return <MatchesLoading />;
 
-  // Belum ada analisis CV
   if (!cvAnalysis) {
     return (
       <div>

@@ -1,10 +1,6 @@
-// components/blog-detail/RelatedArticles.tsx
-// Server Component — tidak ada "use client".
-// Semua interactivity di sini adalah hover CSS, bukan JS.
-
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
-import type { ArticleContent } from "@/components/blog-detail/types";
+import type { ArticleContent } from "@/types/blogs";
 
 interface RelatedArticlesProps {
   articles: ArticleContent[];
@@ -30,8 +26,7 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
             <Link
               key={article.slug}
               href={`/blog/${article.slug}`}
-              className="no-underline block h-full"
-            >
+              className="no-underline block h-full">
               <article className="h-full bg-[#0a0f0d] border border-emerald-500/10 rounded-[14px] p-5 flex flex-col gap-3 transition-all duration-300 hover:border-emerald-500/25 hover:-translate-y-[2px] group cursor-pointer">
                 <span className="text-[0.63rem] text-emerald-500/70 font-semibold uppercase tracking-[0.08em]">
                   {article.category}
@@ -54,8 +49,7 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
         <div className="mt-8 text-center">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[9px] rounded-[9px] no-underline text-[0.84rem] transition-all"
-          >
+            className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[9px] rounded-[9px] no-underline text-[0.84rem] transition-all">
             <ArrowLeft size={13} /> Kembali ke Semua Artikel
           </Link>
         </div>

@@ -1,4 +1,4 @@
-import { getPaletteColor } from "@/components/companies/constants";
+import { getPaletteColor } from "@/constants/blogs";
 import { Company } from "@/types/company";
 import { Job } from "@/types/jobs";
 

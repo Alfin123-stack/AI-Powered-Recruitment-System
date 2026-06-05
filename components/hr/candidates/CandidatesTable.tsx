@@ -39,12 +39,8 @@ import {
 } from "@/app/(role)/dashboard/hr/_components/shared";
 import type { Candidate } from "@/app/(role)/dashboard/hr/_components/shared";
 import OpeningsSection from "./OpeningsSection";
-import { useDashboard } from "@/app/(role)/layout";
+import { useDashboard } from "@/context/DashboardContext";
 import { useSearchParams, useRouter } from "next/navigation";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────────────────────
 
 type SortKey = "score" | "match" | "name" | "date" | "applied_role";
 type SortDir = "asc" | "desc";

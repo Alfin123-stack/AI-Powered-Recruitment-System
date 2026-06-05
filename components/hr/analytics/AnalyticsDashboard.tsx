@@ -1,9 +1,5 @@
 "use client";
 
-// @/components/hr/analytics/AnalyticsDashboard.tsx
-// Client Component utama — mengelola state tab & data fetching (CSR)
-// Di-mount di dalam Suspense dari page.tsx
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity } from "lucide-react";
@@ -13,10 +9,8 @@ import { OverviewTab } from "./OverviewTab";
 import { KandidatTab } from "./KandidatTab";
 import { PosisiTab } from "./PosisiTab";
 
-// Helpers — sama seperti shared di project (apiFetch, FadeIn)
-// Sesuaikan import path dengan project Anda:
 import { apiFetch, FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
-import { useDashboard } from "@/app/(role)/layout";
+import { useDashboard } from "@/context/DashboardContext";
 
 type TabId = "overview" | "kandidat" | "posisi";
 
