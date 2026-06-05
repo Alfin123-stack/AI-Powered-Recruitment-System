@@ -1,13 +1,5 @@
 "use client";
 
-// components/profile/ui.tsx
-// ─────────────────────────────────────────────
-// Shared UI primitives — semua CSR karena ada interaksi
-// (PasswordInput punya show/hide state)
-//
-// Dipakai oleh semua Tab components.
-// Pisah ke file ini agar tidak duplikasi kode.
-// ─────────────────────────────────────────────
 
 import { useState } from "react";
 import { Check, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";

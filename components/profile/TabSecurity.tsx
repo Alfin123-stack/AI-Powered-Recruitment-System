@@ -59,12 +59,12 @@ export function TabSecurity({ addToast }: TabSecurityProps) {
       setErrors({ new: "", confirm: "" });
       addToast("success", "Password berhasil diubah!");
       setTimeout(() => setSaved(false), 2500);
-    } catch (err: any) {
-      setErrors((p) => ({
-        ...p,
-        new: err.message || "Gagal mengubah password.",
-      }));
-      addToast("error", err.message || "Gagal mengubah password.");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Gagal mengubah password.";
+
+      setErrors((p) => ({ ...p, new: message }));
+      addToast("error", message);
     } finally {
       setLoading(false);
     }

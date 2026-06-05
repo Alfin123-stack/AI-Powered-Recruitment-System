@@ -1,13 +1,6 @@
 "use client";
 
-// components/profile/TabHRProfile.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: CSR
-//
-// Form profil untuk user HR.
-// Lebih sederhana dari kandidat — hanya full_name.
-// Data awal dari user_metadata (server-provided props).
-// ─────────────────────────────────────────────
+
 
 import { useState } from "react";
 import { Mail } from "lucide-react";

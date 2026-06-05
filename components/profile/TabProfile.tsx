@@ -1,19 +1,6 @@
 "use client";
 
-// components/profile/TabProfile.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: CSR
-//
-// Kenapa CSR?
-// - Form state (profileForm) berubah setiap user ketik
-// - Event handlers: onChange, onSubmit
-// - supabase.auth.updateUser() hanya bisa di client
-//   (perlu browser session, bukan server session)
-//
-// Data awal (full_name, phone, dll) sudah ada di
-// user.user_metadata yang di-pass dari server — tidak
-// perlu fetch lagi di client.
-// ─────────────────────────────────────────────
+
 
 import { useState } from "react";
 import { User, Mail, Phone, MapPin, Briefcase } from "lucide-react";
