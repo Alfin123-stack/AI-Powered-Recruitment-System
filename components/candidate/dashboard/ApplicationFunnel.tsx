@@ -5,7 +5,7 @@
 
 import { Activity } from "lucide-react";
 import { statusMap } from "./helpers";
-import { Application } from "@/app/(role)/dashboard/candidate/page";
+import type { Application } from "@/types/candidate-dashboard";
 
 export function ApplicationFunnel({
   applications,

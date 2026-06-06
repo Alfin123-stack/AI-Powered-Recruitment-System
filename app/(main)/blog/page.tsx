@@ -5,7 +5,7 @@ import DevToSection from "@/components/blog/DevToSection";
 import DevToSkeleton from "@/components/blog/DevToSkeleton";
 import { EDITORIAL_ARTICLES } from "@/constants/blogs";
 
-export const revalidate = false;
+export const revalidate = 3600;
 
 export default function BlogPage() {
   return (

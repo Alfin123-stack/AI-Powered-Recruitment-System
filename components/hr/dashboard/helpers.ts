@@ -2,7 +2,7 @@
 // HELPERS — HR Dashboard
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { CandidateExtended, CandidateInsight } from "./types";
+import { CandidateExtended, CandidateInsight } from "@/types/hr-dashboard";
 
 export const JOB_COLORS = [
   "#10b981",
@@ -73,17 +73,23 @@ export function getRec(score: number, match: number) {
 export function computeInsight(c: CandidateExtended): CandidateInsight {
   const strengths: string[] = [];
   if (c.resumeScore >= 80) strengths.push("Resume kuat & terstruktur");
-  if (c.matchScore >= 80) strengths.push("Match tinggi dengan kebutuhan posisi");
-  if (c.skills.length >= 4) strengths.push(`${c.skills.length} skill relevan terdeteksi`);
-  if (c.resumeScore >= 70 && c.matchScore >= 70) strengths.push("Konsistensi skor AI & match");
-  if (strengths.length === 0) strengths.push("Memiliki pengalaman di bidang terkait");
+  if (c.matchScore >= 80)
+    strengths.push("Match tinggi dengan kebutuhan posisi");
+  if (c.skills.length >= 4)
+    strengths.push(`${c.skills.length} skill relevan terdeteksi`);
+  if (c.resumeScore >= 70 && c.matchScore >= 70)
+    strengths.push("Konsistensi skor AI & match");
+  if (strengths.length === 0)
+    strengths.push("Memiliki pengalaman di bidang terkait");
 
   const weaknesses: string[] = [];
   if (c.matchScore < 50) weaknesses.push("Match score rendah dengan JD");
   if (c.resumeScore < 60) weaknesses.push("Resume perlu diperkuat");
   if (c.skills.length < 2) weaknesses.push("Skill terdeteksi terbatas");
-  if (Math.abs(c.resumeScore - c.matchScore) > 30) weaknesses.push("Ketidaksesuaian skor AI vs match");
-  if (weaknesses.length === 0) weaknesses.push("Belum ada data kelemahan signifikan");
+  if (Math.abs(c.resumeScore - c.matchScore) > 30)
+    weaknesses.push("Ketidaksesuaian skor AI vs match");
+  if (weaknesses.length === 0)
+    weaknesses.push("Belum ada data kelemahan signifikan");
 
   return { strengths, weaknesses };
 }
@@ -93,7 +99,8 @@ export function generateInsights(candidates: CandidateExtended[]) {
   const ins = [];
 
   const topReady = candidates.filter(
-    (c) => c.resumeScore >= 80 && c.matchScore >= 75 && c.status !== "shortlisted"
+    (c) =>
+      c.resumeScore >= 80 && c.matchScore >= 75 && c.status !== "shortlisted",
   );
   if (topReady.length > 0)
     ins.push({
@@ -106,7 +113,9 @@ export function generateInsights(candidates: CandidateExtended[]) {
 
   const pending = candidates.filter((c) => c.status === "applied");
   if (pending.length > 0) {
-    const avg = Math.round(pending.reduce((a, c) => a + c.resumeScore, 0) / pending.length);
+    const avg = Math.round(
+      pending.reduce((a, c) => a + c.resumeScore, 0) / pending.length,
+    );
     ins.push({
       iconName: "Clock" as const,
       color: "#f59e0b",
@@ -142,14 +151,21 @@ export const formatInterviewTime = (d: string, dm = 60) => {
   const s = new Date(d);
   const e = new Date(s.getTime() + dm * 60000);
   const f = (dt: Date) =>
-    dt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    dt.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
   return `${f(s)} – ${f(e)}`;
 };
 
 export const formatInterviewDate = (d: string) => {
   if (isToday(d)) return "Hari Ini";
   if (isTomorrow(d)) return "Besok";
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+  return new Date(d).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+  });
 };
 
 export function getColor(index: number): string {

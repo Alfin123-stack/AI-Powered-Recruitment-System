@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { timeAgo } from "./helpers";
-import { CvAnalysis } from "@/app/(role)/dashboard/candidate/page";
+import { CvAnalysis } from "@/types/candidate-dashboard";
 
 // ── Radial Score ──────────────────────────────────────────────────────────────
 function RadialScore({

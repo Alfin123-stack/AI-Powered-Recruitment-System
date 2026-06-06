@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity } from "lucide-react";
-import { T, Application, Job, computeStats } from "./shared";
+
 import { StatCards } from "./StatCards";
 import { OverviewTab } from "./OverviewTab";
 import { KandidatTab } from "./KandidatTab";
 import { PosisiTab } from "./PosisiTab";
-
-import { apiFetch, FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
-import { useDashboard } from "@/context/DashboardContext";
+import { useAnalyticsData } from "@/hooks/dashboard/hr/useAnalyticsData";
+import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
+import { T } from "./shared";
 
 type TabId = "overview" | "kandidat" | "posisi";
 
@@ -21,26 +21,8 @@ const TABS: { id: TabId; label: string }[] = [
 ];
 
 export function AnalyticsDashboard() {
-  const { token } = useDashboard();
-  const [apps, setApps] = useState<Application[]>([]);
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const { apps, jobs, stats } = useAnalyticsData();
   const [activeTab, setActiveTab] = useState<TabId>("overview");
-
-  // CSR fetch — data real-time, tidak di-cache server
-  useEffect(() => {
-    if (!token) return;
-    Promise.all([
-      apiFetch("/api/applications/hr", token),
-      apiFetch("/api/jobs/my", token),
-    ])
-      .then(([appsData, jobsData]) => {
-        setApps(Array.isArray(appsData) ? appsData : []);
-        setJobs(Array.isArray(jobsData) ? jobsData : []);
-      })
-      .catch(console.error);
-  }, [token]);
-
-  const stats = computeStats(apps, jobs);
 
   return (
     <div className="min-h-screen pb-10" style={{ background: T.bg }}>
@@ -96,7 +78,7 @@ export function AnalyticsDashboard() {
         </div>
       </FadeIn>
 
-      {/* Stat Cards — hanya di overview, tapi tetap visible saat pindah tab */}
+      {/* Stat Cards — hanya di overview */}
       {activeTab === "overview" && (
         <StatCards
           total={stats.total}

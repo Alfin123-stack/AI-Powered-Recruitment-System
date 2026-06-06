@@ -7,10 +7,15 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-  Building2, Clock, Eye, Award, Target, ArrowUpRight,
+  Building2,
+  Clock,
+  Eye,
+  Award,
+  Target,
+  ArrowUpRight,
 } from "lucide-react";
 import { statusMap, getCardColor } from "./helpers";
-import { Application } from "@/app/(role)/dashboard/candidate/page";
+import type { Application } from "@/types/candidate-dashboard";
 
 const TABS = [
   { id: "all", label: "Semua" },
@@ -21,13 +26,7 @@ const TABS = [
 ];
 
 // ── Radial Score (mini) ───────────────────────────────────────────────────────
-function RadialScoreMini({
-  score,
-  color,
-}: {
-  score: number;
-  color: string;
-}) {
+function RadialScoreMini({ score, color }: { score: number; color: string }) {
   const size = 56;
   const strokeWidth = 5;
   const r = (size - strokeWidth) / 2;
@@ -37,21 +36,39 @@ function RadialScoreMini({
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
       <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={strokeWidth}
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="rgba(255,255,255,0.05)"
+        strokeWidth={strokeWidth}
       />
       <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke={color} strokeWidth={strokeWidth}
-        strokeDasharray={circ} strokeDashoffset={offset}
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeDasharray={circ}
+        strokeDashoffset={offset}
         strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)" }}
+        style={{
+          transition: "stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)",
+        }}
       />
       <text
-        x={size / 2} y={size / 2 + 1}
-        textAnchor="middle" dominantBaseline="middle"
-        fill={color} fontSize={size * 0.22} fontWeight="700"
-        style={{ transform: "rotate(90deg)", transformOrigin: `${size / 2}px ${size / 2}px` }}>
+        x={size / 2}
+        y={size / 2 + 1}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill={color}
+        fontSize={size * 0.22}
+        fontWeight="700"
+        style={{
+          transform: "rotate(90deg)",
+          transformOrigin: `${size / 2}px ${size / 2}px`,
+        }}>
         {score}
       </text>
     </svg>
@@ -80,8 +97,12 @@ function AppCard({ app, index }: { app: Application; index: number }) {
             <Building2 size={17} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-bold text-[0.93rem] mb-[2px] truncate">{app.job_title}</div>
-            <div className="text-[0.76rem] text-[#7a9585]">{app.company_name}</div>
+            <div className="font-bold text-[0.93rem] mb-[2px] truncate">
+              {app.job_title}
+            </div>
+            <div className="text-[0.76rem] text-[#7a9585]">
+              {app.company_name}
+            </div>
           </div>
           <span
             className="inline-flex items-center gap-1 px-[9px] py-[4px] rounded-full text-[0.65rem] font-bold tracking-wide uppercase flex-shrink-0"
@@ -143,7 +164,9 @@ function AppCard({ app, index }: { app: Application; index: number }) {
           <span className="text-[0.69rem] text-[#7a9585] flex items-center gap-1">
             <Clock size={10} /> Dilamar{" "}
             {new Date(app.created_at).toLocaleDateString("id-ID", {
-              day: "numeric", month: "short", year: "numeric",
+              day: "numeric",
+              month: "short",
+              year: "numeric",
             })}
           </span>
           {(resumeScore > 0 || matchScore > 0) && (
@@ -166,11 +189,15 @@ function AppCard({ app, index }: { app: Application; index: number }) {
               <div className="pt-3 mt-3 border-t border-white/[0.05] grid grid-cols-2 gap-3">
                 <div className="text-center p-3 rounded-[10px] bg-white/[0.025]">
                   <RadialScoreMini score={resumeScore} color="#10b981" />
-                  <div className="text-[0.65rem] text-[#7a9585] mt-1">Resume Score</div>
+                  <div className="text-[0.65rem] text-[#7a9585] mt-1">
+                    Resume Score
+                  </div>
                 </div>
                 <div className="text-center p-3 rounded-[10px] bg-white/[0.025]">
                   <RadialScoreMini score={matchScore} color="#8b5cf6" />
-                  <div className="text-[0.65rem] text-[#7a9585] mt-1">Job Match Score</div>
+                  <div className="text-[0.65rem] text-[#7a9585] mt-1">
+                    Job Match Score
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -204,9 +231,10 @@ export function ApplicationList({
             key={t.id}
             onClick={() => onTabChange(t.id)}
             className={`px-4 py-[6px] rounded-[7px] text-[0.78rem] font-medium cursor-pointer transition-all whitespace-nowrap border-0
-              ${activeTab === t.id
-                ? "bg-emerald-500/12 text-emerald-400 border border-emerald-500/20"
-                : "bg-transparent text-[#7a9585] hover:text-[#e8f0ec]"
+              ${
+                activeTab === t.id
+                  ? "bg-emerald-500/12 text-emerald-400 border border-emerald-500/20"
+                  : "bg-transparent text-[#7a9585] hover:text-[#e8f0ec]"
               }`}>
             {t.label}
             {t.id !== "all" && (
@@ -223,7 +251,9 @@ export function ApplicationList({
         <div className="text-center py-14">
           <div className="text-[2.8rem] mb-3 opacity-25">📭</div>
           <div className="font-bold text-[0.93rem] mb-2">
-            {applications.length === 0 ? "Belum ada lamaran" : "Tidak ada di kategori ini"}
+            {applications.length === 0
+              ? "Belum ada lamaran"
+              : "Tidak ada di kategori ini"}
           </div>
           <p className="text-[#7a9585] text-[0.8rem] mb-5">
             {applications.length === 0

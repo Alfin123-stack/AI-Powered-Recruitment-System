@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// SKELETON UI — HR Dashboard (semua skeleton dalam 1 file)
-// ─────────────────────────────────────────────────────────────────────────────
-// Route: @/components/hr/dashboard/DashboardSkeleton.tsx
-
 export function SkeletonPulse({ className = "" }: { className?: string }) {
   return (
     <div
       className={`animate-pulse rounded bg-white/[0.06] ${className}`}
-      style={{ backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite" }}
+      style={{
+        backgroundImage:
+          "linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)",
+        backgroundSize: "200% 100%",
+        animation: "shimmer 1.5s infinite",
+      }}
     />
   );
 }
@@ -19,8 +19,7 @@ export function StatCardsSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[16px] p-5 relative overflow-hidden"
-        >
+          className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[16px] p-5 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/[0.04] rounded-t-[16px]" />
           <SkeletonPulse className="w-8 h-8 rounded-[8px] mb-3" />
           <SkeletonPulse className="w-12 h-8 mb-2" />
@@ -62,11 +61,15 @@ export function AIInsightPanelSkeleton() {
 // ── Analytics Section Skeleton ───────────────────────────────────────────────
 export function AnalyticsSectionSkeleton() {
   return (
-    <div className="grid gap-5 mb-5" style={{ gridTemplateColumns: "minmax(0,1fr) 280px" }}>
+    <div
+      className="grid gap-5 mb-5"
+      style={{ gridTemplateColumns: "minmax(0,1fr) 280px" }}>
       {/* Left column */}
       <div className="flex flex-col gap-5 min-w-0">
         {/* Overview + Pipeline row */}
-        <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1.5fr" }}>
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: "1fr 1.5fr" }}>
           <div className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[18px] p-5">
             <div className="flex items-center gap-2 mb-4">
               <SkeletonPulse className="w-6 h-6 rounded-[6px]" />
@@ -110,7 +113,9 @@ export function AnalyticsSectionSkeleton() {
         {/* Chart row */}
         <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[18px] p-5">
+            <div
+              key={i}
+              className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[18px] p-5">
               <div className="flex items-center gap-2 mb-4">
                 <SkeletonPulse className="w-6 h-6 rounded-[6px]" />
                 <SkeletonPulse className="w-36 h-4" />
@@ -169,14 +174,20 @@ export function AnalyticsSectionSkeleton() {
             </div>
             <div className="grid grid-cols-7 gap-y-[2px]">
               {Array.from({ length: 35 }).map((_, i) => (
-                <SkeletonPulse key={i} className="aspect-square rounded-[6px] m-[1px]" />
+                <SkeletonPulse
+                  key={i}
+                  className="aspect-square rounded-[6px] m-[1px]"
+                />
               ))}
             </div>
           </div>
           <div className="px-4 pb-4 pt-3">
             <SkeletonPulse className="w-full h-3 mb-2" />
             {Array.from({ length: 2 }).map((_, i) => (
-              <SkeletonPulse key={i} className="w-full h-12 rounded-[9px] mb-2" />
+              <SkeletonPulse
+                key={i}
+                className="w-full h-12 rounded-[9px] mb-2"
+              />
             ))}
           </div>
         </div>
@@ -192,7 +203,9 @@ export function AnalyticsSectionSkeleton() {
           </div>
           <div className="px-4 py-3 space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-start gap-2 p-2 rounded-[9px] border border-white/[0.05]">
+              <div
+                key={i}
+                className="flex items-start gap-2 p-2 rounded-[9px] border border-white/[0.05]">
                 <SkeletonPulse className="w-2 h-2 rounded-full mt-1 flex-shrink-0" />
                 <div className="flex-1 space-y-1">
                   <SkeletonPulse className="w-28 h-3" />
@@ -230,7 +243,9 @@ export function CandidateRankingSkeleton() {
 
       {/* Job group tables skeleton */}
       {Array.from({ length: 3 }).map((_, gi) => (
-        <div key={gi} className="rounded-[14px] overflow-hidden mb-3 bg-[#0a0f0c] border border-emerald-500/12">
+        <div
+          key={gi}
+          className="rounded-[14px] overflow-hidden mb-3 bg-[#0a0f0c] border border-emerald-500/12">
           {/* Group header */}
           <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.04]">
             <SkeletonPulse className="w-[10px] h-[10px] rounded-full flex-shrink-0" />
@@ -291,7 +306,10 @@ export function CandidateRankingSkeleton() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
                         {Array.from({ length: 4 }).map((_, bi) => (
-                          <SkeletonPulse key={bi} className="w-7 h-7 rounded-[7px]" />
+                          <SkeletonPulse
+                            key={bi}
+                            className="w-7 h-7 rounded-[7px]"
+                          />
                         ))}
                       </div>
                     </td>

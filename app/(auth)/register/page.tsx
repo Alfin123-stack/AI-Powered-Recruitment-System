@@ -13,7 +13,6 @@ export const metadata = {
   description:
     "Daftar dan mulai analisis CV dengan AI. Gratis untuk kandidat, tidak perlu kartu kredit.",
 };
-
 export default async function RegisterPage() {
   const session = await getServerSession();
   if (session) {

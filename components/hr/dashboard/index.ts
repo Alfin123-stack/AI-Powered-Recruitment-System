@@ -26,7 +26,7 @@ export type {
   CandidateInsight,
   DashboardStats,
   CompanyInfo,
-} from "./types";
+} from "@/types/hr-dashboard";
 
 export {
   getScoreColor,

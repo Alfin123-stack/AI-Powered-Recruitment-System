@@ -1,10 +1,5 @@
 "use client";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STAT CARDS — CSR (butuh animasi motion per-card)
-// Route: @/components/hr/dashboard/StatCards.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { motion } from "framer-motion";
 import {
   Briefcase,
@@ -92,22 +87,21 @@ export function StatCards({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[16px] p-5 hover:border-emerald-500/30 hover:-translate-y-[2px] transition-all duration-200 cursor-default relative overflow-hidden"
-        >
+          className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[16px] p-5 hover:border-emerald-500/30 hover:-translate-y-[2px] transition-all duration-200 cursor-default relative overflow-hidden">
           <div
             className="absolute top-0 left-0 right-0 h-[2px]"
-            style={{ background: `linear-gradient(90deg,${color},transparent)` }}
+            style={{
+              background: `linear-gradient(90deg,${color},transparent)`,
+            }}
           />
           <div
             className="w-8 h-8 rounded-[8px] flex items-center justify-center mb-3"
-            style={{ background: bg, color }}
-          >
+            style={{ background: bg, color }}>
             <Icon size={14} />
           </div>
           <div
             className="font-black text-[1.9rem] leading-none mb-1"
-            style={{ color }}
-          >
+            style={{ color }}>
             {num}
           </div>
           <div className="text-[0.73rem] text-[#c8d8d0] font-medium mb-[2px]">

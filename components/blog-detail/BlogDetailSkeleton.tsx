@@ -1,7 +1,4 @@
-// components/blog-detail/BlogDetailSkeleton.tsx
-// Suspense fallback untuk BlogDetailPage.
-// Mereplikasi struktur: ArticleHeader → ArticleBody → ArticleCTA → RelatedArticles.
-// Server Component — tidak ada "use client".
+
 
 export default function BlogDetailSkeleton() {
   return (

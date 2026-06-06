@@ -724,13 +724,13 @@ export default function Topbar({
         {/* Avatar + dropdown */}
         <div className="relative" ref={profileRef}>
           <button
+            type="button"
             onClick={() => {
               setShowProfile((v) => !v);
               setShowNotif(false);
             }}
             title="Buka menu akun"
             aria-label="Buka menu akun pengguna"
-            aria-expanded={showProfile}
             className={`flex items-center gap-[7px] h-[34px] pl-[4px] pr-[10px] rounded-[10px] border transition-all duration-200 cursor-pointer
               ${
                 showProfile

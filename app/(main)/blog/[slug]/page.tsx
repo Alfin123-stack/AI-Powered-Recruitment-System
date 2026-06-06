@@ -12,7 +12,7 @@ export function generateStaticParams() {
   return Object.keys(ARTICLE_MAP).map((slug) => ({ slug }));
 }
 
-export const revalidate = false;
+export const revalidate = 3600;
 
 // Metadata per artikel (SEO)
 export async function generateMetadata({
