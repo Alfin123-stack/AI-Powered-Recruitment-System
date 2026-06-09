@@ -15,12 +15,11 @@ import type { Metadata } from "next";
 
 import { getServerSession } from "@/lib/auth/getServerSession";
 
-import { HR_DASHBOARD_REVALIDATE } from "@/constants/hr-dashboard";
 import { HRDashboardSkeleton } from "@/components/hr/dashboard/DashboardSkeleton";
 import { fetchDashboardData } from "@/lib/fetchers/hr/dashboardHR";
 import { DashboardClient } from "@/components/hr/dashboard/DashboardClient";
 
-export const revalidate = HR_DASHBOARD_REVALIDATE;
+export const revalidate = 60;
 
 async function HRDashboardServer() {
   const session = await getServerSession();
