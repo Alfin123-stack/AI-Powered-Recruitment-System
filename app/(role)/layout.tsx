@@ -15,7 +15,7 @@ import {
   HR_TITLES,
 } from "@/constants/dashboardNav";
 import type { Company } from "@/types/company";
-import CompanySetupModal from "./dashboard/hr/_components/CompanySetupModal";
+import CompanySetupModal from "../../components/hr/dashboard/DashboardCompanySetupModal";
 
 export default function DashboardLayout({
   children,

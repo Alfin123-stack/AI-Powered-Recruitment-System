@@ -1,6 +1,6 @@
 // @/components/hr/calendar/CalendarSkeleton.tsx
-// Semua skeleton UI untuk Calendar Page dalam satu file
-// Style diselaraskan dengan JobsSkeleton (Tailwind + framer-motion)
+// All skeleton UI for Calendar Page in one file
+// Style aligned with JobsSkeleton (Tailwind + framer-motion)
 
 "use client";
 
@@ -10,9 +10,9 @@ import { motion } from "framer-motion";
 const pulse = "animate-pulse rounded bg-emerald-500/[0.07]";
 const pulseStrong = "animate-pulse rounded bg-emerald-500/[0.10]";
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // MINI CALENDAR (sidebar)
-// ─────────────────────────────────────────────────────────────────────────────
+
 function MiniCalendarSkeleton() {
   return (
     <div className="bg-[#0f1612] border border-emerald-500/[0.13] rounded-[16px] p-4">
@@ -49,9 +49,9 @@ function MiniCalendarSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // SIDEBAR
-// ─────────────────────────────────────────────────────────────────────────────
+
 function SidebarSkeleton() {
   return (
     <div className="w-[240px] flex-shrink-0 flex flex-col border-r border-emerald-500/[0.08]">
@@ -85,9 +85,9 @@ function SidebarSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // TOOLBAR
-// ─────────────────────────────────────────────────────────────────────────────
+
 function ToolbarSkeleton() {
   return (
     <div className="flex items-center gap-3 px-5 py-[14px] flex-shrink-0 border-b border-emerald-500/[0.08]">
@@ -127,9 +127,9 @@ function ToolbarSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // WEEK VIEW
-// ─────────────────────────────────────────────────────────────────────────────
+
 export function WeekViewSkeleton() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -196,9 +196,9 @@ export function WeekViewSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // MONTH VIEW
-// ─────────────────────────────────────────────────────────────────────────────
+
 export function MonthViewSkeleton() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -243,9 +243,9 @@ export function MonthViewSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // DAY VIEW
-// ─────────────────────────────────────────────────────────────────────────────
+
 export function DayViewSkeleton() {
   return (
     <div className="flex h-full overflow-hidden">
@@ -288,9 +288,9 @@ export function DayViewSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // FULL PAGE SKELETON
-// ─────────────────────────────────────────────────────────────────────────────
+
 export function CalendarPageSkeleton() {
   return (
     <div

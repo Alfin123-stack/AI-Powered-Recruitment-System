@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 // Components
 import { AnalyticsDashboard } from "@/components/hr/analytics/AnalyticsDashboard";
-import { AnalyticsPageSkeleton } from "@/components/hr/analytics/AnalyticsSkeleton";
+import { AnalyticsPageSkeleton } from "@/components/hr/analytics/AnalyticsPageSkeleton";
 
 // ─── Metadata (SSG-like, dihasilkan build-time) ──────────────────────────────
 export const metadata: Metadata = {

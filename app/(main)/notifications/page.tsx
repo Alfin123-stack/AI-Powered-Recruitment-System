@@ -10,8 +10,8 @@
 import { redirect } from "next/navigation";
 
 import NotificationsServer from "@/components/notifications/NotificationsServer";
-import { ROLE_CONFIG } from "@/components/notifications/roleConfig";
-import type { UserMeta } from "@/components/notifications/notifications";
+import { ROLE_CONFIG } from "@/constants/roleConfig";
+import type { UserMeta } from "@/types/notifications";
 import { getServerSession } from "@/lib/auth/getServerSession";
 import { getUserRole } from "@/lib/auth/getUserRole";
 

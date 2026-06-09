@@ -1,5 +1,5 @@
 // @/components/hr/jobs/JobsSkeleton.tsx
-// Semua skeleton UI dalam satu file — dipakai via Suspense fallback
+// All skeleton UI in one file — used via Suspense fallback
 
 "use client";
 
@@ -9,9 +9,9 @@ import { motion } from "framer-motion";
 const pulse =
   "animate-pulse rounded bg-emerald-500/[0.07]";
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // STAT CARD SKELETON
-// ─────────────────────────────────────────────────────────────────────────────
+
 function StatCardSkeleton() {
   return (
     <div className="bg-[#0f1612] border border-emerald-500/12 rounded-[12px] p-4 flex items-center gap-3">
@@ -24,9 +24,9 @@ function StatCardSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // JOB CARD SKELETON
-// ─────────────────────────────────────────────────────────────────────────────
+
 function JobCardSkeleton({ delay = 0 }: { delay?: number }) {
   return (
     <motion.div
@@ -97,9 +97,9 @@ function JobCardSkeleton({ delay = 0 }: { delay?: number }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FULL PAGE SKELETON — dipakai sebagai Suspense fallback
-// ─────────────────────────────────────────────────────────────────────────────
+
+// FULL PAGE SKELETON — used as Suspense fallback
+
 export function JobsPageSkeleton() {
   return (
     <div>
@@ -135,9 +135,9 @@ export function JobsPageSkeleton() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MODAL FORM SKELETON — opsional, kalau mau lazy load modal
-// ─────────────────────────────────────────────────────────────────────────────
+
+// MODAL FORM SKELETON — optional, for lazy loading modal
+
 export function JobFormSkeleton() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-[8px]">

@@ -1,9 +1,10 @@
 import { Suspense } from "react";
-import JobHero from "@/components/jobs/JobHero";
+
 import JobsContainer from "@/components/jobs/JobsContainer";
 import JobsSkeleton from "@/components/jobs/JobsSkeleton";
 import { getJobs } from "@/lib/fetchers/jobs";
 import { Job } from "@/types/jobs";
+import JobsHero from "@/components/jobs/JobsHero";
 
 export const revalidate = 60;
 
@@ -19,7 +20,7 @@ export default async function JobsPage() {
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
       <main className="pt-16">
-        <Suspense fallback={<JobHero jobs={[]} loading={true} />}>
+        <Suspense fallback={<JobsHero jobs={[]} loading={true} />}>
           <JobHeroServer jobsPromise={jobsPromise} />
         </Suspense>
 
@@ -33,7 +34,7 @@ export default async function JobsPage() {
 
 async function JobHeroServer({ jobsPromise }: { jobsPromise: Promise<Job[]> }) {
   const jobs = await jobsPromise;
-  return <JobHero jobs={jobs} loading={false} />;
+  return <JobsHero jobs={jobs} loading={false} />;
 }
 
 async function JobsContainerServer({

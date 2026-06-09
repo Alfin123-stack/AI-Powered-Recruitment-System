@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Search, Brain } from "lucide-react";
 
-import { FadeIn } from "./blog-components";
 import { EditorialArticle } from "@/types/blogs";
 import { CATEGORIES } from "@/constants/blogs";
+import { BlogFadeIn } from "./BlogFadeIn";
 
 // ── Editorial card ─────────────────────────────────────────────────────────────
 function EditorialCard({
@@ -14,7 +14,7 @@ function EditorialCard({
   index: number;
 }) {
   return (
-    <FadeIn delay={index * 0.07}>
+    <BlogFadeIn delay={index * 0.07}>
       <Link
         href={`/blog/${article.slug}`}
         className="no-underline block h-full">
@@ -59,7 +59,7 @@ function EditorialCard({
           </div>
         </article>
       </Link>
-    </FadeIn>
+    </BlogFadeIn>
   );
 }
 

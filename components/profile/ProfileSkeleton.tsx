@@ -1,13 +1,3 @@
-// components/profile/ProfileSkeleton.tsx
-// ─────────────────────────────────────────────
-// Pure Server Component — tidak ada "use client"
-// Tidak butuh state/effect, jadi bisa render di server.
-//
-// Dipakai oleh:
-//   - app/profile/loading.tsx  (route-level loading)
-//   - app/profile/page.tsx     (Suspense fallback)
-// ─────────────────────────────────────────────
-
 function Shimmer({ className }: { className?: string }) {
   return (
     <div

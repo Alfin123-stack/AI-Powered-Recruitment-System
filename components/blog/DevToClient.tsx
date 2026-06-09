@@ -1,158 +1,16 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Globe,
-  Clock,
-  Heart,
-  ExternalLink,
-  RefreshCw,
-  AlertCircle,
-  User,
-  Tag,
-} from "lucide-react";
-import { FadeIn } from "./blog-components";
-import Pagination from "@/components/Pagination";
+import { Globe, RefreshCw, AlertCircle } from "lucide-react";
 import { DevToArticle } from "@/types/blogs";
-import { ARTICLES_PER_PAGE } from "@/constants/blogs";
+import { DevToCard } from "./DevToCard";
+import { useFilteredPagination } from "@/hooks/main/useFilteredPagination";
+import Pagination from "@/components/Pagination";
 
-// ── Card ───────────────────────────────────────────────────────────────────────
-function DevToCard({
-  article,
-  index,
-}: {
-  article: DevToArticle;
-  index: number;
-}) {
-  const cleanDesc = article.description
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .trim()
-    .slice(0, 130);
-
-  const formattedDate = article.pubDate
-    ? new Date(article.pubDate).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "";
-
-  const authorName = article.author || article.source.replace("dev.to — ", "");
-  const visibleTags = (article.tags || []).slice(0, 3);
-
-  return (
-    <FadeIn delay={index * 0.05}>
-      <a
-        href={article.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="no-underline block h-full">
-        <article className="h-full bg-[#080d0b] border border-emerald-500/10 rounded-[16px] overflow-hidden flex flex-col transition-all duration-300 hover:border-emerald-500/25 hover:-translate-y-[3px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.5)] group cursor-pointer">
-          {article.thumbnail ? (
-            <div className="relative h-[140px] overflow-hidden bg-[#0f1612] flex-shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={article.thumbnail}
-                alt={article.title}
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#080d0b] via-transparent to-transparent" />
-              <div className="absolute top-3 left-3">
-                <span className="inline-flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-emerald-500/20 text-emerald-400 px-2 py-[3px] rounded-full text-[0.58rem] font-bold tracking-[0.08em] uppercase">
-                  <Globe size={7} /> dev.to
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="h-[6px] bg-gradient-to-r from-emerald-500/40 via-cyan-500/30 to-emerald-500/10 flex-shrink-0" />
-          )}
-
-          <div className="flex flex-col gap-3 p-5 flex-1">
-            <div className="flex items-center gap-2">
-              {article.authorImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={article.authorImage}
-                  alt={authorName}
-                  className="w-5 h-5 rounded-full object-cover ring-1 ring-emerald-500/20"
-                />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <User size={10} className="text-emerald-500/60" />
-                </div>
-              )}
-              <span className="text-[0.68rem] text-[#5a7a68] font-medium truncate max-w-[160px]">
-                {authorName}
-              </span>
-              {!article.thumbnail && (
-                <span className="ml-auto inline-flex items-center gap-1 bg-[#0f1612] border border-emerald-500/15 text-emerald-400/70 px-[7px] py-[2px] rounded-full text-[0.58rem] font-bold tracking-[0.08em] uppercase">
-                  <Globe size={7} /> dev.to
-                </span>
-              )}
-            </div>
-
-            <h4 className="font-syne font-bold text-[0.92rem] leading-[1.45] text-[#c8d9d0] group-hover:text-emerald-400 transition-colors line-clamp-2">
-              {article.title}
-            </h4>
-
-            {cleanDesc && (
-              <p className="text-[#4a6b58] text-[0.80rem] leading-[1.6] line-clamp-2 flex-1">
-                {cleanDesc}
-                {cleanDesc.length >= 130 ? "…" : ""}
-              </p>
-            )}
-
-            {visibleTags.length > 0 && (
-              <div className="flex items-center gap-1 flex-wrap">
-                <Tag size={9} className="text-emerald-500/30" />
-                {visibleTags.map((t) => (
-                  <span
-                    key={t}
-                    className="text-[0.60rem] text-emerald-500/50 bg-emerald-500/[0.05] border border-emerald-500/10 px-[6px] py-[1px] rounded-full">
-                    {t}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-2 border-t border-emerald-500/[0.07] mt-auto">
-              <div className="flex items-center gap-3 text-[#3a5545] text-[0.70rem]">
-                {article.readTime && (
-                  <span className="flex items-center gap-1">
-                    <Clock size={10} />
-                    {article.readTime} min
-                  </span>
-                )}
-                {typeof article.reactions === "number" && (
-                  <span className="flex items-center gap-1">
-                    <Heart size={10} />
-                    {article.reactions}
-                  </span>
-                )}
-                {formattedDate && (
-                  <span className="hidden sm:inline">{formattedDate}</span>
-                )}
-              </div>
-              <span className="flex items-center gap-1 text-cyan-500/50 group-hover:text-cyan-400 transition-colors text-[0.70rem]">
-                Baca <ExternalLink size={10} />
-              </span>
-            </div>
-          </div>
-        </article>
-      </a>
-    </FadeIn>
-  );
-}
-
-// ── Main ───────────────────────────────────────────────────────────────────────
 interface DevToClientProps {
   articles: DevToArticle[];
   topicTags: string[];
-  // search prop: passed down from BlogSearchClient if you wire it via context/prop
-  // For now we keep local search state here for the dev.to section independently
   search?: string;
 }
 
@@ -163,38 +21,15 @@ export default function DevToClient({
 }: DevToClientProps) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  // Internal search — used when externalSearch prop is not provided
-  const [localSearch, setLocalSearch] = useState("");
+  const [localSearch] = useState("");
   const search = externalSearch ?? localSearch;
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search]);
+  const { filtered, paginated, currentPage, totalPages, setCurrentPage } =
+    useFilteredPagination(articles, search);
 
-  const filtered = useMemo(() => {
-    if (!search) return articles;
-    const q = search.toLowerCase();
-    return articles.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.description.toLowerCase().includes(q) ||
-        (a.tags || []).some((t) => t.toLowerCase().includes(q)),
-    );
-  }, [search, articles]);
-
-  const totalPages = Math.ceil(filtered.length / ARTICLES_PER_PAGE);
-  const paginated = filtered.slice(
-    (currentPage - 1) * ARTICLES_PER_PAGE,
-    currentPage * ARTICLES_PER_PAGE,
-  );
-
-  // Refresh triggers Next.js ISR revalidation by calling router.refresh()
-  // This re-runs the Server Component (DevToSection) and re-fetches
   const handleRefresh = async () => {
     setIsRefreshing(true);
     router.refresh();
-    // Give the server a moment to respond
     await new Promise((r) => setTimeout(r, 1500));
     setIsRefreshing(false);
   };

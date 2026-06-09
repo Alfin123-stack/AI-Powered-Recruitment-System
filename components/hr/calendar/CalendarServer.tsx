@@ -4,8 +4,8 @@ import { getServerSession } from "@/lib/auth/getServerSession";
 import { getUserRole } from "@/lib/auth/getUserRole";
 
 import { CalendarClient } from "./CalendarClient";
-import type { Interview } from "./types";
-import { fetchWithToken } from "@/lib/fetchers/dashboardHR/fetchWithToken";
+import type { Interview } from "@/types/calendar";
+import { fetchWithToken } from "@/lib/fetchers/hr/fetchWithToken";
 
 export async function CalendarServer() {
   const session = await getServerSession();

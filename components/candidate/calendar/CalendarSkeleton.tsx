@@ -1,4 +1,4 @@
-// Semua skeleton UI dalam satu file — jangan dipisah
+// All skeleton UI in one file — do not split
 
 // ── Skeleton primitives ───────────────────────────────────────────────────────
 

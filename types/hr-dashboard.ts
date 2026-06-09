@@ -131,3 +131,49 @@ export type Job = {
   is_active?: boolean;
   companies: { name: string; logo_url?: string };
 };
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+export type ActionButton = {
+  onClick: () => void;
+  title: string;
+  Icon: React.ComponentType<{ size?: number }>;
+  color: string;
+  bg: string;
+  border: string;
+  disabled: boolean;
+};
+
+export type ScoreItem = {
+  label: string;
+  val: number;
+  suffix: string;
+};
+
+export type InsightPanel = {
+  title: string;
+  items: string[];
+  color: string;
+  bg: string;
+  border: string;
+  Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
+};
+
+export type StatusAction = {
+  label: string;
+  status: string;
+  Icon: React.ComponentType<{ size?: number }>;
+  color: string;
+  bg: string;
+  border: string;
+};
+
+export type GroupMetric = {
+  label: string;
+  val: number;
+  color: string;
+};
+
+export type FilterOption = {
+  value: string;
+  label: string;
+};

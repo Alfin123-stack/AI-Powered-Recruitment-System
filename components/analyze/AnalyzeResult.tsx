@@ -3,15 +3,15 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, FileText, Loader2, RefreshCw } from "lucide-react";
-import ScoreBlock from "./ScoreBlock";
-import AnimatedBar from "./AnimatedBar";
-import SummaryBanner from "./SummaryBanner";
-import TabBar from "./TabBar";
-import OverviewTab from "./OverviewTab";
-import ATSTab from "./ATSTab";
-import FeedbackTab from "./FeedbackTab";
-import WritingTab from "./WritingTab";
-import { scoreColor } from "./analyze-helpers";
+import ScoreBlock from "./AnalyzeScoreBlock";
+import AnimatedBar from "./AnalyzeAnimatedBar";
+import SummaryBanner from "./AnalyzeSummaryBanner";
+import TabBar from "./AnalyzeTabBar";
+import OverviewTab from "./AnalyzeOverviewTab";
+import ATSTab from "./AnalyzeATSTab";
+import FeedbackTab from "./AnalyzeFeedbackTab";
+import WritingTab from "./AnalyzeWritingTab";
+import { scoreColor } from "../../lib/helpers/analyze";
 import type { AnalysisData, Tab } from "@/types/analyze";
 
 // ─── ANALYSIS RESULT ─────────────────────────────────────────────────────────

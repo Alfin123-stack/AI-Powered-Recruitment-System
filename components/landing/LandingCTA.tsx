@@ -1,7 +1,5 @@
 import Link from "next/link";
 import {
-  Star,
-  Plus,
   FileText,
   Mail,
   CheckCircle2,
@@ -9,7 +7,8 @@ import {
   Shield,
   Sparkles,
 } from "lucide-react";
-import { FadeIn, Tag } from "./landing-components";
+import { LandingFadeIn } from "./LandingFadeIn";
+import { LandingTag } from "./LandingTag";
 
 export function LandingCTA() {
   return (
@@ -26,10 +25,10 @@ export function LandingCTA() {
       </div>
 
       <div className="max-w-[700px] mx-auto px-6 text-center relative">
-        <FadeIn>
-          <Tag>
+        <LandingFadeIn>
+          <LandingTag>
             <Sparkles size={9} className="animate-pulse" /> Mulai Gratis
-          </Tag>
+          </LandingTag>
           <h2 className="font-syne font-extrabold mt-6 mb-5 leading-[1.12] text-[clamp(2rem,4vw,3.2rem)]">
             CV Kamu Sudah Siap. <br />
             <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
@@ -69,7 +68,7 @@ export function LandingCTA() {
               terenkripsi
             </span>
           </p>
-        </FadeIn>
+        </LandingFadeIn>
       </div>
     </section>
   );

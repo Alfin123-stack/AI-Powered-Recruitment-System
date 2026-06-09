@@ -1,9 +1,9 @@
-// Server Component — tidak ada "use client"
-// Render deskripsi, requirements, benefits, dan about company
+// Server Component — no "use client"
+// Renders description, requirements, benefits, and about company
 
 import React from "react";
 import { CheckCircle2, Building2 } from "lucide-react";
-import FadeIn from "./FadeIn";
+import JobFadeIn from "./JobFadeIn";
 import { Job } from "@/types/jobs";
 
 function Card({
@@ -42,20 +42,20 @@ export default function JobDetailBody({
   return (
     <div>
       {/* Description */}
-      <FadeIn delay={0.05}>
+      <JobFadeIn delay={0.05}>
         <Card>
-          <CardTitle>Deskripsi Pekerjaan</CardTitle>
+          <CardTitle>Job Description</CardTitle>
           <p className="text-[#7a9585] text-[0.9rem] leading-[1.75] whitespace-pre-line">
             {job.description}
           </p>
         </Card>
-      </FadeIn>
+      </JobFadeIn>
 
       {/* Requirements */}
       {requirements.length > 0 && (
-        <FadeIn delay={0.1}>
+        <JobFadeIn delay={0.1}>
           <Card>
-            <CardTitle>Kualifikasi & Persyaratan</CardTitle>
+            <CardTitle>Qualifications & Requirements</CardTitle>
             <div className="flex flex-col gap-[10px]">
               {requirements.map((item, i) => (
                 <div
@@ -70,14 +70,14 @@ export default function JobDetailBody({
               ))}
             </div>
           </Card>
-        </FadeIn>
+        </JobFadeIn>
       )}
 
       {/* Benefits */}
       {(job.benefits || []).length > 0 && (
-        <FadeIn delay={0.15}>
+        <JobFadeIn delay={0.15}>
           <Card>
-            <CardTitle>Benefit & Fasilitas</CardTitle>
+            <CardTitle>Benefits & Facilities</CardTitle>
             <div className="grid grid-cols-2 gap-2">
               {job.benefits?.map((b, i) => (
                 <div
@@ -88,14 +88,14 @@ export default function JobDetailBody({
               ))}
             </div>
           </Card>
-        </FadeIn>
+        </JobFadeIn>
       )}
 
       {/* About Company */}
       {job.companies && (
-        <FadeIn delay={0.2}>
+        <JobFadeIn delay={0.2}>
           <Card>
-            <CardTitle>Tentang Perusahaan</CardTitle>
+            <CardTitle>About the Company</CardTitle>
             <div className="flex gap-[14px] items-start mb-[14px]">
               <div
                 className="w-12 h-12 rounded-[11px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
@@ -119,7 +119,7 @@ export default function JobDetailBody({
               </p>
             )}
           </Card>
-        </FadeIn>
+        </JobFadeIn>
       )}
     </div>
   );

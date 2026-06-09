@@ -1,9 +1,5 @@
 "use client";
 
-// ApplicationsClient.tsx — Client Component (shell utama CSR)
-// Mengelola: tabs, search, filter, modal detail
-// Data sudah diambil di page.tsx (SSR), diterima via props
-
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,11 +12,20 @@ import {
   X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Application, Interview, FILTER_OPTIONS } from "./types";
-import { isToday, getDayLabel, formatTime } from "./utils";
+import type {
+  Application,
+  Interview,
+} from "../../../constants/candidate/applications";
+import { FILTER_OPTIONS } from "../../../constants/candidate/applications";
+import {
+  isToday,
+  getDayLabel,
+  formatTime,
+} from "../../../lib/helpers/candidate/applications";
+import { useApplicationsFilter } from "@/hooks/dashboard/candidate/Useapplicationsfilter";
 import ApplicationCard from "./ApplicationCard";
 import ApplicationDetailModal from "./ApplicationDetailModal";
-import InterviewsSection from "./InterviewsSection";
+import InterviewsSection from "./ApplicationsInterviewsSection";
 
 interface ApplicationsClientProps {
   applications: Application[];
@@ -31,32 +36,37 @@ export default function ApplicationsClient({
   applications,
   interviews,
 }: ApplicationsClientProps) {
-  const [activeTab, setActiveTab] = useState<"applications" | "interviews">(
-    "applications",
-  );
-  const [appSearch, setAppSearch] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const {
+    activeTab,
+    setActiveTab,
+    appSearch,
+    setAppSearch,
+    filter,
+    setFilter,
+    selectedApp,
+    setSelectedApp,
+    upcomingInterviews,
+    filteredApps,
+  } = useApplicationsFilter(applications, interviews);
 
-  // Upcoming interviews for banner
-  const upcomingInterviews = interviews.filter(
-    (iv) => iv.status === "scheduled" && new Date(iv.scheduled_at) > new Date(),
-  );
-
-  // Filtered applications
-  const filteredApps = applications.filter((a) => {
-    const matchStatus = filter === "all" || a.status === filter;
-    const q = appSearch.toLowerCase();
-    return (
-      matchStatus &&
-      ((a.job_title || "").toLowerCase().includes(q) ||
-        (a.company_name || "").toLowerCase().includes(q))
-    );
-  });
+  const TABS = [
+    {
+      key: "applications" as const,
+      label: "Lamaranku",
+      Icon: Building2,
+      count: applications.length,
+    },
+    {
+      key: "interviews" as const,
+      label: "Jadwal Interview",
+      Icon: Calendar,
+      count: interviews.length,
+    },
+  ];
 
   return (
     <>
-      {/* ── Upcoming Interview Banner (hanya di tab aplikasi) ── */}
+      {/* ── Upcoming Interview Banner ── */}
       <AnimatePresence>
         {upcomingInterviews.length > 0 && activeTab === "applications" && (
           <motion.div
@@ -85,12 +95,14 @@ export default function ApplicationsClient({
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
+                title="Lihat semua jadwal interview"
                 onClick={() => setActiveTab("interviews")}
                 className="flex items-center gap-1 text-[0.77rem] text-cyan-400 hover:text-cyan-300 font-semibold transition-colors cursor-pointer whitespace-nowrap bg-transparent border-0">
                 Lihat Jadwal <ChevronRight size={13} />
               </button>
               <Link
                 href="./applications/calendar"
+                title="Buka tampilan kalender"
                 className="flex items-center gap-1 text-[0.75rem] text-[#7a9585] hover:text-[#e8f0ec] transition-colors no-underline whitespace-nowrap">
                 <LayoutGrid size={11} /> Kalender
               </Link>
@@ -101,24 +113,11 @@ export default function ApplicationsClient({
 
       {/* ── Tabs + Action Buttons ── */}
       <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        {/* Tab switcher */}
         <div className="flex gap-1 bg-[#0a0f0c] border border-emerald-500/12 rounded-[12px] p-[5px]">
-          {[
-            {
-              key: "applications" as const,
-              label: "Lamaranku",
-              Icon: Building2,
-              count: applications.length,
-            },
-            {
-              key: "interviews" as const,
-              label: "Jadwal Interview",
-              Icon: Calendar,
-              count: interviews.length,
-            },
-          ].map(({ key, label, Icon, count }) => (
+          {TABS.map(({ key, label, Icon, count }) => (
             <button
               key={key}
+              title={`Tampilkan tab ${label}`}
               onClick={() => setActiveTab(key)}
               className={`flex items-center gap-2 px-4 py-[7px] rounded-[9px] text-[0.81rem] font-medium cursor-pointer transition-all whitespace-nowrap border-0
                 ${
@@ -131,7 +130,7 @@ export default function ApplicationsClient({
               {count > 0 && (
                 <span
                   className={`rounded-[4px] px-[6px] py-[1px] text-[0.61rem] font-extrabold
-                    ${activeTab === key ? "bg-emerald-500/20 text-emerald-400" : "bg-white/[0.05] text-[#7a9585]"}`}>
+                  ${activeTab === key ? "bg-emerald-500/20 text-emerald-400" : "bg-white/[0.05] text-[#7a9585]"}`}>
                   {count}
                 </span>
               )}
@@ -139,16 +138,17 @@ export default function ApplicationsClient({
           ))}
         </div>
 
-        {/* Action buttons */}
         <div className="flex items-center gap-2">
           <Link
             href="./applications/calendar"
+            title="Buka tampilan kalender"
             className="flex items-center gap-2 px-3 py-[8px] rounded-[9px] text-[0.79rem] font-medium text-[#7a9585] hover:text-[#e8f0ec] border border-emerald-500/12 hover:border-emerald-500/25 no-underline transition-all">
             <LayoutGrid size={13} /> Kalender
           </Link>
           {activeTab === "applications" && (
             <Link
               href="/jobs"
+              title="Cari lowongan baru untuk dilamar"
               className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-4 py-[8px] rounded-[9px] text-[0.81rem] no-underline transition-all hover:shadow-[0_4px_12px_rgba(16,185,129,0.28)]">
               + Lamar Lagi
             </Link>
@@ -158,7 +158,6 @@ export default function ApplicationsClient({
 
       {/* ── Tab Content ── */}
       <AnimatePresence mode="wait">
-        {/* Tab: Lamaranku */}
         {activeTab === "applications" && (
           <motion.div
             key="apps"
@@ -181,7 +180,7 @@ export default function ApplicationsClient({
                 />
                 {appSearch && (
                   <button
-                    title="Clear search"
+                    title="Hapus pencarian"
                     onClick={() => setAppSearch("")}
                     className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[#7a9585] hover:text-[#e8f0ec] transition-colors cursor-pointer bg-transparent border-0">
                     <X size={13} />
@@ -192,6 +191,7 @@ export default function ApplicationsClient({
                 {FILTER_OPTIONS.map(({ val, label }) => (
                   <button
                     key={val}
+                    title={`Filter status: ${label}`}
                     onClick={() => setFilter(val)}
                     className={`px-3 py-[6px] rounded-[8px] border text-[0.77rem] font-medium cursor-pointer transition-all whitespace-nowrap
                       ${
@@ -240,7 +240,6 @@ export default function ApplicationsClient({
           </motion.div>
         )}
 
-        {/* Tab: Jadwal Interview */}
         {activeTab === "interviews" && (
           <motion.div
             key="ivs"

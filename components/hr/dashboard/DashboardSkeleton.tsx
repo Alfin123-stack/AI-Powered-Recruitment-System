@@ -324,7 +324,7 @@ export function CandidateRankingSkeleton() {
   );
 }
 
-// ── Full Page Skeleton (dipakai sebagai loading.tsx atau Suspense fallback) ──
+// ── Full Page Skeleton (used as loading.tsx or Suspense fallback) ──
 export function HRDashboardSkeleton() {
   return (
     <div className="min-h-screen p-5" style={{ background: "#080d0a" }}>

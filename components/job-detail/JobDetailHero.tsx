@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { MapPin, Clock, Briefcase, Building2, ArrowLeft } from "lucide-react";
-import FadeIn from "./FadeIn";
+import JobFadeIn from "./JobFadeIn";
 import type { Job } from "@/types/jobs";
 import { timeAgo } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export default function JobDetailHero({
         }}
       />
 
-      <FadeIn>
+      <JobFadeIn>
         <div className="max-w-[1100px] mx-auto px-6">
           {/* Back button */}
           <div className="mt-6 mb-5">
@@ -40,7 +40,7 @@ export default function JobDetailHero({
                 size={14}
                 className="transition-transform group-hover:-translate-x-[3px]"
               />
-              Kembali ke Jobs
+              Back to Jobs
             </Link>
           </div>
 
@@ -56,7 +56,6 @@ export default function JobDetailHero({
             <div
               className="w-16 h-16 rounded-[14px] flex items-center justify-center flex-shrink-0 border border-white/[0.08]"
               style={{ background: `${color}18`, color }}>
-              {/* FIX: double optional chaining untuk companies yang nullable */}
               {job.companies?.logo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -76,7 +75,6 @@ export default function JobDetailHero({
                 {job.title}
               </h1>
 
-              {/* FIX: render companies.name hanya jika ada */}
               <div className="text-[#7a9585] text-[0.95rem] mb-4">
                 {job.companies?.name
                   ? `${job.companies.name} · ${job.location}`
@@ -88,7 +86,7 @@ export default function JobDetailHero({
                 {[
                   { Icon: MapPin, text: job.location },
                   { Icon: Briefcase, text: job.type },
-                  { Icon: Clock, text: `Diposting ${timeAgo(job.created_at)}` },
+                  { Icon: Clock, text: `Posted ${timeAgo(job.created_at)}` },
                 ]
                   .filter((m) => m.text)
                   .map(({ Icon, text }) => (
@@ -120,7 +118,7 @@ export default function JobDetailHero({
             </div>
           </div>
         </div>
-      </FadeIn>
+      </JobFadeIn>
     </section>
   );
 }

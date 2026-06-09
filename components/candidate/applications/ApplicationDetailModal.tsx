@@ -17,10 +17,19 @@ import {
   Video,
   X,
 } from "lucide-react";
-import { Application, Interview, IV_STATUS_MAP, STATUS_MAP } from "./types";
-import { getAIInsights, getDayLabel, formatTime } from "./utils";
-import AIInsightBadge from "./AIInsightBadge";
-import LiveCountdown from "./LiveCountdown";
+import {
+  Application,
+  Interview,
+  IV_STATUS_MAP,
+  STATUS_MAP,
+} from "../../../constants/candidate/applications";
+import {
+  getAIInsights,
+  getDayLabel,
+  formatTime,
+} from "../../../lib/helpers/candidate/applications";
+import ApplicationsAIInsightBadge from "./ApplicationsAIInsightBadge";
+import ApplicationsLiveCountdown from "./ApplicationsLiveCountdown";
 
 interface ApplicationDetailModalProps {
   app: Application;
@@ -37,9 +46,10 @@ export default function ApplicationDetailModal({
   const appInterviews = interviews.filter((iv) => iv.application_id === app.id);
   const insights = getAIInsights(app, interviews);
   const steps = ["applied", "review", "shortlisted"] as const;
-  const currentStepIdx = steps.indexOf(
-    app.status as (typeof steps)[number],
-  );
+  const currentStepIdx = steps.indexOf(app.status as (typeof steps)[number]);
+
+  const resumeScore = app.resume_score ?? 0;
+  const matchingScore = app.matching_score ?? 0;
 
   return (
     <motion.div
@@ -57,7 +67,6 @@ export default function ApplicationDetailModal({
         transition={{ duration: 0.2 }}
         className="relative bg-[#07100d] border border-emerald-500/15 rounded-[20px] w-full max-w-[600px] max-h-[85vh] overflow-y-auto shadow-[0_32px_80px_rgba(0,0,0,0.8)]"
         onClick={(e) => e.stopPropagation()}>
-
         {/* ── Header ── */}
         <div className="sticky top-0 z-10 bg-[#07100d] border-b border-emerald-500/10 px-6 py-4 flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -82,6 +91,7 @@ export default function ApplicationDetailModal({
               {st.label}
             </span>
             <button
+              title="Tutup Detail Lamaran"
               onClick={onClose}
               className="w-8 h-8 rounded-[8px] border border-emerald-500/15 flex items-center justify-center text-[#7a9585] hover:text-[#e8f0ec] transition-colors cursor-pointer bg-transparent">
               <X size={14} />
@@ -147,9 +157,9 @@ export default function ApplicationDetailModal({
           )}
 
           {/* ── Scores ── */}
-          {(app.resume_score > 0 || app.matching_score > 0) && (
+          {(resumeScore > 0 || matchingScore > 0) && (
             <div className="grid grid-cols-2 gap-3">
-              {app.resume_score > 0 && (
+              {resumeScore > 0 && (
                 <div className="bg-white/[0.025] border border-emerald-500/12 rounded-[12px] p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Award size={13} className="text-emerald-400" />
@@ -158,13 +168,13 @@ export default function ApplicationDetailModal({
                     </span>
                   </div>
                   <div className="text-[1.6rem] font-black text-emerald-400 leading-none mb-2">
-                    {app.resume_score}
+                    {resumeScore}
                   </div>
                   <div className="w-full h-[5px] bg-white/[0.05] rounded-full overflow-hidden">
                     <motion.div
                       className="h-full rounded-full"
                       initial={{ width: 0 }}
-                      animate={{ width: `${app.resume_score}%` }}
+                      animate={{ width: `${resumeScore}%` }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
                       style={{
                         background: "linear-gradient(90deg,#10b981,#06b6d4)",
@@ -173,7 +183,7 @@ export default function ApplicationDetailModal({
                   </div>
                 </div>
               )}
-              {app.matching_score > 0 && (
+              {matchingScore > 0 && (
                 <div className="bg-white/[0.025] border border-violet-500/12 rounded-[12px] p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Target size={13} className="text-violet-400" />
@@ -182,14 +192,18 @@ export default function ApplicationDetailModal({
                     </span>
                   </div>
                   <div className="text-[1.6rem] font-black text-violet-400 leading-none mb-2">
-                    {app.matching_score}%
+                    {matchingScore}%
                   </div>
                   <div className="w-full h-[5px] bg-white/[0.05] rounded-full overflow-hidden">
                     <motion.div
                       className="h-full rounded-full"
                       initial={{ width: 0 }}
-                      animate={{ width: `${app.matching_score}%` }}
-                      transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+                      animate={{ width: `${matchingScore}%` }}
+                      transition={{
+                        duration: 0.8,
+                        ease: "easeOut",
+                        delay: 0.1,
+                      }}
                       style={{
                         background: "linear-gradient(90deg,#8b5cf6,#06b6d4)",
                       }}
@@ -211,7 +225,7 @@ export default function ApplicationDetailModal({
               </div>
               <div className="space-y-2">
                 {insights.map((insight, i) => (
-                  <AIInsightBadge key={i} insight={insight} />
+                  <ApplicationsAIInsightBadge key={i} insight={insight} />
                 ))}
               </div>
             </div>
@@ -312,7 +326,9 @@ export default function ApplicationDetailModal({
 
                       {upcoming && (
                         <div className="mt-3 flex items-center justify-between">
-                          <LiveCountdown scheduledAt={iv.scheduled_at} />
+                          <ApplicationsLiveCountdown
+                            scheduledAt={iv.scheduled_at}
+                          />
                         </div>
                       )}
                     </div>

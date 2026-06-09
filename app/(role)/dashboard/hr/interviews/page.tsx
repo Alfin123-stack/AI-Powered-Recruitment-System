@@ -9,8 +9,8 @@ import InterviewsClient from "@/components/hr/interviews/InterviewsClient";
 import type {
   Interview,
   ShortlistedCandidate,
-} from "@/components/hr/interviews/types";
-import { fetchWithToken } from "@/lib/fetchers/dashboardHR/fetchWithToken";
+} from "@/types/hr/interviews";
+import { fetchWithToken } from "@/lib/fetchers/hr/fetchWithToken";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ASYNC DATA LOADER — yang ditunggu oleh <Suspense>

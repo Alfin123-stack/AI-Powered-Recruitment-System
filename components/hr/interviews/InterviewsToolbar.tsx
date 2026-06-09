@@ -13,7 +13,7 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { FilterStatus, SortOption, AdvancedFilters, Interview } from "./types";
+import { FilterStatus, SortOption, AdvancedFilters, Interview } from "../../../types/hr/interviews";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TOKENS — selaras JobCard

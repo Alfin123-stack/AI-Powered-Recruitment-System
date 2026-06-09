@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
-import ArticleHeader from "@/components/blog-detail/ArticleHeader";
-import ArticleBody from "@/components/blog-detail/ArticleBody";
-import ArticleCTA from "@/components/blog-detail/ArticleCTA";
-import RelatedArticles from "@/components/blog-detail/RelatedArticles";
 import BlogDetailSkeleton from "@/components/blog-detail/BlogDetailSkeleton";
 import { ARTICLE_MAP } from "@/lib/articles";
+import BlogDetailHeader from "@/components/blog-detail/BlogDetailHeader";
+import BlogDetailBody from "@/components/blog-detail/BlogDetailBody";
+import BlogDetailCTA from "@/components/blog-detail/BlogDetailCTA";
+import BlogDetailRelated from "@/components/blog-detail/BlogDetailRelated";
 
 export function generateStaticParams() {
   return Object.keys(ARTICLE_MAP).map((slug) => ({ slug }));
@@ -48,10 +48,10 @@ export default async function BlogDetailPage({ params }: Props) {
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
       <main className="pt-16">
         <Suspense fallback={<BlogDetailSkeleton />}>
-          <ArticleHeader article={article} />
-          <ArticleBody article={article} />
-          <ArticleCTA />
-          <RelatedArticles articles={related} />
+          <BlogDetailHeader article={article} />
+          <BlogDetailBody article={article} />
+          <BlogDetailCTA />
+          <BlogDetailRelated articles={related} />
         </Suspense>
       </main>
     </div>

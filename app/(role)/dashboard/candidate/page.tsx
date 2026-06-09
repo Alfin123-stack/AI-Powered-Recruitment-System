@@ -8,7 +8,7 @@ import {
   fetchInterviews,
   fetchJobs,
   fetchUserProfile,
-} from "@/lib/fetchers/dashboardCandidate";
+} from "@/lib/fetchers/candidate/dashboardCandidate";
 
 import { DashboardShell } from "@/components/candidate/dashboard/DashboardShell";
 import {

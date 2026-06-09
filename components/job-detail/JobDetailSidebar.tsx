@@ -1,7 +1,7 @@
 "use client";
 
-// Client Component — butuh interaktivitas: apply, save, cek session
-// Data job di-pass dari Server Component sebagai props
+// Client Component — requires interactivity: apply, save, check session
+// Job data is passed from Server Component as props
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import type { Session } from "@supabase/supabase-js";
 import { CheckCircle2, Bookmark, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ApplyModal } from "./ApplyModal";
+import { JobApplyModal } from "./JobApplyModal";
 import { Job } from "@/types/jobs";
 import { statusConfig } from "@/lib/constants";
 import { formatDeadline } from "@/lib/utils";
@@ -49,7 +49,7 @@ export default function JobDetailSidebar({
       setSession(s);
       if (!s?.access_token) return;
 
-      // Paralel: cek apply status + save status
+      // Parallel: check apply status + save status
       setCheckingApplied(true);
       setCheckingSaved(true);
 
@@ -133,7 +133,7 @@ export default function JobDetailSidebar({
     <>
       {/* Apply Modal */}
       {showApplyModal && session && (
-        <ApplyModal
+        <JobApplyModal
           job={job}
           token={session.access_token}
           userId={session.user.id}
@@ -150,7 +150,7 @@ export default function JobDetailSidebar({
             <div className="w-full py-[14px] rounded-[11px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center gap-2 mb-[10px]">
               <Loader2 size={14} className="text-emerald-400 animate-spin" />
               <span className="text-[#7a9585] text-[0.85rem]">
-                Mengecek status...
+                Checking status...
               </span>
             </div>
           ) : applied && status ? (
@@ -168,14 +168,14 @@ export default function JobDetailSidebar({
               <Link
                 href="/dashboard/candidate/applications"
                 className="flex items-center justify-center gap-1 text-[0.75rem] text-emerald-400 hover:text-emerald-300 no-underline transition-colors">
-                Lihat detail lamaran →
+                View application detail →
               </Link>
             </div>
           ) : (
             <Button
               onClick={handleApplyClick}
               className="w-full py-[14px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-[11px] text-[0.95rem] hover:shadow-[0_6px_24px_rgba(16,185,129,0.3)] hover:-translate-y-[1px] mb-[10px]">
-              <Upload size={15} /> Apply Sekarang
+              <Upload size={15} /> Apply Now
             </Button>
           )}
 
@@ -209,10 +209,10 @@ export default function JobDetailSidebar({
               />
             )}
             {savingLoading
-              ? "Memproses..."
+              ? "Processing..."
               : saved
-                ? "Tersimpan · Klik untuk hapus"
-                : "Simpan Lowongan"}
+                ? "Saved · Click to remove"
+                : "Save Job"}
           </button>
 
           <Separator className="my-5 bg-emerald-500/15" />
@@ -220,9 +220,9 @@ export default function JobDetailSidebar({
           {/* Job info rows */}
           <div className="mb-5">
             {[
-              { label: "Tipe Pekerjaan", value: job.type },
-              { label: "Gaji", value: job.salary || "—" },
-              { label: "Lokasi", value: job.location },
+              { label: "Job Type", value: job.type },
+              { label: "Salary", value: job.salary || "—" },
+              { label: "Location", value: job.location },
               { label: "Deadline", value: formatDeadline(job.deadline) },
             ].map((row, i, arr) => (
               <div
@@ -246,12 +246,12 @@ export default function JobDetailSidebar({
               ✦ AI Match Score
             </div>
             <p className="text-[0.82rem] text-[#7a9585] leading-relaxed mb-[10px]">
-              Upload CV untuk mengetahui tingkat kecocokan dengan posisi ini.
+              Upload your CV to find out how well you match this position.
             </p>
             <Link
               href="/analyze"
               className="flex items-center justify-center gap-2 w-full py-[9px] rounded-[9px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[0.8rem] font-bold no-underline hover:bg-emerald-500/20 transition-all">
-              Analisis CV Saya →
+              Analyze My CV →
             </Link>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function JobDetailSidebar({
         {/* Share card */}
         <div className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] px-[22px] py-[18px]">
           <div className="text-[0.78rem] text-[#7a9585] mb-3">
-            Bagikan lowongan ini
+            Share this job
           </div>
           <div className="flex gap-2">
             {["LinkedIn", "WhatsApp", "Twitter"].map((p) => (

@@ -4,20 +4,20 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity } from "lucide-react";
 
-import { StatCards } from "./StatCards";
-import { OverviewTab } from "./OverviewTab";
-import { KandidatTab } from "./KandidatTab";
-import { PosisiTab } from "./PosisiTab";
+import { AnalyticsStatCards } from "./AnalyticsStatCards";
+import { AnalyticsOverviewTab } from "./AnalyticsOverviewTab";
+import { AnalyticsCandidateTab } from "./AnalyticsCandidateTab";
+import { AnalyticsPositionTab } from "./AnalyticsPositionTab";
 import { useAnalyticsData } from "@/hooks/dashboard/hr/useAnalyticsData";
 import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
-import { T } from "./shared";
+import { T } from "@/constants/hr/analytics";
 
-type TabId = "overview" | "kandidat" | "posisi";
+type TabId = "overview" | "candidate" | "position";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "overview", label: "Overview" },
-  { id: "kandidat", label: "Kandidat" },
-  { id: "posisi", label: "Per Posisi" },
+  { id: "candidate", label: "Candidate" },
+  { id: "position", label: "Per Position" },
 ];
 
 export function AnalyticsDashboard() {
@@ -78,9 +78,9 @@ export function AnalyticsDashboard() {
         </div>
       </FadeIn>
 
-      {/* Stat Cards — hanya di overview */}
+      {/* Stat Cards — overview only */}
       {activeTab === "overview" && (
-        <StatCards
+        <AnalyticsStatCards
           total={stats.total}
           shortlisted={stats.shortlisted}
           hired={stats.hired}
@@ -100,7 +100,7 @@ export function AnalyticsDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}>
-            <OverviewTab
+            <AnalyticsOverviewTab
               apps={apps}
               total={stats.total}
               shortlisted={stats.shortlisted}
@@ -115,14 +115,14 @@ export function AnalyticsDashboard() {
           </motion.div>
         )}
 
-        {activeTab === "kandidat" && (
+        {activeTab === "candidate" && (
           <motion.div
-            key="kandidat"
+            key="candidate"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}>
-            <KandidatTab
+            <AnalyticsCandidateTab
               apps={apps}
               total={stats.total}
               avgScore={stats.avgScore}
@@ -132,14 +132,14 @@ export function AnalyticsDashboard() {
           </motion.div>
         )}
 
-        {activeTab === "posisi" && (
+        {activeTab === "position" && (
           <motion.div
-            key="posisi"
+            key="position"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}>
-            <PosisiTab apps={apps} jobs={jobs} />
+            <AnalyticsPositionTab apps={apps} jobs={jobs} />
           </motion.div>
         )}
       </AnimatePresence>

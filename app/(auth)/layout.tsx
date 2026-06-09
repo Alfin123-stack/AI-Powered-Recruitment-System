@@ -1,6 +1,7 @@
 // app/(auth)/layout.tsx
+import AuthLeftPanel from "@/components/auth/layout/AuthLeftPanel";
+import AuthRightPanel from "@/components/auth/layout/AuthRightPanel";
 import type { Metadata } from "next";
-import { AuthLeftPanel, AuthRightPanel } from "@/components/auth/layout";
 
 export const metadata: Metadata = {
   title: "Autentikasi · RecruitAI",

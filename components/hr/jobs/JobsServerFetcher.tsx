@@ -1,8 +1,8 @@
 import { getServerSession } from "@/lib/auth/getServerSession";
 import { JobsPageClient } from "./JobsPageClient";
-import type { RawApplication } from "./types";
+import type { RawApplication } from "../../../types/hr/jobs";
 import type { Job } from "@/app/(role)/dashboard/hr/_components/shared";
-import { fetchWithToken } from "@/lib/fetchers/dashboardHR/fetchWithToken";
+import { fetchWithToken } from "@/lib/fetchers/hr/fetchWithToken";
 
 export async function JobsServerFetcher() {
   const session = await getServerSession();

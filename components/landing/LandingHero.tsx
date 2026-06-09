@@ -12,7 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Counter, FadeIn, Tag } from "./landing-components";
+import { LandingTag } from "./LandingTag";
 
 export function LandingHero() {
   return (
@@ -29,10 +29,10 @@ export function LandingHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
             <div className="mb-5">
-              <Tag>
+              <LandingTag>
                 <Sparkles size={9} className="animate-pulse" /> Platform
                 Rekrutmen Berbasis AI
-              </Tag>
+              </LandingTag>
             </div>
 
             <h1 className="font-syne font-extrabold text-[clamp(2.4rem,5vw,3.6rem)] leading-[1.09] tracking-tight mb-6">
@@ -122,46 +122,6 @@ export function LandingHero() {
               </div>
             </div>
           </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── Stats bar ─────────────────────────────────────────────────────────────────
-
-const STATS = [
-  { value: 5000, suffix: "+", label: "CV Dianalisis", color: "#10b981" },
-  {
-    value: 98,
-    suffix: "%",
-    label: "Akurasi Ekstraksi Skill",
-    color: "#06b6d4",
-  },
-  {
-    value: 30,
-    suffix: " dtk",
-    label: "Rata-rata Waktu Analisis",
-    color: "#f59e0b",
-  },
-  { value: 200, suffix: "+", label: "Perusahaan Terdaftar", color: "#8b5cf6" },
-];
-
-export function LandingStats() {
-  return (
-    <section className="py-14 bg-[#0f1612] border-y border-emerald-500/[0.08]">
-      <div className="max-w-[1180px] mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {STATS.map((s, i) => (
-            <FadeIn key={i} delay={i * 0.1} className="text-center">
-              <div
-                className="font-syne font-extrabold text-[2.4rem] leading-none mb-1"
-                style={{ color: s.color }}>
-                <Counter to={s.value} suffix={s.suffix} />
-              </div>
-              <p className="text-[#7a9585] text-[0.82rem]">{s.label}</p>
-            </FadeIn>
-          ))}
         </div>
       </div>
     </section>

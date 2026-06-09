@@ -1,5 +1,5 @@
 // app/jobs/_components/JobsSkeleton.tsx
-// ─── SEMUA SKELETON ADA DI SINI — TIDAK DIPISAH ───────────────────────────────
+// ─── ALL SKELETONS LIVE HERE — NOT SPLIT INTO SEPARATE FILES ──────────────────
 
 "use client";
 
@@ -21,8 +21,8 @@ function Pulse({
   );
 }
 
-// ── Skeleton: satu kartu lowongan ─────────────────────────────────────────────
-function JobCardSkeleton() {
+// ── Skeleton: single job card ─────────────────────────────────────────────────
+function JobsCardSkeleton() {
   return (
     <div className="relative bg-[#0f1612] border border-emerald-500/10 rounded-[16px] p-5 flex flex-col gap-3 overflow-hidden">
       {/* Header */}
@@ -69,7 +69,7 @@ function JobCardSkeleton() {
 }
 
 // ── Skeleton: toolbar (search + filter chips) ─────────────────────────────────
-function JobToolbarSkeleton() {
+function JobsToolbarSkeleton() {
   return (
     <section className="pt-7">
       <div className="max-w-[1180px] mx-auto px-6">
@@ -93,7 +93,7 @@ function JobToolbarSkeleton() {
 }
 
 // ── Skeleton: grid label + pagination hint ────────────────────────────────────
-function JobListHeaderSkeleton() {
+function JobsListHeaderSkeleton() {
   return (
     <div className="flex justify-between items-center mb-5">
       <Pulse className="h-3 w-40 rounded-[6px]" />
@@ -106,15 +106,15 @@ function JobListHeaderSkeleton() {
 }
 
 // ── EXPORT: full-page skeleton (toolbar + grid) ───────────────────────────────
-// Ini yang di-render Suspense fallback di page.tsx
+// Rendered as Suspense fallback in page.tsx
 export default function JobsSkeleton({ count = 9 }: { count?: number }) {
   return (
     <>
-      <JobToolbarSkeleton />
+      <JobsToolbarSkeleton />
 
       <section className="py-8 pb-20">
         <div className="max-w-[1180px] mx-auto px-6">
-          <JobListHeaderSkeleton />
+          <JobsListHeaderSkeleton />
 
           <div
             className="grid gap-4"
@@ -122,7 +122,7 @@ export default function JobsSkeleton({ count = 9 }: { count?: number }) {
               gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
             }}>
             {Array.from({ length: count }).map((_, i) => (
-              <JobCardSkeleton key={i} />
+              <JobsCardSkeleton key={i} />
             ))}
           </div>
         </div>

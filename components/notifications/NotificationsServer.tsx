@@ -8,11 +8,11 @@
 
 import { Suspense } from "react";
 import NotificationsHeader from "./NotificationsHeader";
-import AmbientBackground from "./AmbientBackground";
+import AmbientBackground from "./NotificationsBackground";
 import NotificationsClient from "./NotificationsClient";
 import NotificationsSkeleton from "./NotificationsSkeleton";
-import { fetchNotificationsServer } from "./api";
-import type { NavItem, StatDef, UserMeta, Notif } from "./notifications";
+import { fetchNotificationsServer } from "../../lib/fetchers/notifications";
+import type { NavItem, StatDef, UserMeta, Notif } from "../../types/notifications";
 
 export interface NotificationsServerProps {
   role: "hr" | "candidate";

@@ -1,4 +1,4 @@
-// Semua skeleton untuk halaman Job Detail dalam satu file
+// All skeletons for the Job Detail page in one file
 
 function Shimmer({ className = "" }: { className?: string }) {
   return (

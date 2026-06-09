@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useDashboard } from "@/context/DashboardContext";
 import { apiFetch } from "@/app/(role)/dashboard/hr/_components/shared";
-import { computeStats } from "@/components/hr/analytics/shared";
-import type { Application, Job } from "@/components/hr/analytics/shared";
+import type { Application, Job } from "@/types/hr/analytics";
+import { computeStats } from "@/lib/helpers/hr/analytics";
 
 // ── Status narrowing ──────────────────────────────────────────────────────────
 const VALID_STATUSES = [

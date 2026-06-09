@@ -3,8 +3,9 @@
 import { useState } from "react";
 
 import { Plus } from "lucide-react";
-import { FadeIn, Tag } from "./landing-components";
-import { FAQS } from "./landing-types";
+import { LandingFadeIn } from "./LandingFadeIn";
+import { LandingTag } from "./LandingTag";
+import { FAQS } from "@/constants/landing";
 
 export function LandingFAQ() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -12,16 +13,16 @@ export function LandingFAQ() {
   return (
     <section className="py-[100px] bg-[#0f1612]">
       <div className="max-w-[760px] mx-auto px-6">
-        <FadeIn className="text-center mb-[56px]">
-          <Tag>FAQ</Tag>
+        <LandingFadeIn className="text-center mb-[56px]">
+          <LandingTag>FAQ</LandingTag>
           <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
             Pertanyaan yang Sering Diajukan
           </h2>
-        </FadeIn>
+        </LandingFadeIn>
 
         <dl>
           {FAQS.map((f, i) => (
-            <FadeIn key={i} delay={i * 0.06}>
+            <LandingFadeIn key={i} delay={i * 0.06}>
               <div className="border-b border-emerald-500/15">
                 <dt>
                   <button
@@ -47,7 +48,7 @@ export function LandingFAQ() {
                   </p>
                 </dd>
               </div>
-            </FadeIn>
+            </LandingFadeIn>
           ))}
         </dl>
       </div>

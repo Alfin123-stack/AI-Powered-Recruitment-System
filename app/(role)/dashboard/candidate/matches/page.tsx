@@ -1,111 +1,37 @@
-"use client";
+// app/dashboard/candidate/matches/page.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// Server Component — entry point halaman matches.
+//
+// Rendering strategy:
+//   • page.tsx         → SSR (Server Component, no "use client")
+//   • MatchesContent   → async Server Component, di-stream via Suspense
+//   • MatchesLoading   → tampil instan sebagai fallback skeleton
+//   • JobMatchList     → CSR (filter/search interaktif, sudah "use client")
+//   • JobMatchCard     → CSR (animasi framer-motion, sudah "use client")
+// ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from "react";
-import { useDashboard } from "@/context/DashboardContext";
-import type {
-  Job,
-  JobWithMatch,
-  CvAnalysis,
-  Application,
-} from "../../../../../components/candidate/matches/types";
-import {
-  calcMatchScore,
-  getColor,
-} from "../../../../../components/candidate/matches/helpers";
-import JobMatchList from "../../../../../components/candidate/matches/JobMatchList";
-import NoCvState from "../../../../../components/candidate/matches/NoCvState";
-import MatchesLoading from "../../../../../components/candidate/matches/MatchesLoading";
+import { Suspense } from "react";
+import MatchesLoading from "@/components/candidate/matches/MatchesLoading";
+import MatchesContent from "@/components/candidate/matches/MatchesContent";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// Paksa SSR — applications berubah tiap user apply, tidak boleh di-cache di page level
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "Job Matches | Candidate Dashboard",
+  description: "Lowongan yang cocok dengan skills CV kamu",
+};
 
 export default function MatchesPage() {
-  const { token } = useDashboard();
-  const [jobs, setJobs] = useState<JobWithMatch[]>([]);
-  const [cvAnalysis, setCvAnalysis] = useState<CvAnalysis | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!token) return;
-
-    const fetchData = async () => {
-      try {
-        const cvRes = await fetch(`${API}/api/cv-analysis/latest`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!cvRes.ok) {
-          setLoading(false);
-          return;
-        }
-
-        const cvData: CvAnalysis = await cvRes.json();
-
-        if (!cvData?.extracted_skills) {
-          setLoading(false);
-          return;
-        }
-
-        setCvAnalysis(cvData);
-
-        const candidateSkills = cvData.extracted_skills.map((s) => s.name);
-
-        const jobsRes = await fetch(`${API}/api/jobs`);
-        const allJobs: Job[] = await jobsRes.json();
-
-        const appsRes = await fetch(`${API}/api/applications/my`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const myApps: Application[] = (await appsRes.json()) ?? [];
-        const appliedJobIds = new Set(myApps.map((a) => a.job_id)); // ✅ tidak ada any
-
-        const jobsWithMatch: JobWithMatch[] = allJobs.map((job, i) => {
-          const { score, matched, missing } = calcMatchScore(
-            candidateSkills,
-            job.skills || [],
-          );
-          return {
-            ...job,
-            matchScore: score,
-            matchedSkills: matched,
-            missingSkills: missing,
-            alreadyApplied: appliedJobIds.has(job.id),
-            color: getColor(i),
-          };
-        });
-
-        jobsWithMatch.sort((a, b) => {
-          if (a.alreadyApplied !== b.alreadyApplied)
-            return a.alreadyApplied ? 1 : -1;
-          return b.matchScore - a.matchScore;
-        });
-
-        setJobs(jobsWithMatch);
-      } catch (err) {
-        console.error("[MatchesPage]", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchData();
-  }, [token]);
-
-  if (loading) return <MatchesLoading />;
-
-  if (!cvAnalysis) {
-    return (
-      <div>
-        <div className="mb-6">
-          <div className="font-bold text-[1rem]">Job Matches</div>
-          <div className="text-[0.73rem] text-white/35 mt-[2px]">
-            Cocokkan skills CV kamu dengan lowongan yang tersedia
-          </div>
-        </div>
-        <NoCvState />
-      </div>
-    );
-  }
-
-  return <JobMatchList jobs={jobs} cvAnalysis={cvAnalysis} />;
+  return (
+    /**
+     * Suspense + MatchesLoading (komponen yang sudah ada):
+     * - MatchesLoading langsung tampil tanpa nunggu data
+     * - MatchesContent di-stream dari server begitu data siap
+     * - Tidak ada useEffect, tidak ada loading state di client
+     */
+    <Suspense fallback={<MatchesLoading />}>
+      <MatchesContent />
+    </Suspense>
+  );
 }

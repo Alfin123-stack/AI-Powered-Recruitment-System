@@ -16,9 +16,9 @@ import type { Metadata } from "next";
 import { getServerSession } from "@/lib/auth/getServerSession";
 
 import { HR_DASHBOARD_REVALIDATE } from "@/constants/hr-dashboard";
-import { HRDashboardClient } from "@/components/hr/dashboard/HRDashboardClient";
 import { HRDashboardSkeleton } from "@/components/hr/dashboard/DashboardSkeleton";
-import { fetchDashboardData } from "@/lib/fetchers/dashboardHR/dashboardHR";
+import { fetchDashboardData } from "@/lib/fetchers/hr/dashboardHR";
+import { DashboardClient } from "@/components/hr/dashboard/DashboardClient";
 
 export const revalidate = HR_DASHBOARD_REVALIDATE;
 
@@ -34,7 +34,7 @@ async function HRDashboardServer() {
   );
 
   return (
-    <HRDashboardClient
+    <DashboardClient
       initialCandidates={candidates}
       initialInterviews={interviews}
       company={company}

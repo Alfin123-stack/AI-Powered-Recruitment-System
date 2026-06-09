@@ -1,4 +1,4 @@
-import { ThumbsUp, ThumbsDown, AlertTriangle, XCircle } from "lucide-react";
+import { ThumbsUp, AlertTriangle, XCircle } from "lucide-react";
 
 export function getRec(score: number, match: number) {
   const avg = (score + match) / 2;

@@ -1,25 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Calendar } from "lucide-react";
-import { apiFetch, FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
-import { ScheduleModal } from "./InterviewModals";
+import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
 import InterviewsToolbar from "./InterviewsToolbar";
 import InterviewsTable from "./InterviewsTable";
-import {
-  Interview,
-  ShortlistedCandidate,
-  FilterStatus,
-  SortOption,
-  AdvancedFilters,
-  applyFilters,
-  applySort,
-} from "./types";
+import type { Interview, ShortlistedCandidate } from "../../../types/hr/interviews";
+import { useInterviewsClient } from "@/hooks/dashboard/hr/useInterviewsClient";
+import { InterviewScheduleModal } from "./InterviewModals";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const T = {
   emerald: "#10b981",
   textPrimary: "#e8f5ee",
@@ -37,57 +26,31 @@ export default function InterviewsClient({
   initialShortlisted,
   token,
 }: Props) {
-  // ── data state ──
-  const [interviews, setInterviews] = useState<Interview[]>(initialInterviews);
-  const [shortlisted, setShortlisted] =
-    useState<ShortlistedCandidate[]>(initialShortlisted);
-
-  // ── ui state ──
-  const [showModal, setShowModal] = useState(false);
-  const [filter, setFilter] = useState<FilterStatus>("all");
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<SortOption>("date_asc");
-  const [advFilters, setAdvFilters] = useState<AdvancedFilters>({
-    round: "",
-    type: "",
-    interviewer: "",
-  });
-
-  // ── re-fetch after any mutation ──
-  const fetchData = useCallback(async () => {
-    if (!token) return;
-    try {
-      const [ivData, slData] = await Promise.all([
-        apiFetch("/api/interviews", token),
-        apiFetch("/api/interviews/shortlisted", token),
-      ]);
-      setInterviews(Array.isArray(ivData) ? ivData : []);
-      setShortlisted(Array.isArray(slData) ? slData : []);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [token]);
-
-  // ── derived counts ──
-  const scheduledCount = interviews.filter(
-    (iv) => iv.status === "scheduled",
-  ).length;
-  const doneCount = interviews.filter((iv) => iv.status === "done").length;
-  const overdueCount = interviews.filter(
-    (iv) => iv.status === "overdue",
-  ).length;
-
-  // ── apply filters + sort ──
-  const filtered = applySort(
-    applyFilters(interviews, filter, search, advFilters),
+  const {
+    interviews,
+    shortlisted,
+    showModal,
+    setShowModal,
+    filter,
+    setFilter,
+    search,
+    setSearch,
     sort,
-  );
+    setSort,
+    advFilters,
+    setAdvFilters,
+    fetchData,
+    scheduledCount,
+    doneCount,
+    overdueCount,
+    filtered,
+  } = useInterviewsClient(initialInterviews, initialShortlisted, token);
 
   return (
     <>
       <AnimatePresence>
         {showModal && (
-          <ScheduleModal
+          <InterviewScheduleModal
             token={token}
             candidates={shortlisted}
             onDone={() => {
@@ -99,7 +62,7 @@ export default function InterviewsClient({
         )}
       </AnimatePresence>
 
-      {/* ── Heading — selaras dengan AnalyticsPage ── */}
+      {/* ── Heading ── */}
       <FadeIn>
         <div style={{ marginBottom: 24 }}>
           <div
@@ -138,7 +101,6 @@ export default function InterviewsClient({
             style={{
               fontSize: "0.75rem",
               color: T.textSecondary,
-              marginLeft: 44 /* 32px icon + 12px gap */,
               margin: "0 0 0 44px",
             }}>
             Jadwal interview —{" "}

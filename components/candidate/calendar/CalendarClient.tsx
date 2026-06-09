@@ -1,29 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-import FullCalendar from "./FullCalendar";
-import { Interview } from "./types";
-import { useDashboard } from "@/context/DashboardContext";
-
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import CalendarFull from "./CalendarFull";
+import { useInterviews } from "@/hooks/dashboard/candidate/useInterviews";
 
 export default function CalendarClient() {
-  const { token } = useDashboard();
-  const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!token) return;
-
-    fetch(`${API}/api/interviews/my`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => (r.ok ? r.json() : []))
-      .then((data) => setInterviews(Array.isArray(data) ? data : []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [token]);
+  const { interviews, loading } = useInterviews();
 
   if (loading) {
     return (
@@ -46,5 +27,5 @@ export default function CalendarClient() {
     );
   }
 
-  return <FullCalendar interviews={interviews} />;
+  return <CalendarFull interviews={interviews} />;
 }

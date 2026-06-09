@@ -1,11 +1,11 @@
 // @/components/hr/jobs/JobsSummaryStats.tsx
-// Server-renderable display component — tidak ada state/hooks
-// Bisa dipakai sebagai pure server component kalau tidak pakai motion
+// Server-renderable display component — no state/hooks
+// Can be used as pure server component without motion
 
 "use client";
 
 import { Briefcase, Users, TrendingUp, Sparkles } from "lucide-react";
-import type { JobsSummaryData } from "./types";
+import type { JobsSummaryData } from "../../../types/hr/jobs";
 
 interface Props {
   data: JobsSummaryData;
@@ -14,13 +14,13 @@ interface Props {
 const STAT_CONFIGS = [
   {
     key: "totalActive" as const,
-    label: "Posisi Aktif",
+    label: "Active Positions",
     col: "#10b981",
     Icon: Briefcase,
   },
   {
     key: "totalApplicants" as const,
-    label: "Total Pelamar",
+    label: "Total Applicants",
     col: "#06b6d4",
     Icon: Users,
   },

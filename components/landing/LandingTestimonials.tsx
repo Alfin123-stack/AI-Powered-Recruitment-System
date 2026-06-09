@@ -1,13 +1,14 @@
 import { Star } from "lucide-react";
-import { FadeIn, Tag } from "./landing-components";
-import { TESTIMONIALS } from "./landing-types";
+import { LandingFadeIn } from "./LandingFadeIn";
+import { LandingTag } from "./LandingTag";
+import { TESTIMONIALS } from "@/constants/landing";
 
 export function LandingTestimonials() {
   return (
     <section className="py-[100px]">
       <div className="max-w-[1180px] mx-auto px-6">
-        <FadeIn className="text-center mb-[60px]">
-          <Tag>Testimoni</Tag>
+        <LandingFadeIn className="text-center mb-[60px]">
+          <LandingTag>Testimoni</LandingTag>
           <h2 className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
             Dipercaya Kandidat & Tim HR
           </h2>
@@ -15,11 +16,11 @@ export function LandingTestimonials() {
             Dari pencari kerja yang akhirnya lolos seleksi awal hingga rekruter
             yang mempersingkat proses shortlist dari hari ke jam.
           </p>
-        </FadeIn>
+        </LandingFadeIn>
 
         <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(340px,1fr))]">
           {TESTIMONIALS.map((t, i) => (
-            <FadeIn key={i} delay={i * 0.08}>
+            <LandingFadeIn key={i} delay={i * 0.08}>
               <article className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] p-7 flex flex-col gap-5 transition-all duration-300 hover:border-emerald-500/30 hover:-translate-y-[2px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)] h-full">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-[3px]">
@@ -71,7 +72,7 @@ export function LandingTestimonials() {
                   </div>
                 </footer>
               </article>
-            </FadeIn>
+            </LandingFadeIn>
           ))}
         </div>
       </div>

@@ -16,10 +16,19 @@ import {
   Target,
   Video,
 } from "lucide-react";
-import { Application, Interview, STATUS_MAP } from "./types";
-import { getAIInsights, getCardColor, getDayLabel, formatTime } from "./utils";
-import AIInsightBadge from "./AIInsightBadge";
-import LiveCountdown from "./LiveCountdown";
+import {
+  Application,
+  Interview,
+  STATUS_MAP,
+} from "../../../constants/candidate/applications";
+import {
+  getAIInsights,
+  getCardColor,
+  getDayLabel,
+  formatTime,
+} from "../../../lib/helpers/candidate/applications";
+import AIInsightBadge from "./ApplicationsAIInsightBadge";
+import LiveCountdown from "./ApplicationsLiveCountdown";
 
 interface ApplicationCardProps {
   app: Application;
@@ -42,6 +51,9 @@ export default function ApplicationCard({
     (iv) => iv.application_id === app.id && iv.status === "scheduled",
   );
   const insights = getAIInsights(app, interviews);
+
+  const resumeScore = app.resume_score ?? 0;
+  const matchingScore = app.matching_score ?? 0;
 
   return (
     <motion.div
@@ -90,42 +102,42 @@ export default function ApplicationCard({
               </div>
 
               {/* Score bars */}
-              {(app.resume_score > 0 || app.matching_score > 0) && (
+              {(resumeScore > 0 || matchingScore > 0) && (
                 <div className="flex gap-5 mb-3 flex-wrap">
-                  {app.resume_score > 0 && (
+                  {resumeScore > 0 && (
                     <div className="flex items-center gap-2">
                       <Award size={10} className="text-emerald-400 shrink-0" />
                       <div className="w-[64px] h-[4px] rounded-full bg-white/[0.05] overflow-hidden">
                         <div
                           className="h-full rounded-full"
                           style={{
-                            width: `${app.resume_score}%`,
+                            width: `${resumeScore}%`,
                             background:
                               "linear-gradient(90deg,#10b981,#06b6d4)",
                           }}
                         />
                       </div>
                       <span className="text-[0.71rem] font-bold text-emerald-400">
-                        {app.resume_score}{" "}
+                        {resumeScore}{" "}
                         <span className="text-[#7a9585] font-normal">CV</span>
                       </span>
                     </div>
                   )}
-                  {app.matching_score > 0 && (
+                  {matchingScore > 0 && (
                     <div className="flex items-center gap-2">
                       <Target size={10} className="text-violet-400 shrink-0" />
                       <div className="w-[64px] h-[4px] rounded-full bg-white/[0.05] overflow-hidden">
                         <div
                           className="h-full rounded-full"
                           style={{
-                            width: `${app.matching_score}%`,
+                            width: `${matchingScore}%`,
                             background:
                               "linear-gradient(90deg,#8b5cf6,#06b6d4)",
                           }}
                         />
                       </div>
                       <span className="text-[0.71rem] font-bold text-violet-400">
-                        {app.matching_score}%{" "}
+                        {matchingScore}%{" "}
                         <span className="text-[#7a9585] font-normal">
                           Match
                         </span>
