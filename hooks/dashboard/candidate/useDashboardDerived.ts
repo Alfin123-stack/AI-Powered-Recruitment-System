@@ -8,7 +8,7 @@ import type {
   Interview,
   Job,
 } from "@/types/candidate-dashboard";
-import { calcMatchScore } from "@/components/candidate/dashboard/DashboardHelpers";
+import { calcMatchScore } from "@/lib/helpers/candidate/dashboard";
 
 export type JobRecommendation = {
   id: string;

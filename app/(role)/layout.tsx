@@ -56,15 +56,21 @@ export default function DashboardLayout({
     Object.entries(titleMap).find(([key]) => pathname.startsWith(key))?.[1] ??
     "Dashboard";
 
+  const handleCompanySetupDone = (c: Company) => {
+    setCompany(c);
+    setHasCompany(true);
+    // Persist ke localStorage agar modal tidak muncul lagi setelah setup selesai
+    if (user?.id) {
+      localStorage.setItem(`company_setup_done_${user.id}`, "1");
+    }
+  };
+
   return (
     <DashboardContext.Provider value={{ user, token, company, setCompany }}>
       {isHR && hasCompany === false && (
         <CompanySetupModal
           token={token}
-          onDone={(c: Company) => {
-            setCompany(c);
-            setHasCompany(true);
-          }}
+          onDone={handleCompanySetupDone}
         />
       )}
 

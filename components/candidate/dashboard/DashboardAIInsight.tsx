@@ -18,7 +18,7 @@ import {
   Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { timeAgo } from "./DashboardHelpers";
+import { timeAgo } from "../../../lib/helpers/candidate/dashboard";
 import { CvAnalysis } from "@/types/candidate-dashboard";
 
 // ── Radial Score ──────────────────────────────────────────────────────────────

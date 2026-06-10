@@ -14,16 +14,9 @@ import {
   Target,
   ArrowUpRight,
 } from "lucide-react";
-import { statusMap, getCardColor } from "./DashboardHelpers";
 import type { Application } from "@/types/candidate-dashboard";
-
-const TABS = [
-  { id: "all", label: "Semua" },
-  { id: "shortlisted", label: "Shortlisted" },
-  { id: "review", label: "In Review" },
-  { id: "applied", label: "Dikirim" },
-  { id: "rejected", label: "Ditolak" },
-];
+import { STATUS_MAP, TABS } from "@/constants/candidate/dashboard";
+import { getCardColor } from "@/lib/helpers/candidate/dashboard";
 
 // ── Radial Score (mini) ───────────────────────────────────────────────────────
 function RadialScoreMini({ score, color }: { score: number; color: string }) {
@@ -77,7 +70,7 @@ function RadialScoreMini({ score, color }: { score: number; color: string }) {
 
 // ── Application Card ──────────────────────────────────────────────────────────
 function AppCard({ app, index }: { app: Application; index: number }) {
-  const st = statusMap[app.status] ?? { label: app.status, color: "#7a9585" };
+  const st = STATUS_MAP[app.status] ?? { label: app.status, color: "#7a9585" };
   const color = getCardColor(index);
   const [showDetail, setShowDetail] = useState(false);
 

@@ -1,12 +1,8 @@
 "use client";
 
-// app/dashboard/candidate/_components/ApplicationFunnel.tsx
-// CSR — bar chart dengan animasi CSS transition
-
 import { Activity } from "lucide-react";
-import { statusMap } from "./DashboardHelpers";
 import type { Application } from "@/types/candidate-dashboard";
-
+import { STATUS_MAP } from "@/constants/candidate/dashboard";
 export function DashboardAppFunnel({
   applications,
 }: {
@@ -16,9 +12,9 @@ export function DashboardAppFunnel({
 
   const counts = statusOrder.map((s) => ({
     key: s,
-    label: statusMap[s]?.label || s,
+    label: STATUS_MAP[s]?.label || s,
     count: applications.filter((a) => a.status === s).length,
-    color: statusMap[s]?.color || "#7a9585",
+    color: STATUS_MAP[s]?.color || "#7a9585",
   }));
 
   const max = Math.max(...counts.map((c) => c.count), 1);

@@ -1,5 +1,5 @@
 import type { Notif, GroupKey } from "../../types/notifications";
-import { typeConfig } from "../../components/notifications/config";
+import { TYPE_CONFIG } from "@/constants/notifications";
 
 // ─── Time ago helper ──────────────────────────────────────────────────────────
 
@@ -20,8 +20,8 @@ export function timeAgo(dateStr: string): string {
 export function normalizeNotif(n: Record<string, unknown>): Notif {
   const type =
     typeof n.type === "string" &&
-    Object.prototype.hasOwnProperty.call(typeConfig, n.type)
-      ? (n.type as keyof typeof typeConfig)
+    Object.prototype.hasOwnProperty.call(TYPE_CONFIG, n.type)
+      ? (n.type as keyof typeof TYPE_CONFIG)
       : "general";
 
   return {

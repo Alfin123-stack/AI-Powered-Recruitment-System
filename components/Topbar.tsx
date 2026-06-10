@@ -88,28 +88,28 @@ const NOTIF_TYPE_CFG: Record<
   }
 > = {
   status_update: {
-    bg: "bg-[rgba(52,211,153,0.12)]",
-    border: "border-[rgba(52,211,153,0.2)]",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
     dotColor: "#34d399",
     emoji: "📋",
     label: "Status",
-    labelColor: "text-[#34d399]",
+    labelColor: "text-emerald-400",
   },
   interview: {
-    bg: "bg-[rgba(56,189,248,0.12)]",
-    border: "border-[rgba(56,189,248,0.2)]",
+    bg: "bg-sky-500/10",
+    border: "border-sky-500/20",
     dotColor: "#38bdf8",
     emoji: "📅",
     label: "Interview",
-    labelColor: "text-[#38bdf8]",
+    labelColor: "text-sky-400",
   },
   general: {
-    bg: "bg-[rgba(196,181,253,0.12)]",
-    border: "border-[rgba(196,181,253,0.2)]",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
     dotColor: "#c4b5fd",
     emoji: "🔔",
     label: "Info",
-    labelColor: "text-[#c4b5fd]",
+    labelColor: "text-violet-400",
   },
 };
 
@@ -171,17 +171,17 @@ function NotifPopup({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+      initial={{ opacity: 0, y: -6, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.97 }}
-      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+      transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
       role="dialog"
       aria-label="Panel notifikasi"
-      className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[370px] overflow-hidden rounded-2xl
-        bg-[#0a0f0c] border border-[rgba(52,211,153,0.15)]
-        shadow-[0_24px_64px_rgba(0,0,0,0.75),0_0_0_1px_rgba(52,211,153,0.05)]">
+      className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[370px] overflow-hidden rounded-xl
+        bg-[#0a0f0c] border border-white/[0.08]
+        shadow-[0_16px_40px_rgba(0,0,0,0.6)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(52,211,153,0.08)]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <span className="font-bold text-[0.88rem] text-[#dff0e8]">
             Notifikasi
@@ -189,13 +189,13 @@ function NotifPopup({
           {loading && (
             <span
               aria-label="Memuat notifikasi"
-              className="w-[5px] h-[5px] rounded-full animate-pulse bg-[rgba(52,211,153,0.5)]"
+              className="w-[5px] h-[5px] rounded-full animate-pulse bg-emerald-500/40"
             />
           )}
           {unread > 0 && (
             <span
               aria-label={`${unread} notifikasi belum dibaca`}
-              className="rounded-full font-extrabold bg-[#34d399] text-[#041a0e] py-[1px] px-[7px] text-[10px] shadow-[0_0_8px_rgba(52,211,153,0.5)]">
+              className="rounded-full font-extrabold bg-emerald-500 text-black py-[1px] px-[7px] text-[10px]">
               {unread}
             </span>
           )}
@@ -206,10 +206,10 @@ function NotifPopup({
               onClick={onMarkAllRead}
               title="Tandai semua notifikasi sebagai sudah dibaca"
               aria-label="Tandai semua sebagai sudah dibaca"
-              className="flex items-center gap-[5px] text-[11px] font-semibold text-[#34d399] cursor-pointer
-                bg-[rgba(52,211,153,0.08)] hover:bg-[rgba(52,211,153,0.15)]
-                border border-[rgba(52,211,153,0.18)] hover:border-[rgba(52,211,153,0.35)]
-                rounded-[6px] px-[8px] py-[4px] transition-all">
+              className="flex items-center gap-[5px] text-[11px] font-semibold text-emerald-400 cursor-pointer
+                bg-emerald-500/[0.07] hover:bg-emerald-500/[0.13]
+                border border-emerald-500/20
+                rounded-md px-[8px] py-[4px] transition-colors">
               <CheckCheck size={11} aria-hidden="true" /> Baca semua
             </button>
           )}
@@ -217,8 +217,8 @@ function NotifPopup({
             onClick={onClose}
             title="Tutup notifikasi"
             aria-label="Tutup panel notifikasi"
-            className="w-6 h-6 rounded-[7px] flex items-center justify-center cursor-pointer transition-all
-              bg-white/[0.04] border border-white/[0.08] text-[#3a5245]
+            className="w-6 h-6 rounded-md flex items-center justify-center cursor-pointer transition-colors
+              bg-white/[0.04] border border-white/[0.07] text-[#3a5245]
               hover:bg-white/[0.08] hover:text-[#dff0e8]">
             <X size={12} aria-hidden="true" />
           </button>
@@ -229,8 +229,8 @@ function NotifPopup({
       <div className="overflow-y-auto max-h-[320px]" role="list">
         {notifs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[rgba(52,211,153,0.06)] border border-[rgba(52,211,153,0.10)] flex items-center justify-center">
-              <Inbox size={18} className="text-[#1e3028]" aria-hidden="true" />
+            <div className="w-10 h-10 rounded-lg bg-white/[0.03] border border-white/[0.07] flex items-center justify-center">
+              <Inbox size={18} className="text-[#2a4035]" aria-hidden="true" />
             </div>
             <div className="text-center">
               <p className="text-[0.8rem] font-semibold text-[#3d5a4a]">
@@ -251,25 +251,23 @@ function NotifPopup({
                 role="listitem"
                 onClick={() => isUnread && onMarkOneRead(n.id)}
                 className={`group relative flex gap-3 px-4 py-3 transition-colors
-                  ${i < preview.length - 1 ? "border-b border-[rgba(52,211,153,0.06)]" : ""}
+                  ${i < preview.length - 1 ? "border-b border-white/[0.05]" : ""}
                   ${
                     isUnread
-                      ? "bg-[rgba(52,211,153,0.03)] hover:bg-[rgba(52,211,153,0.06)] cursor-pointer"
-                      : "bg-transparent hover:bg-white/[0.02] cursor-default"
+                      ? "bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer"
+                      : "bg-transparent hover:bg-white/[0.01] cursor-default"
                   }`}>
+                {/* Unread accent bar */}
                 {isUnread && (
                   <div
                     aria-hidden="true"
-                    className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-full"
-                    style={{
-                      background: cfg.dotColor,
-                      boxShadow: `0 0 6px ${cfg.dotColor}`,
-                    }}
+                    className="absolute left-0 top-[20%] bottom-[20%] w-[2.5px] rounded-r-full"
+                    style={{ background: cfg.dotColor }}
                   />
                 )}
                 <div
                   aria-hidden="true"
-                  className={`w-8 h-8 rounded-[10px] flex items-center justify-center flex-shrink-0 mt-[1px] text-[0.88rem] border ${cfg.bg} ${cfg.border}`}>
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-[1px] text-[0.88rem] border ${cfg.bg} ${cfg.border}`}>
                   {cfg.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -285,32 +283,22 @@ function NotifPopup({
                       </span>
                     </div>
                     {isUnread && (
-                      <div className="relative flex-shrink-0 w-4 h-4 mt-[3px]">
-                        <span
+                      <button
+                        title="Tandai notifikasi ini sebagai sudah dibaca"
+                        aria-label={`Tandai "${n.title}" sebagai sudah dibaca`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMarkOneRead(n.id);
+                        }}
+                        className="flex-shrink-0 w-5 h-5 rounded mt-[2px] opacity-0 group-hover:opacity-100 transition-opacity
+                          bg-emerald-500/10 border border-emerald-500/20
+                          flex items-center justify-center hover:bg-emerald-500/20">
+                        <CheckCheck
+                          size={9}
+                          className="text-emerald-400"
                           aria-hidden="true"
-                          className="absolute inset-0 rounded-full group-hover:opacity-0 transition-opacity"
-                          style={{
-                            background: cfg.dotColor,
-                            boxShadow: `0 0 6px ${cfg.dotColor}`,
-                          }}
                         />
-                        <button
-                          title="Tandai notifikasi ini sebagai sudah dibaca"
-                          aria-label={`Tandai "${n.title}" sebagai sudah dibaca`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onMarkOneRead(n.id);
-                          }}
-                          className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity
-                            bg-[rgba(52,211,153,0.2)] border border-[rgba(52,211,153,0.4)]
-                            flex items-center justify-center hover:bg-[rgba(52,211,153,0.35)]">
-                          <CheckCheck
-                            size={9}
-                            className="text-[#34d399]"
-                            aria-hidden="true"
-                          />
-                        </button>
-                      </div>
+                      </button>
                     )}
                   </div>
                   <p className="text-[0.73rem] leading-[1.45] line-clamp-2 mb-[4px] text-[#3a5245]">
@@ -328,7 +316,7 @@ function NotifPopup({
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-[9px] border-t border-[rgba(52,211,153,0.08)]">
+      <div className="flex items-center justify-between px-4 py-[9px] border-t border-white/[0.06]">
         <span className="text-[0.67rem] text-[#253b2e]">
           {hasMore
             ? `${POPUP_LIMIT} dari ${notifs.length} notifikasi`
@@ -340,7 +328,7 @@ function NotifPopup({
           href="/notifications"
           onClick={onClose}
           aria-label="Lihat semua notifikasi"
-          className="flex items-center gap-1 font-semibold no-underline text-[#34d399] text-[11px] transition-colors hover:text-[#6ee7b7]">
+          className="flex items-center gap-1 font-semibold no-underline text-emerald-400 text-[11px] transition-colors hover:text-emerald-300">
           Lihat semua <ArrowRight size={11} aria-hidden="true" />
         </Link>
       </div>
@@ -377,21 +365,21 @@ function UserDropdown({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+      initial={{ opacity: 0, y: -6, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.97 }}
-      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+      transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
       role="dialog"
       aria-label="Menu akun pengguna"
-      className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[260px] overflow-hidden rounded-2xl
-        bg-[#0a0f0c] border border-[rgba(52,211,153,0.15)]
-        shadow-[0_24px_64px_rgba(0,0,0,0.75),0_0_0_1px_rgba(52,211,153,0.05)]">
+      className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[260px] overflow-hidden rounded-xl
+        bg-[#0a0f0c] border border-white/[0.08]
+        shadow-[0_16px_40px_rgba(0,0,0,0.6)]">
       {/* User info */}
-      <div className="px-4 py-4 border-b border-[rgba(52,211,153,0.08)]">
+      <div className="px-4 py-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-3 mb-3">
           <div
             aria-hidden="true"
-            className="w-10 h-10 rounded-[10px] bg-[linear-gradient(135deg,#10b981,#06b6d4)] flex items-center justify-center font-black text-[0.9rem] text-black flex-shrink-0">
+            className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-[0.9rem] text-black flex-shrink-0">
             {getInitials(user.full_name)}
           </div>
           <div className="flex-1 min-w-0">
@@ -404,11 +392,11 @@ function UserDropdown({
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-[3px] rounded-full text-[0.62rem] font-bold">
+          <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-[3px] rounded text-[0.62rem] font-bold">
             ✓ {isHR ? "HR Manager" : "Kandidat"}
           </span>
           {isHR && company && (
-            <span className="inline-flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-2 py-[3px] rounded-full text-[0.62rem] font-medium truncate max-w-[140px]">
+            <span className="inline-flex items-center gap-1 bg-sky-500/10 border border-sky-500/20 text-sky-400 px-2 py-[3px] rounded text-[0.62rem] font-medium truncate max-w-[140px]">
               <Building2 size={9} aria-hidden="true" /> {company.name}
             </span>
           )}
@@ -422,9 +410,9 @@ function UserDropdown({
           onClick={onClose}
           title="Buka halaman pengaturan profil"
           aria-label="Pengaturan profil, password dan akun"
-          className="flex items-center gap-3 px-3 py-[9px] rounded-[10px] no-underline
-            hover:bg-[rgba(52,211,153,0.06)] transition-colors group">
-          <div className="w-7 h-7 rounded-[7px] bg-[rgba(52,211,153,0.05)] border border-[rgba(52,211,153,0.1)] flex items-center justify-center text-[#3a5245] group-hover:text-emerald-400 group-hover:border-[rgba(52,211,153,0.28)] transition-colors flex-shrink-0">
+          className="flex items-center gap-3 px-3 py-[9px] rounded-lg no-underline
+            hover:bg-white/[0.04] transition-colors group">
+          <div className="w-7 h-7 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#3a5245] group-hover:text-emerald-400 transition-colors flex-shrink-0">
             <Settings size={13} aria-hidden="true" />
           </div>
           <div className="flex-1">
@@ -438,11 +426,11 @@ function UserDropdown({
           <ArrowRight
             size={11}
             aria-hidden="true"
-            className="text-[#253b2e] group-hover:text-[#34d399] group-hover:translate-x-[2px] transition-all flex-shrink-0"
+            className="text-[#253b2e] group-hover:text-emerald-400 group-hover:translate-x-[2px] transition-all flex-shrink-0"
           />
         </Link>
 
-        <div className="h-px bg-[rgba(52,211,153,0.08)] mx-1 my-1" />
+        <div className="h-px bg-white/[0.05] mx-1 my-1" />
 
         <button
           onClick={handleLogout}
@@ -451,18 +439,18 @@ function UserDropdown({
           aria-label={
             isLoggingOut ? "Sedang proses keluar" : "Keluar dari akun"
           }
-          className={`w-full flex items-center gap-3 px-3 py-[9px] rounded-[10px] transition-colors group
+          className={`w-full flex items-center gap-3 px-3 py-[9px] rounded-lg transition-colors group
             ${
               isLoggingOut
-                ? "opacity-70 cursor-not-allowed bg-red-500/[0.04]"
-                : "hover:bg-red-500/[0.07] cursor-pointer"
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-red-500/[0.06] cursor-pointer"
             }`}>
           <div
-            className={`w-7 h-7 rounded-[7px] border flex items-center justify-center transition-colors flex-shrink-0
+            className={`w-7 h-7 rounded-md border flex items-center justify-center transition-colors flex-shrink-0
               ${
                 isLoggingOut
-                  ? "bg-red-500/[0.10] border-red-500/25 text-red-400"
-                  : "bg-red-500/[0.06] border-red-500/[0.12] text-[#5a3535] group-hover:text-red-400 group-hover:border-red-500/25"
+                  ? "bg-red-500/[0.08] border-red-500/20 text-red-400"
+                  : "bg-white/[0.03] border-white/[0.07] text-[#5a3535] group-hover:text-red-400 group-hover:border-red-500/20"
               }`}>
             {isLoggingOut ? (
               <LogoutSpinner />
@@ -521,11 +509,11 @@ type IconBtnProps = {
 };
 
 function IconBtn({ onClick, active, children, title, href }: IconBtnProps) {
-  const cls = `w-[34px] h-[34px] rounded-[9px] border flex items-center justify-center transition-all duration-200 cursor-pointer
+  const cls = `w-[34px] h-[34px] rounded-lg border flex items-center justify-center transition-colors duration-150 cursor-pointer
     ${
       active
-        ? "bg-[rgba(52,211,153,0.10)] border-[rgba(52,211,153,0.40)] text-[#34d399]"
-        : "bg-[#0f1612] border-emerald-500/15 text-[#7a9585] hover:border-emerald-500/30 hover:text-[#e8f0ec]"
+        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+        : "bg-[#0f1612] border-white/[0.08] text-[#7a9585] hover:border-white/[0.14] hover:text-[#e8f0ec]"
     }`;
 
   if (href) {
@@ -632,7 +620,7 @@ export default function Topbar({
 
   return (
     <header
-      className="sticky top-0 z-40 border-b border-emerald-500/[0.1] px-8 h-[62px] flex items-center justify-between bg-[rgba(10,15,13,0.92)] [backdrop-filter:blur(20px)]"
+      className="sticky top-0 z-40 border-b border-white/[0.06] px-8 h-[62px] flex items-center justify-between bg-[rgba(10,15,13,0.94)] [backdrop-filter:blur(16px)]"
       role="banner">
       {/* Left: Title */}
       <div>
@@ -659,7 +647,7 @@ export default function Topbar({
           <Link href="/dashboard/hr/jobs" title="Buat lowongan baru">
             <Button
               aria-label="Buat lowongan baru"
-              className="inline-flex items-center gap-[6px] bg-emerald-500 hover:bg-emerald-400 hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)] text-black font-bold text-[0.8rem] px-4 h-[34px] rounded-[9px] transition-all">
+              className="inline-flex items-center gap-[6px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.8rem] px-4 h-[34px] rounded-lg transition-colors">
               <Plus size={13} aria-hidden="true" /> Buat Lowongan
             </Button>
           </Link>
@@ -670,18 +658,15 @@ export default function Topbar({
             href="/analyze"
             title="Upload dan analisis CV kamu"
             aria-label="Analisis CV — Upload dan analisis CV kamu"
-            className="hidden sm:inline-flex items-center gap-[6px] h-[34px] px-[14px] rounded-[9px]
-              bg-[rgba(16,185,129,0.06)] border border-[rgba(16,185,129,0.15)]
-              text-[#34d399] text-[0.78rem] font-semibold no-underline
-              hover:bg-[rgba(16,185,129,0.11)] hover:border-[rgba(16,185,129,0.3)] transition-all">
+            className="hidden sm:inline-flex items-center gap-[6px] h-[34px] px-[14px] rounded-lg
+              bg-white/[0.04] border border-white/[0.08]
+              text-[#a0c0b0] text-[0.78rem] font-semibold no-underline
+              hover:bg-white/[0.07] hover:text-[#d0e8dc] transition-colors">
             <FileText size={13} aria-hidden="true" /> Analisis CV
           </Link>
         )}
 
-        <div
-          aria-hidden="true"
-          className="w-px h-5 bg-[rgba(52,211,153,0.08)] mx-[2px]"
-        />
+        <div aria-hidden="true" className="w-px h-5 bg-white/[0.06] mx-[2px]" />
 
         {/* Bell */}
         <div className="relative" ref={notifRef}>
@@ -699,10 +684,9 @@ export default function Topbar({
             <span
               aria-label={`${unreadCount} notifikasi belum dibaca`}
               className="absolute -top-[5px] -right-[5px] min-w-[16px] h-4 rounded-full
-                bg-[#34d399] text-[#041a0e] text-[9px] font-extrabold
+                bg-emerald-500 text-black text-[9px] font-extrabold
                 flex items-center justify-center px-[3px]
                 ring-2 ring-[#0a0f0c]
-                shadow-[0_0_8px_rgba(52,211,153,0.65)]
                 pointer-events-none">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
@@ -731,15 +715,15 @@ export default function Topbar({
             }}
             title="Buka menu akun"
             aria-label="Buka menu akun pengguna"
-            className={`flex items-center gap-[7px] h-[34px] pl-[4px] pr-[10px] rounded-[10px] border transition-all duration-200 cursor-pointer
+            className={`flex items-center gap-[7px] h-[34px] pl-[4px] pr-[10px] rounded-lg border transition-colors duration-150 cursor-pointer
               ${
                 showProfile
-                  ? "bg-[rgba(52,211,153,0.08)] border-[rgba(52,211,153,0.32)]"
-                  : "bg-[#0f1612] border-emerald-500/15 hover:border-emerald-500/25 hover:bg-[rgba(52,211,153,0.03)]"
+                  ? "bg-emerald-500/[0.07] border-emerald-500/25"
+                  : "bg-[#0f1612] border-white/[0.08] hover:border-white/[0.14]"
               }`}>
             <div
               aria-hidden="true"
-              className="w-[26px] h-[26px] rounded-[7px] bg-[linear-gradient(135deg,#10b981,#06b6d4)] flex items-center justify-center font-black text-[0.65rem] text-black flex-shrink-0 select-none">
+              className="w-[26px] h-[26px] rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-[0.65rem] text-black flex-shrink-0 select-none">
               {user ? getInitials(user.full_name) : "U"}
             </div>
             <span className="hidden md:block text-[0.78rem] font-semibold text-[#c5d8cc] max-w-[90px] truncate">
