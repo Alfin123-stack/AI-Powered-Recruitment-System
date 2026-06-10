@@ -1,8 +1,10 @@
-type TypeBadgeProps = {
+type CompanyDetailTypeBadgeProps = {
   type: string | null;
 };
 
-export default function TypeBadge({ type }: TypeBadgeProps) {
+export default function CompanyDetailTypeBadge({
+  type,
+}: CompanyDetailTypeBadgeProps) {
   const color = "#5d7a6a";
 
   return (

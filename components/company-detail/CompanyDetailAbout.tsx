@@ -1,22 +1,23 @@
-// SERVER Component — tidak ada directive "use client".
+// SERVER Component — no "use client" directive.
 
 import { Building2, Users, MapPin, Briefcase } from "lucide-react";
 import { Company } from "@/types/company";
-type CompanyAboutProps = {
+
+type CompanyDetailAboutProps = {
   company: Company;
   jobCount: number;
   accent: string;
 };
 
-export default function CompanyAbout({
+export default function CompanyDetailAbout({
   company,
   jobCount,
   accent,
-}: CompanyAboutProps) {
+}: CompanyDetailAboutProps) {
   const details = [
-    { icon: Users, label: "Ukuran", value: company.company_size },
-    { icon: MapPin, label: "Lokasi", value: company.location },
-    { icon: Briefcase, label: "Lowongan aktif", value: `${jobCount} posisi` },
+    { icon: Users, label: "Company size", value: company.company_size },
+    { icon: MapPin, label: "Location", value: company.location },
+    { icon: Briefcase, label: "Open roles", value: `${jobCount} positions` },
   ].filter((d) => d.value);
 
   return (
@@ -26,11 +27,11 @@ export default function CompanyAbout({
         style={{ borderTop: `2px solid ${accent}` }}>
         <h2 className="font-semibold text-[1rem] text-[#e8f0ec] mb-[12px] flex items-center gap-[7px]">
           <Building2 size={15} style={{ color: accent }} />
-          Tentang {company.name}
+          About {company.name}
         </h2>
 
         <p className="text-[#6a8878] text-[0.82rem] leading-[1.75] whitespace-pre-line">
-          {company.description || "Perusahaan ini belum menambahkan deskripsi."}
+          {company.description || "This company hasn't added a description yet."}
         </p>
 
         <div className="mt-[20px] pt-[16px] border-t border-white/[0.07] grid grid-cols-2 gap-[14px]">

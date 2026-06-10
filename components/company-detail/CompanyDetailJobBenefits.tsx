@@ -1,11 +1,14 @@
 import { CheckCircle2 } from "lucide-react";
 
-type JobBenefitsProps = {
+type CompanyDetailJobBenefitsProps = {
   benefits: string[];
   accent: string;
 };
 
-export default function JobBenefits({ benefits, accent }: JobBenefitsProps) {
+export default function CompanyDetailJobBenefits({
+  benefits,
+  accent,
+}: CompanyDetailJobBenefitsProps) {
   if (!benefits?.length) return null;
 
   const visible = benefits.slice(0, 3);

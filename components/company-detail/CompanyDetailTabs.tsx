@@ -4,8 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, Layers } from "lucide-react";
 import type { Company } from "@/types/company";
-import JobGrid from "./JobGrid";
-import CompanyAbout from "./CompanyAbout";
+import CompanyDetailJobGrid from "./CompanyDetailJobGrid";
+import CompanyDetailAbout from "./CompanyDetailAbout";
 import { Job } from "@/types/jobs";
 
 type CompanyDetailTabsProps = {
@@ -23,7 +23,7 @@ export default function CompanyDetailTabs({
 
   return (
     <>
-      {/* Tabs bar — masih di dalam section header secara visual */}
+      {/* Tabs bar */}
       <div className="max-w-[900px] mx-auto px-6">
         <div className="flex gap-0 border-b border-white/[0.07]">
           {(["jobs", "about"] as const).map((tab) => (
@@ -39,7 +39,7 @@ export default function CompanyDetailTabs({
               {tab === "jobs" ? (
                 <span className="flex items-center gap-[5px]">
                   <Briefcase size={12} />
-                  Lowongan
+                  Open Roles
                   <span
                     className="text-[0.62rem] px-[5px] py-[1px] rounded-full font-semibold"
                     style={{ background: `${accent}20`, color: accent }}>
@@ -48,7 +48,7 @@ export default function CompanyDetailTabs({
                 </span>
               ) : (
                 <span className="flex items-center gap-[5px]">
-                  <Layers size={12} /> Tentang
+                  <Layers size={12} /> About
                 </span>
               )}
             </button>
@@ -67,7 +67,7 @@ export default function CompanyDetailTabs({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}>
-                <JobGrid jobs={jobs} accent={accent} />
+                <CompanyDetailJobGrid jobs={jobs} accent={accent} />
               </motion.div>
             ) : (
               <motion.div
@@ -76,7 +76,7 @@ export default function CompanyDetailTabs({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}>
-                <CompanyAbout
+                <CompanyDetailAbout
                   company={company}
                   jobCount={jobs.length}
                   accent={accent}

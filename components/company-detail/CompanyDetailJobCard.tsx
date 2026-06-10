@@ -11,18 +11,21 @@ import {
   CalendarDays,
 } from "lucide-react";
 import type { Job } from "@/types/jobs";
-import TypeBadge from "./TypeBadge";
-import JobSkills from "./JobSkills";
-import JobBenefits from "./JobBenefits";
+import CompanyDetailTypeBadge from "./CompanyDetailTypeBadge";
+import CompanyDetailJobSkills from "./CompanyDetailJobSkills";
+import CompanyDetailJobBenefits from "./CompanyDetailJobBenefits";
 
-type JobCardProps = {
+type CompanyDetailJobCardProps = {
   job: Job;
   accent: string;
   index: number;
 };
 
-export default function JobCard({ job, accent, index }: JobCardProps) {
-  // ✅ Fix 1: Pindahkan ke useMemo agar tidak impure saat render
+export default function CompanyDetailJobCard({
+  job,
+  accent,
+  index,
+}: CompanyDetailJobCardProps) {
   const daysAgo = useMemo(
     () =>
       Math.floor((Date.now() - new Date(job.created_at).getTime()) / 86400000),
@@ -52,10 +55,10 @@ export default function JobCard({ job, accent, index }: JobCardProps) {
             {job.title}
           </h3>
           <div className="flex items-center gap-[10px] flex-wrap">
-            <TypeBadge type={job.type} />
+            <CompanyDetailTypeBadge type={job.type} />
             <span className="flex items-center gap-[3px] text-[#5d7a6a] text-[0.68rem]">
               <Clock size={10} />
-              {daysAgo === 0 ? "Hari ini" : `${daysAgo}h lalu`}
+              {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}
             </span>
           </div>
         </div>
@@ -74,7 +77,7 @@ export default function JobCard({ job, accent, index }: JobCardProps) {
         {job.description}
       </p>
 
-      {/* Meta: lokasi + deadline */}
+      {/* Meta: location + deadline */}
       <div className="flex items-center gap-[12px] flex-wrap">
         <span className="flex items-center gap-[3px] text-[#5d7a6a] text-[0.7rem]">
           <MapPin size={10} /> {job.location}
@@ -82,7 +85,7 @@ export default function JobCard({ job, accent, index }: JobCardProps) {
         {job.deadline && (
           <span className="flex items-center gap-[3px] text-[#5d7a6a] text-[0.7rem]">
             <CalendarDays size={10} /> Deadline:{" "}
-            {new Date(job.deadline).toLocaleDateString("id-ID", {
+            {new Date(job.deadline).toLocaleDateString("en-US", {
               day: "numeric",
               month: "short",
             })}
@@ -90,10 +93,9 @@ export default function JobCard({ job, accent, index }: JobCardProps) {
         )}
       </div>
 
-      {/* ✅ Fix 2: Gunakan ?? [] untuk handle null */}
-      <JobSkills skills={job.skills ?? []} />
+      <CompanyDetailJobSkills skills={job.skills ?? []} />
 
-      <JobBenefits benefits={job.benefits ?? []} accent={accent} />
+      <CompanyDetailJobBenefits benefits={job.benefits ?? []} accent={accent} />
 
       {/* CTA */}
       <div className="flex gap-[6px] mt-auto pt-1">
@@ -105,13 +107,13 @@ export default function JobCard({ job, accent, index }: JobCardProps) {
             border: `0.5px solid ${accent}35`,
             color: accent,
           }}>
-          Lihat detail <ChevronRight size={11} />
+          View details <ChevronRight size={11} />
         </Link>
         <Link
           href={`/jobs/${job.id}/apply`}
           className="px-[14px] py-[7px] rounded-[8px] text-[0.73rem] font-semibold no-underline transition-all duration-200"
           style={{ background: accent, color: "#0a0f0d" }}>
-          Lamar
+          Apply
         </Link>
       </div>
     </motion.div>

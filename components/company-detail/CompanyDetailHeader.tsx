@@ -1,4 +1,4 @@
-// SERVER Component — tidak ada directive "use client".
+// SERVER Component — no "use client" directive.
 
 import Link from "next/link";
 import { Building2, Users, MapPin, ArrowLeft, Tag } from "lucide-react";
@@ -38,7 +38,7 @@ export default function CompanyDetailHeader({
             size={13}
             className="group-hover:-translate-x-[2px] transition-transform"
           />
-          Direktori Perusahaan
+          Company Directory
         </Link>
 
         {/* Header */}
@@ -98,7 +98,7 @@ export default function CompanyDetailHeader({
               {jobCount}
             </span>
             <span className="text-[0.67rem] text-[#5d7a6a] whitespace-nowrap">
-              lowongan aktif
+              open roles
             </span>
           </div>
         </div>

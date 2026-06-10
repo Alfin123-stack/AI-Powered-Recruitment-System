@@ -1,8 +1,10 @@
-type JobSkillsProps = {
+type CompanyDetailJobSkillsProps = {
   skills: string[];
 };
 
-export default function JobSkills({ skills }: JobSkillsProps) {
+export default function CompanyDetailJobSkills({
+  skills,
+}: CompanyDetailJobSkillsProps) {
   if (!skills?.length) return null;
 
   const visible = skills.slice(0, 5);
