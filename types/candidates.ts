@@ -1,4 +1,17 @@
-import type { Candidate } from "@/app/(role)/dashboard/hr/_components/shared";
+export type Candidate = {
+  id: string;
+  name: string;
+  avatar: string;
+  job: string;
+  jobId: string;
+  resumeScore: number;
+  matchScore: number;
+  skills: string[];
+  status: string;
+  appliedDate: string;
+  color: string;
+  cv_url: string | null;
+};
 
 export type SortKey = "score" | "match" | "name" | "date" | "applied_role";
 export type SortDir = "asc" | "desc";
@@ -28,27 +41,11 @@ export interface JobMeta {
   todayCount: number;
 }
 
-export interface ApplicationRaw {
-  id: string;
-  candidate_name?: string;
-  job_title?: string;
-  job_id?: string;
-  resume_score?: number;
-  matching_score?: number;
-  extracted_skills?: Array<{ name?: string } | string>;
-  status: CandidateStatus;
-  created_at: string;
-  cv_url?: string;
-  candidate_email?: string;
-  candidate_phone?: string;
-  location?: string;
-}
-
-export interface CandidateExtended extends Candidate {
+// CandidateRaw meng-extend Candidate dari _components/shared (raw DB shape).
+// Berbeda dari CandidateUI di hr-dashboard.ts yang merupakan representasi UI (camelCase).
+export interface CandidateRaw extends Candidate {
   created_at: string;
   email: string;
   phone: string;
   location: string;
 }
-
-

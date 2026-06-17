@@ -1,7 +1,8 @@
 import { normalizeNotif } from "../helpers/notifications";
 import type { Notif } from "../../types/notifications";
 
-const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API } from "@/lib/api";
+
 
 // ─── Server-side fetch (used in RSC / SSR) ────────────────────────────────────
 // Called from Server Components — receives token from server session.
@@ -12,7 +13,7 @@ export async function fetchNotificationsServer(
   revalidate = 30
 ): Promise<Notif[]> {
   try {
-    const res = await fetch(`${base}/api/notifications`, {
+    const res = await fetch(`${API}/api/notifications`, {
       headers: { Authorization: `Bearer ${token}` },
       next: { revalidate }, // ISR: revalidate every N seconds
     });
@@ -34,7 +35,7 @@ export async function apiMarkRead(
   token: string
 ): Promise<boolean> {
   try {
-    const res = await fetch(`${base}/api/notifications/${id}/read`, {
+    const res = await fetch(`${API}/api/notifications/${id}/read`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -46,7 +47,7 @@ export async function apiMarkRead(
 
 export async function apiMarkAllRead(token: string): Promise<boolean> {
   try {
-    const res = await fetch(`${base}/api/notifications/read-all`, {
+    const res = await fetch(`${API}/api/notifications/read-all`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -61,7 +62,7 @@ export async function apiDeleteNotif(
   token: string
 ): Promise<boolean> {
   try {
-    const res = await fetch(`${base}/api/notifications/${id}`, {
+    const res = await fetch(`${API}/api/notifications/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -76,7 +77,7 @@ export async function apiDeleteNotif(
 export async function fetchNotificationsClient(
   token: string
 ): Promise<Notif[]> {
-  const res = await fetch(`${base}/api/notifications`, {
+  const res = await fetch(`${API}/api/notifications`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store", // always fresh on manual refresh
   });

@@ -1,14 +1,10 @@
-export const COLORS = [
-  "#10b981",
-  "#06b6d4",
-  "#8b5cf6",
-  "#f59e0b",
-  "#ef4444",
-  "#ec4899",
-];
+export { timeAgoShort as timeAgo, getColor, PALETTE as COLORS } from "@/lib/utils";
 
-export const getColor = (i: number) => COLORS[i % COLORS.length];
-
+/**
+ * calcMatchScore — canonical implementation.
+ * Default score 50 jika jobSkills kosong (karena tidak ada requirements = semua bisa match).
+ * Default score 0 jika candidateSkills kosong.
+ */
 export const calcMatchScore = (
   candidateSkills: string[],
   jobSkills: string[],
@@ -37,13 +33,6 @@ export const calcMatchScore = (
 
   const score = Math.round((matched.length / jobSkills.length) * 100);
   return { score: Math.min(score, 100), matched, missing };
-};
-
-export const timeAgo = (dateStr: string) => {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m lalu`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}j lalu`;
-  return `${Math.floor(diff / 86400)}h lalu`;
 };
 
 export const getMatchLabel = (

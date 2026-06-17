@@ -21,29 +21,29 @@ import {
 } from "lucide-react";
 import type {
   ActionButton,
-  CandidateExtended,
+  CandidateUI,
   GroupMetric,
   InsightPanel,
   JobGroup,
   ScoreItem,
   StatusAction,
-} from "@/types/hr-dashboard";
+} from "@/types/hr/dashboard";
 import {
   getScoreColor,
   getScoreGradient,
   getRec,
   computeInsight,
   statusMap,
-} from "@/lib/helpers/dashboardHR";
+} from "@/lib/helpers/hr/dashboard";
 import {
   RANK_COLORS,
   REC_ICON_MAP,
   STATUS_FILTER_OPTIONS,
   TABLE_HEADERS,
-} from "@/constants/hr-dashboard";
+} from "@/constants/hr/dashboard";
 
 // ── Candidate Insight Row ─────────────────────────────────────────────────────
-function CandidateInsightRow({ candidate }: { candidate: CandidateExtended }) {
+function CandidateInsightRow({ candidate }: { candidate: CandidateUI }) {
   const ins = useMemo(() => computeInsight(candidate), [candidate]);
 
   const panels: InsightPanel[] = [
@@ -103,7 +103,7 @@ function CandidateModal({
   onClose,
   onStatusChange,
 }: {
-  candidate: CandidateExtended;
+  candidate: CandidateUI;
   onClose: () => void;
   onStatusChange: (id: string, status: string) => void;
 }) {
@@ -409,7 +409,7 @@ function JobGroupTable({
   onStatusChange,
 }: {
   group: JobGroup;
-  onView: (c: CandidateExtended) => void;
+  onView: (c: CandidateUI) => void;
   onStatusChange: (id: string, status: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -775,7 +775,7 @@ export function CandidateRanking({
   const [search, setSearch] = useState("");
   const [filterStatus, setFilter] = useState("all");
   const [selectedCandidate, setSelectedCandidate] =
-    useState<CandidateExtended | null>(null);
+    useState<CandidateUI | null>(null);
 
   const filteredGroups = useMemo(() => {
     return jobGroups

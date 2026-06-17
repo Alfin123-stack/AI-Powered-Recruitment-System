@@ -4,7 +4,7 @@
 
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { FILTERS } from "@/lib/constants";
+import { FILTERS_JOB } from "@/constants/jobs";
 
 interface JobsToolbarProps {
   search: string;
@@ -39,7 +39,7 @@ export function JobsToolbar({
 
           {/* Filter pills */}
           <div className="flex gap-[6px] flex-wrap">
-            {FILTERS?.map((f) => (
+            {FILTERS_JOB?.map((f) => (
               <button
                 key={f}
                 onClick={() => onFilterChange(f)}

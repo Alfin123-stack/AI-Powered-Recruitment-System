@@ -2,15 +2,8 @@
 
 import { motion } from "framer-motion";
 import AnimatedBar from "./AnalyzeAnimatedBar";
-import {
-  gradeLabel,
-  scoreColor,
-  scoreColorBg,
-  scoreColorBorder,
-  scoreColorMuted,
-} from "../../lib/helpers/analyze";
+import { getColor } from "@/lib/utils";
 
-// ─── SCORE BLOCK ──────────────────────────────────────────────────────────────
 type Props = {
   label: string;
   value: number;
@@ -26,9 +19,9 @@ export default function ScoreBlock({
   primary = false,
   delay = 0,
 }: Props) {
-  const color = scoreColor(value);
-  const bg = primary ? scoreColorBg(value) : "rgba(255,255,255,0.025)";
-  const border = primary ? scoreColorBorder(value) : "rgba(255,255,255,0.07)";
+  const color = getColor(value);
+  const bg = primary ? getColor(value) : "rgba(255,255,255,0.025)";
+  const border = primary ? getColor(value) : "rgba(255,255,255,0.07)";
 
   return (
     <motion.div
@@ -60,10 +53,10 @@ export default function ScoreBlock({
           className="mb-[3px] text-[10.5px] font-bold px-[7px] py-[2px] rounded-[5px]"
           style={{
             background: `${color}18`,
-            color: scoreColorMuted(value),
+            color: getColor(value),
             marginLeft: "auto",
           }}>
-          {gradeLabel(value)}
+          {value}
         </span>
       </div>
       <AnimatedBar

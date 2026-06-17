@@ -4,8 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCheck, XCircle, Info } from "lucide-react";
 import AnimatedBar from "./AnalyzeAnimatedBar";
-import { scoreColor, scoreColorBg, scoreColorBorder } from "../../lib/helpers/analyze";
 import type { ATSCheck } from "@/types/analyze";
+import { getColor } from "@/lib/utils";
 
 // ─── EMPTY STATE (local, reused in tab files) ─────────────────────────────────
 function EmptyTabState({ message }: { message: string }) {
@@ -23,7 +23,6 @@ function EmptyTabState({ message }: { message: string }) {
   );
 }
 
-// ─── ATS TAB ─────────────────────────────────────────────────────────────────
 type Props = { checks: ATSCheck[] | undefined };
 
 export default function ATSTab({ checks }: Props) {
@@ -37,15 +36,15 @@ export default function ATSTab({ checks }: Props) {
 
   const passCount = checks.filter((c) => c.ok).length;
   const pct = Math.round((passCount / checks.length) * 100);
-  const col = scoreColor(pct);
+  const col = getColor(pct);
 
   return (
     <div>
       <div
         className="flex items-center gap-5 mb-5 p-4 rounded-[12px]"
         style={{
-          background: scoreColorBg(pct),
-          border: `1px solid ${scoreColorBorder(pct)}`,
+          background: getColor(pct),
+          border: `1px solid ${getColor(pct)}`,
         }}>
         <div>
           <div

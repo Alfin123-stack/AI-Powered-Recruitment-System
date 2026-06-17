@@ -1,6 +1,6 @@
 import { AnalyzeApiResult } from "@/types/analyze";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API } from "@/lib/api";
 
 export async function persistAnalysis(
   result: AnalyzeApiResult,

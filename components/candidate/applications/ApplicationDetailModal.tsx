@@ -3,7 +3,7 @@
 // ApplicationDetailModal.tsx — Client Component
 // CSR: modal interaktif dengan animasi, butuh browser event
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Award,
   Building2,
@@ -17,19 +17,13 @@ import {
   Video,
   X,
 } from "lucide-react";
-import {
-  Application,
-  Interview,
-  IV_STATUS_MAP,
-  STATUS_MAP,
-} from "../../../constants/candidate/applications";
-import {
-  getAIInsights,
-  getDayLabel,
-  formatTime,
-} from "../../../lib/helpers/candidate/applications";
+
 import ApplicationsAIInsightBadge from "./ApplicationsAIInsightBadge";
 import ApplicationsLiveCountdown from "./ApplicationsLiveCountdown";
+import { Application, Interview } from "@/types/candidate/dashboard";
+import { IV_STATUS_MAP, STATUS_MAP } from "@/constants/shared";
+import { formatTime, getAIInsights, getDayLabel } from "@/lib/helpers/candidate/applications";
+
 
 interface ApplicationDetailModalProps {
   app: Application;

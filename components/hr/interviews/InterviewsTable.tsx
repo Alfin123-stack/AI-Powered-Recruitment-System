@@ -1,14 +1,13 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
 import { Interview, InterviewFilterType } from "@/types/hr/interviews";
-import { groupByDay } from "@/lib/helpers/hr/interviews";
-
 import { InterviewTableHeader } from "./InterviewTableHeader";
 import { InterviewDayHeader } from "./InterviewDayHeader";
 import { InterviewEmptyState } from "./InterviewEmptyState";
 import { InterviewRow } from "./InterviewRow";
+import { groupByDay } from "@/lib/helpers/hr/interviews";
+import { FadeIn } from "@/components/shared/FadeIn";
 
 // ── Re-export primitives so consumers only need one import path ───────────────
 export { InterviewTableHeader } from "./InterviewTableHeader";

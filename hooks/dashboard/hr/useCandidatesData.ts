@@ -1,32 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  apiFetch,
-  getColor,
-  getInitials,
-} from "@/app/(role)/dashboard/hr/_components/shared";
+
 import { useDashboard } from "@/context/DashboardContext";
 
 import type {
-  ApplicationRaw,
-  CandidateExtended,
+  CandidateRaw,
   CandidateStatus,
   JobMeta,
 } from "@/types/candidates";
 import { JOB_COLORS } from "@/constants/candidates";
-import { isToday } from "@/lib/helpers/candidates";
+import { isToday } from "@/lib/helpers/candidate/dashboard";
+import { Application } from "@/types/hr/dashboard";
+import { apiFetch } from "@/lib/api";
+import { getColor, getInitials } from "@/lib/utils";
 
 export function useCandidatesData() {
   const { token } = useDashboard();
-  const [candidates, setCandidates] = useState<CandidateExtended[]>([]);
+  const [candidates, setCandidates] = useState<CandidateRaw[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) return;
     apiFetch("/api/applications/hr", token)
-      .then((apps: ApplicationRaw[]) => {
-        const mapped: CandidateExtended[] = apps.map((a, i) => ({
+      .then((apps: Application[]) => {
+        const mapped: CandidateRaw[] = apps.map((a, i) => ({
           id: a.id,
           name: a.candidate_name ?? "Kandidat",
           avatar: getInitials(a.candidate_name ?? "KD"),

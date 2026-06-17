@@ -16,19 +16,13 @@ import {
   Target,
   Video,
 } from "lucide-react";
-import {
-  Application,
-  Interview,
-  STATUS_MAP,
-} from "../../../constants/candidate/applications";
-import {
-  getAIInsights,
-  getCardColor,
-  getDayLabel,
-  formatTime,
-} from "../../../lib/helpers/candidate/applications";
+
 import AIInsightBadge from "./ApplicationsAIInsightBadge";
 import LiveCountdown from "./ApplicationsLiveCountdown";
+import { STATUS_MAP } from "@/constants/shared";
+import { formatTime, getCardColor, getDayLabel } from "@/lib/utils";
+import { getAIInsights } from "@/lib/helpers/candidate/applications";
+import { Application, Interview } from "@/types/candidate/dashboard";
 
 interface ApplicationCardProps {
   app: Application;

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronDown, Users } from "lucide-react";
 import { JobMeta } from "@/types/candidates";
+import { useCandidatesJobFilterDropdown } from "@/hooks/dashboard/hr/useCandidatesJobFilterDropdown";
 
 export function CandidatesJobFilterDropdown({
   jobMetas,
@@ -16,45 +16,31 @@ export function CandidatesJobFilterDropdown({
   totalCount: number;
   onSelect: (job: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) {
-        setOpen(false);
-        setSearch("");
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
-  useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 50);
-  }, [open]);
-
-  const filtered = jobMetas.filter((j) =>
-    j.label.toLowerCase().includes(search.toLowerCase()),
-  );
-  const activeJobMeta = jobMetas.find((j) => j.key === activeJob);
-  const activeColor = activeJobMeta?.color ?? "#10b981";
-  const activeLabel =
-    activeJob === "all"
-      ? "All Positions"
-      : (activeJobMeta?.label ?? "All Positions");
-  const activeCount =
-    activeJob === "all" ? totalCount : (activeJobMeta?.count ?? 0);
+  const {
+    open,
+    search,
+    setSearch,
+    ref,
+    inputRef,
+    filtered,
+    activeColor,
+    activeLabel,
+    activeCount,
+    toggleOpen,
+    handleSelect,
+  } = useCandidatesJobFilterDropdown({
+    jobMetas,
+    activeJob,
+    totalCount,
+    onSelect,
+  });
 
   return (
     <div ref={ref} className="relative flex-shrink-0">
       <button
         type="button"
         title={`Filter position: ${activeLabel}`}
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggleOpen}
         className="flex items-center gap-2 px-3 py-[5px] rounded-full text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer"
         style={
           open
@@ -135,11 +121,7 @@ export function CandidatesJobFilterDropdown({
                 <button
                   type="button"
                   title="Show all positions"
-                  onClick={() => {
-                    onSelect("all");
-                    setOpen(false);
-                    setSearch("");
-                  }}
+                  onClick={() => handleSelect("all")}
                   className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold text-left transition-colors cursor-pointer hover:bg-[rgba(16,185,129,0.04)]"
                   style={{
                     background:
@@ -181,15 +163,13 @@ export function CandidatesJobFilterDropdown({
                     key={job.key}
                     type="button"
                     title={`Filter position: ${job.label}`}
-                    onClick={() => {
-                      onSelect(job.key);
-                      setOpen(false);
-                      setSearch("");
-                    }}
+                    onClick={() => handleSelect(job.key)}
                     className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold text-left transition-colors cursor-pointer"
                     style={{
                       background:
-                        activeJob === job.key ? `${job.color}10` : "transparent",
+                        activeJob === job.key
+                          ? `${job.color}10`
+                          : "transparent",
                       color: activeJob === job.key ? job.color : "#7a9585",
                     }}
                     onMouseEnter={(e) => {

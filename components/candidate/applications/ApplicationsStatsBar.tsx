@@ -1,9 +1,7 @@
+import { computeStats } from "@/lib/helpers/candidate/applications";
+import { Application, Interview } from "@/types/candidate/dashboard";
 import { BarChart2, Briefcase, Calendar, TrendingUp } from "lucide-react";
-import {
-  Application,
-  Interview,
-} from "../../../constants/candidate/applications";
-import { computeStats } from "../../../lib/helpers/candidate/applications";
+
 
 interface StatsBarProps {
   applications: Application[];

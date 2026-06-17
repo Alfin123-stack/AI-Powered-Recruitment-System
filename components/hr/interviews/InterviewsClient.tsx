@@ -2,12 +2,15 @@
 
 import { AnimatePresence } from "framer-motion";
 import { Calendar } from "lucide-react";
-import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
 import InterviewsToolbar from "./InterviewsToolbar";
 import InterviewsTable from "./InterviewsTable";
-import type { Interview, ShortlistedCandidate } from "../../../types/hr/interviews";
+import type {
+  Interview,
+  ShortlistedCandidate,
+} from "../../../types/hr/interviews";
 import { useInterviewsClient } from "@/hooks/dashboard/hr/useInterviewsClient";
 import { InterviewScheduleModal } from "./InterviewModals";
+import { FadeIn } from "@/components/shared/FadeIn";
 
 const T = {
   emerald: "#10b981",

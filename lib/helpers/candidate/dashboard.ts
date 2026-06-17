@@ -1,53 +1,35 @@
-import { CARD_COLORS } from "@/constants/candidate/dashboard";
+import { ThumbsUp, AlertTriangle, XCircle } from "lucide-react";
+export { getScoreColor, getScoreGradient, isToday } from "@/lib/utils";
 
-export function calcMatchScore(
-  candidateSkills: string[],
-  jobSkills: string[],
-): { score: number; matched: string[]; missing: string[] } {
-  if (!jobSkills.length) return { score: 0, matched: [], missing: [] };
-
-  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const candidateNorm = candidateSkills.map(normalize);
-
-  const matched: string[] = [];
-  const missing: string[] = [];
-
-  for (const skill of jobSkills) {
-    const norm = normalize(skill);
-    if (candidateNorm.some((c) => c.includes(norm) || norm.includes(c))) {
-      matched.push(skill);
-    } else {
-      missing.push(skill);
-    }
-  }
-
-  const score = Math.round((matched.length / jobSkills.length) * 100);
-  return { score, matched, missing };
-}
-
-// ── Time Utilities ────────────────────────────────────────────────────────────
-export function timeAgo(dateStr: string): string {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 3600) return `${Math.floor(diff / 60)} menit lalu`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`;
-  return `${Math.floor(diff / 86400)} hari lalu`;
-}
-
-export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("id-ID", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-}
-
-export function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-export function getCardColor(index: number): string {
-  return CARD_COLORS[index % CARD_COLORS.length];
+export function getRec(score: number, match: number) {
+  const avg = (score + match) / 2;
+  if (avg >= 80)
+    return {
+      label: "Direkomendasikan",
+      short: "Rekomen",
+      color: "#10b981",
+      bg: "rgba(16,185,129,0.08)",
+      border: "rgba(16,185,129,0.2)",
+      icon: ThumbsUp,
+      iconName: "CheckCircle2" as const,
+    };
+  if (avg >= 60)
+    return {
+      label: "Perlu Review Lanjut",
+      short: "Review",
+      color: "#f59e0b",
+      bg: "rgba(245,158,11,0.08)",
+      border: "rgba(245,158,11,0.2)",
+      icon: AlertTriangle,
+      iconName: "AlertCircle" as const,
+    };
+  return {
+    label: "Kurang Sesuai",
+    short: "Tidak Sesuai",
+    color: "#f43f5e",
+    bg: "rgba(244,63,94,0.08)",
+    border: "rgba(244,63,94,0.2)",
+    icon: XCircle,
+    iconName: "XCircle" as const,
+  };
 }

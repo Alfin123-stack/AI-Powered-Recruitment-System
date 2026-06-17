@@ -9,8 +9,9 @@ import { AnalyticsOverviewTab } from "./AnalyticsOverviewTab";
 import { AnalyticsCandidateTab } from "./AnalyticsCandidateTab";
 import { AnalyticsPositionTab } from "./AnalyticsPositionTab";
 import { useAnalyticsData } from "@/hooks/dashboard/hr/useAnalyticsData";
-import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
+
 import { T } from "@/constants/hr/analytics";
+import { FadeIn } from "@/components/shared/FadeIn";
 
 type TabId = "overview" | "candidate" | "position";
 

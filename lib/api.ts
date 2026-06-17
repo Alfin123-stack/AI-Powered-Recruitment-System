@@ -1,6 +1,13 @@
 // lib/api.ts
+// ─────────────────────────────────────────────────────────────────────────────
+// Canonical — dipindahkan dari shared/lib/api.ts ke sini.
+// shared/lib/api.ts dihapus.
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/** Alias — beberapa file lama mengimpor API_BASE_URL dari sini. */
+export { API as API_BASE_URL };
 
 export const apiFetch = async (
   path: string,

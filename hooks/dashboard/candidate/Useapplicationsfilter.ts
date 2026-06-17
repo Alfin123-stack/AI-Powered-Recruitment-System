@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Application, Interview } from "@/types/candidate-dashboard";
+import type { Application, Interview } from "@/types/candidate/dashboard";
 
 export function useApplicationsFilter(
   applications: Application[],

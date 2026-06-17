@@ -1,5 +1,4 @@
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
+import { createSupabaseServerClient } from "./supabaseServer";
 
 /**
  * getServerSession
@@ -10,19 +9,7 @@ import { createServerClient } from "@supabase/ssr";
  * @returns Session | null
  */
 export async function getServerSession() {
-  const cookieStore = await cookies();
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-      },
-    },
-  );
+  const supabase = await createSupabaseServerClient();
 
   const {
     data: { session },

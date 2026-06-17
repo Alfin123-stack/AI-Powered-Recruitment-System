@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -14,89 +13,26 @@ import {
   ChevronRight,
   ArrowRight,
 } from "lucide-react";
-import type { Interview } from "@/types/hr-dashboard";
-import {
-  isToday,
-  isTomorrow,
-  formatInterviewTime,
-  formatInterviewDate,
-  roundConfig,
-} from"@/lib/helpers/dashboardHR";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-type LegendItem = {
-  dot: string;
-  label: string;
-};
-
-type CalendarCell = number | null;
-
-type StatItem = {
-  label: string;
-  val: number;
-  color: string;
-};
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-] as const;
-
-const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
-
-const CALENDAR_LEGENDS: LegendItem[] = [
-  { dot: "bg-emerald-400/60", label: "Hari ini" },
-  { dot: "bg-cyan-400/60", label: "Has schedule" },
-];
+import type { Interview } from "@/types/hr/dashboard";
+import { formatDateLong, isToday, isTomorrow } from "@/lib/utils";
+import { formatTimeRange } from "@/lib/helpers/hr/interviews";
+import { roundConfig } from "@/lib/helpers/hr/dashboard";
+import { useMiniCalendar } from "@/hooks/dashboard/hr/useMiniCalendar";
+import { CALENDAR_LEGENDS, DAYS, MONTHS } from "@/constants/hr/dashboard";
+import { useInterviewScheduleSidebar } from "@/hooks/dashboard/hr/useInterviewScheduleSidebar";
 
 // ── Mini Calendar ─────────────────────────────────────────────────────────────
 function MiniCalendar({ interviews }: { interviews: Interview[] }) {
-  const [current, setCurrent] = useState(new Date());
-  const today = new Date();
-  const year = current.getFullYear();
-  const month = current.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const interviewDays = useMemo(() => {
-    const days = new Set<number>();
-    interviews.forEach((iv) => {
-      const d = new Date(iv.scheduled_at);
-      if (d.getMonth() === month && d.getFullYear() === year)
-        days.add(d.getDate());
-    });
-    return days;
-  }, [interviews, month, year]);
-
-  const prevMonth = (): void => setCurrent(new Date(year, month - 1, 1));
-  const nextMonth = (): void => setCurrent(new Date(year, month + 1, 1));
-
-  const cells = useMemo((): CalendarCell[] => {
-    const result: CalendarCell[] = [];
-    for (let i = 0; i < firstDay; i++) result.push(null);
-    for (let d = 1; d <= daysInMonth; d++) result.push(d);
-    while (result.length % 7 !== 0) result.push(null);
-    return result;
-  }, [firstDay, daysInMonth]);
-
-  const todayInterviews = useMemo(
-    () =>
-      interviews.filter(
-        (iv) => isToday(iv.scheduled_at) && iv.status === "scheduled",
-      ),
-    [interviews],
-  );
+  const {
+    today,
+    year,
+    month,
+    interviewDays,
+    prevMonth,
+    nextMonth,
+    cells,
+    todayInterviews,
+  } = useMiniCalendar(interviews);
 
   return (
     <div className="bg-[#0a0f0c] border border-emerald-500/20 rounded-[18px] overflow-hidden">
@@ -226,7 +162,7 @@ function MiniCalendar({ interviews }: { interviews: Interview[] }) {
                     {iv.candidate_name}
                   </div>
                   <div className="text-[0.65rem] text-[#7a9585]">
-                    {formatInterviewTime(iv.scheduled_at, iv.duration_minutes)}
+                    {formatTimeRange(iv.scheduled_at, iv.duration_minutes)}
                   </div>
                 </div>
                 <span
@@ -254,32 +190,7 @@ function MiniCalendar({ interviews }: { interviews: Interview[] }) {
 
 // ── Interview Schedule Sidebar ────────────────────────────────────────────────
 function InterviewScheduleSidebar({ interviews }: { interviews: Interview[] }) {
-  const upcoming = useMemo(
-    () =>
-      interviews
-        .filter((iv) => iv.status === "scheduled" || iv.status === "overdue")
-        .sort(
-          (a, b) =>
-            new Date(a.scheduled_at).getTime() -
-            new Date(b.scheduled_at).getTime(),
-        )
-        .slice(0, 8),
-    [interviews],
-  );
-
-  const stats: StatItem[] = [
-    { label: "Total", val: interviews.length, color: "#94a3b8" },
-    {
-      label: "Selesai",
-      val: interviews.filter((iv) => iv.status === "done").length,
-      color: "#10b981",
-    },
-    {
-      label: "Batal",
-      val: interviews.filter((iv) => iv.status === "cancelled").length,
-      color: "#ef4444",
-    },
-  ];
+  const { upcoming, stats } = useInterviewScheduleSidebar(interviews);
 
   return (
     <div className="bg-[#0a0f0c] border border-emerald-500/12 rounded-[18px] overflow-hidden">
@@ -376,14 +287,11 @@ function InterviewScheduleSidebar({ interviews }: { interviews: Interview[] }) {
                               ? "text-emerald-400"
                               : "text-[#7a9585]"
                         }`}>
-                        {formatInterviewDate(iv.scheduled_at)}
+                        {formatDateLong(iv.scheduled_at)}
                       </span>
                       <span className="text-[0.65rem] text-[#475569] flex items-center gap-1">
                         <Clock size={8} aria-hidden="true" />
-                        {formatInterviewTime(
-                          iv.scheduled_at,
-                          iv.duration_minutes,
-                        )}
+                        {formatTimeRange(iv.scheduled_at, iv.duration_minutes)}
                       </span>
                     </div>
 

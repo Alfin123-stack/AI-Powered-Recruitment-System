@@ -1,15 +1,13 @@
 "use client";
 
-// ApplicationsAIInsightBadge.tsx — Client Component (kecil, reusable)
-// Separated because used in both ApplicationCard AND ApplicationDetailModal
+import { Insight } from "@/types/candidate/dashboard";
 
 import { AlertCircle, Brain, Sparkles } from "lucide-react";
-import { AIInsight } from "../../../constants/candidate/applications";
 
 export default function ApplicationsAIInsightBadge({
   insight,
 }: {
-  insight: AIInsight;
+  insight: Insight;
 }) {
   const cfg = {
     tip: {

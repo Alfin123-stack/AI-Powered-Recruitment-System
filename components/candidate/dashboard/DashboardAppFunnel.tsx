@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity } from "lucide-react";
-import type { Application } from "@/types/candidate-dashboard";
+import type { Application } from "@/types/candidate/dashboard";
 import { STATUS_MAP } from "@/constants/candidate/dashboard";
 export function DashboardAppFunnel({
   applications,

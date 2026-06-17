@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { ProfileFormField } from "./ProfileFormField";
-import { inputCls, inputErrCls } from "./profileInputStyles";
+import { inputCls, inputErrorCls } from "../shared/input";
 
 export function ProfilePasswordInput({
   label,
@@ -27,7 +27,7 @@ export function ProfilePasswordInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`${error ? inputErrCls : inputCls} pr-11`}
+          className={`${error ? inputErrorCls : inputCls} pr-11`}
         />
         <button
           onClick={() => setShow((v) => !v)}

@@ -6,7 +6,7 @@
 
 import type { CandidateStats, CompanyData } from "@/types/profile";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API } from "@/lib/api";
 
 /**
  * fetchCandidateStats

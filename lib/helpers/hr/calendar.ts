@@ -1,4 +1,5 @@
 import { CARD_COLORS } from "@/constants/calendar";
+export { getInitials } from "@/lib/utils";
 
 // ─── UTILITY FUNCTIONS ────────────────────────────────────────────────────────
 export const sameDay = (a: Date, b: Date) =>
@@ -42,14 +43,6 @@ export const getMonthGrid = (year: number, month: number): (Date | null)[] => {
 
 export const getCardColor = (id: string) =>
   CARD_COLORS[id.charCodeAt(0) % CARD_COLORS.length];
-
-export const getInitials = (name: string) =>
-  name
-    .split(" ")
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
 
 export const getAvatarColor = (name: string) => {
   const colors = [

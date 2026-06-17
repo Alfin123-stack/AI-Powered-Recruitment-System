@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useDashboard } from "@/context/DashboardContext";
-import { apiFetch } from "@/app/(role)/dashboard/hr/_components/shared";
 import type { Application, Job } from "@/types/hr/analytics";
-import { computeStats } from "@/lib/helpers/hr/analytics";
+import { apiFetch } from "@/lib/api";
+import { analyticStats } from "@/lib/helpers/hr/analytics";
 
 // ── Status narrowing ──────────────────────────────────────────────────────────
 const VALID_STATUSES = [
@@ -30,16 +30,17 @@ function normalizeApplication(raw: unknown): Application | null {
 
   return {
     id: String(r.id ?? ""),
-    job_id: String(r.job_id ?? ""),
-    job_title: r.job_title != null ? String(r.job_title) : undefined,
+    job_id: r.job_id != null ? String(r.job_id) : undefined,
+    job_title: r.job_title != null ? String(r.job_title) : "", // ← fallback "" karena required
+    company_name: r.company_name != null ? String(r.company_name) : undefined,
     candidate_name:
       r.candidate_name != null ? String(r.candidate_name) : undefined,
     status: r.status,
-    resume_score:
-      typeof r.resume_score === "number" ? r.resume_score : undefined,
+    resume_score: typeof r.resume_score === "number" ? r.resume_score : null,
     matching_score:
-      typeof r.matching_score === "number" ? r.matching_score : undefined,
-    created_at: r.created_at != null ? String(r.created_at) : undefined,
+      typeof r.matching_score === "number" ? r.matching_score : null,
+    cv_url: r.cv_url != null ? String(r.cv_url) : null,
+    created_at: r.created_at != null ? String(r.created_at) : "", // ← fallback "" karena required
   };
 }
 
@@ -49,7 +50,7 @@ function normalizeJob(raw: unknown): Job | null {
 
   return {
     id: String(r.id ?? ""),
-    title: r.title != null ? String(r.title) : undefined,
+    title: r.title != null ? String(r.title) : "", // ← fallback "" karena required
     is_active: typeof r.is_active === "boolean" ? r.is_active : undefined,
   };
 }
@@ -80,7 +81,7 @@ export function useAnalyticsData() {
       .catch(console.error);
   }, [token]);
 
-  const stats = computeStats(apps, jobs);
+  const stats = analyticStats(apps, jobs);
 
   return { apps, jobs, stats };
 }

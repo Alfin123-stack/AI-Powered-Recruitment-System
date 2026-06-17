@@ -1,5 +1,7 @@
 "use client";
 
+import { formatTimeRange } from "@/lib/helpers/hr/interviews";
+import { Interview } from "@/types/hr/interviews";
 import { motion } from "framer-motion";
 import {
   Clock,
@@ -12,8 +14,6 @@ import {
   User,
   ExternalLink,
 } from "lucide-react";
-import { Interview } from "@/types/hr/interviews";
-import { formatTimeRange } from "@/lib/helpers/hr/interviews";
 
 export function InterviewStartMeetingModal({
   interview,

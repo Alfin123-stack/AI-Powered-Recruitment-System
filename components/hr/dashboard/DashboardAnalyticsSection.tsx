@@ -30,14 +30,14 @@ import {
   XCircle,
   Briefcase,
 } from "lucide-react";
-import type { CandidateExtended, JobGroup } from "@/types/hr-dashboard";
-import { getScoreColor, getScoreGradient } from "@/lib/helpers/dashboardHR";
+import { getScoreColor, getScoreGradient } from "@/lib/helpers/hr/dashboard";
 
 import type { TooltipProps } from "recharts";
 import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { CandidateUI, JobGroup } from "@/types/hr/dashboard";
 
 type CustomTooltipProps = TooltipProps<ValueType, NameType> & {
   active?: boolean;
@@ -399,7 +399,7 @@ type LegendItem = {
 function WeeklyApplicationsChart({
   candidates,
 }: {
-  candidates: CandidateExtended[];
+  candidates: CandidateUI[];
 }) {
   const data: WeeklyDataPoint[] = useMemo(() => {
     const DAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
@@ -517,11 +517,7 @@ function WeeklyApplicationsChart({
 }
 
 // ── Score Distribution Bar Chart ──────────────────────────────────────────────
-function ScoreDistributionChart({
-  candidates,
-}: {
-  candidates: CandidateExtended[];
-}) {
+function ScoreDistributionChart({ candidates }: { candidates: CandidateUI[] }) {
   const data: ScoreBucket[] = useMemo(() => {
     const buckets: ScoreBucket[] = [
       { range: "0-20", min: 0, max: 20, count: 0, color: "#ef4444" },
@@ -764,7 +760,7 @@ function JobAdsTable({ jobGroups }: { jobGroups: JobGroup[] }) {
 
 // ── Analytics Section Props ───────────────────────────────────────────────────
 type AnalyticsSectionProps = {
-  candidates: CandidateExtended[];
+  candidates: CandidateUI[];
   jobGroups: JobGroup[];
   total: number;
   shortlisted: number;

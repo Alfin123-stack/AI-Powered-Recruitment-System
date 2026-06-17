@@ -1,6 +1,3 @@
-// @/components/hr/calendar/CalendarToolbar.tsx
-// Top toolbar: period label, prev/today/next navigation, search, view toggle, filter
-
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,7 +7,7 @@ import {
 } from "lucide-react";
 
 import { type ViewMode } from "@/types/calendar";
-import { VIEW_MODES } from "@/constants/hr/calendar";
+import { VIEW_MODES } from "@/constants/calendar";
 
 interface CalendarToolbarProps {
   headerLabel: string;

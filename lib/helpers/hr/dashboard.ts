@@ -2,24 +2,26 @@
 // HELPERS — HR Dashboard
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { CandidateExtended, CandidateInsight } from "@/types/hr-dashboard";
+import { CandidateInsight, CandidateUI } from "@/types/hr/dashboard";
+import { isToday, isTomorrow } from "@/lib/utils";
 
-export const JOB_COLORS = [
-  "#10b981",
-  "#06b6d4",
-  "#8b5cf6",
-  "#f59e0b",
-  "#ec4899",
-  "#0d9488",
-  "#6366f1",
-  "#f97316",
-];
+export {
+  getInitials,
+  isToday,
+  isTomorrow,
+  getScoreColor,
+  getScoreGradient,
+  getColor,
+  PALETTE as JOB_COLORS,
+} from "@/lib/utils";
 
-export const roundConfig: Record<string, { color: string; bg: string }> = {
-  "First Interview": { color: "#06b6d4", bg: "rgba(6,182,212,0.1)" },
-  "Second Interview": { color: "#8b5cf6", bg: "rgba(139,92,246,0.1)" },
-  "Final Interview": { color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
-};
+export { getRec } from "@/lib/helpers/candidate/dashboard";
+
+/**
+ * roundConfig — alias INTERVIEW_ROUND_CONFIG (canonical di constants/hr/Interviews.ts).
+ * Sebelumnya didefinisikan ulang di sini dengan field lebih sedikit (tanpa `border`).
+ */
+export { INTERVIEW_ROUND_CONFIG as roundConfig } from "@/constants/hr/Interviews";
 
 export const statusMap: Record<string, { label: string; color: string }> = {
   applied: { label: "Applied", color: "#06b6d4" },
@@ -29,48 +31,7 @@ export const statusMap: Record<string, { label: string; color: string }> = {
   hired: { label: "Hired", color: "#8b5cf6" },
 };
 
-export function getScoreColor(s: number) {
-  if (s >= 80) return "#10b981";
-  if (s >= 65) return "#06b6d4";
-  if (s >= 50) return "#f59e0b";
-  return "#ef4444";
-}
-
-export function getScoreGradient(s: number) {
-  if (s >= 80) return "linear-gradient(90deg,#10b981,#06b6d4)";
-  if (s >= 65) return "linear-gradient(90deg,#06b6d4,#8b5cf6)";
-  if (s >= 50) return "linear-gradient(90deg,#f59e0b,#f97316)";
-  return "linear-gradient(90deg,#ef4444,#ec4899)";
-}
-
-export function getRec(score: number, match: number) {
-  const avg = (score + match) / 2;
-  if (avg >= 80)
-    return {
-      label: "Direkomendasikan",
-      color: "#10b981",
-      bg: "rgba(16,185,129,0.1)",
-      border: "rgba(16,185,129,0.25)",
-      iconName: "CheckCircle2" as const,
-    };
-  if (avg >= 60)
-    return {
-      label: "Perlu Review",
-      color: "#f59e0b",
-      bg: "rgba(245,158,11,0.1)",
-      border: "rgba(245,158,11,0.25)",
-      iconName: "AlertCircle" as const,
-    };
-  return {
-    label: "Kurang Sesuai",
-    color: "#ef4444",
-    bg: "rgba(239,68,68,0.08)",
-    border: "rgba(239,68,68,0.25)",
-    iconName: "XCircle" as const,
-  };
-}
-
-export function computeInsight(c: CandidateExtended): CandidateInsight {
+export function computeInsight(c: CandidateUI): CandidateInsight {
   const strengths: string[] = [];
   if (c.resumeScore >= 80) strengths.push("Resume kuat & terstruktur");
   if (c.matchScore >= 80)
@@ -94,7 +55,14 @@ export function computeInsight(c: CandidateExtended): CandidateInsight {
   return { strengths, weaknesses };
 }
 
-export function generateInsights(candidates: CandidateExtended[]) {
+export function getMatchColor(score: number) {
+  if (score >= 80) return "#10b981";
+  if (score >= 65) return "#06b6d4";
+  if (score >= 50) return "#f59e0b";
+  return "#f43f5e";
+}
+
+export function generateInsights(candidates: CandidateUI[]) {
   if (candidates.length === 0) return [];
   const ins = [];
 
@@ -138,15 +106,6 @@ export function generateInsights(candidates: CandidateExtended[]) {
   return ins.slice(0, 3);
 }
 
-export const isToday = (d: string) =>
-  new Date(d).toDateString() === new Date().toDateString();
-
-export const isTomorrow = (d: string) => {
-  const t = new Date();
-  t.setDate(t.getDate() + 1);
-  return new Date(d).toDateString() === t.toDateString();
-};
-
 export const formatInterviewTime = (d: string, dm = 60) => {
   const s = new Date(d);
   const e = new Date(s.getTime() + dm * 60000);
@@ -159,7 +118,7 @@ export const formatInterviewTime = (d: string, dm = 60) => {
   return `${f(s)} – ${f(e)}`;
 };
 
-export const formatInterviewDate = (d: string) => {
+export const formatInterviewDate = (d: string): string => {
   if (isToday(d)) return "Hari Ini";
   if (isTomorrow(d)) return "Besok";
   return new Date(d).toLocaleDateString("id-ID", {
@@ -167,16 +126,3 @@ export const formatInterviewDate = (d: string) => {
     month: "short",
   });
 };
-
-export function getColor(index: number): string {
-  return JOB_COLORS[index % JOB_COLORS.length];
-}
-
-export function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}

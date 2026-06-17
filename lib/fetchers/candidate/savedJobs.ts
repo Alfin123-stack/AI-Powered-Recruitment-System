@@ -1,7 +1,7 @@
 import { getColor } from "@/lib/helpers/candidate/saved";
 import { SavedJob, SavedJobRaw } from "@/types/candidate/saved";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API } from "@/lib/api";
 
 export async function fetchSavedJobs(accessToken: string): Promise<SavedJob[]> {
   try {

@@ -1,26 +1,29 @@
 "use client";
 
-// ApplicationsLiveCountdown.tsx — Client Component
-// CSR: uses useEffect to update every 30 seconds
-
 import { useEffect, useState } from "react";
 import { Timer } from "lucide-react";
-import { getCountdown } from "../../../lib/helpers/candidate/applications";
+import { getCountdown } from "@/lib/helpers/candidate/applications";
 
 interface LiveCountdownProps {
   scheduledAt: string;
-}
+} 
 
-export default function ApplicationsLiveCountdown({ scheduledAt }: LiveCountdownProps) {
+export default function ApplicationsLiveCountdown({
+  scheduledAt,
+}: LiveCountdownProps) {
   const [text, setText] = useState(() => getCountdown(scheduledAt));
+  const [isUrgent, setIsUrgent] = useState(
+    () => new Date(scheduledAt).getTime() - Date.now() < 3_600_000,
+  );
 
   useEffect(() => {
-    const id = setInterval(() => setText(getCountdown(scheduledAt)), 30_000);
+    const update = () => {
+      setText(getCountdown(scheduledAt));
+      setIsUrgent(new Date(scheduledAt).getTime() - Date.now() < 3_600_000);
+    };
+    const id = setInterval(update, 30_000);
     return () => clearInterval(id);
   }, [scheduledAt]);
-
-  const isUrgent =
-    new Date(scheduledAt).getTime() - Date.now() < 3_600_000;
 
   return (
     <span

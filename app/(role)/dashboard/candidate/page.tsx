@@ -8,18 +8,9 @@ import {
   fetchInterviews,
   fetchJobs,
   fetchUserProfile,
-} from "@/lib/fetchers/candidate/dashboardCandidate";
+} from "@/lib/fetchers/candidate/dashboard";
 
 import { DashboardShell } from "@/components/candidate/dashboard/DashboardShell";
-import {
-  WelcomeBannerSkeleton,
-  StatsGridSkeleton,
-  AiInsightCardSkeleton,
-  ApplicationFunnelSkeleton,
-  ApplicationListSkeleton,
-  MiniCalendarSkeleton,
-  RecommendationsPanelSkeleton,
-} from "./loading";
 
 export const metadata: Metadata = {
   title: "Dashboard Kandidat",
@@ -51,13 +42,6 @@ export default async function CandidateDashboardPage() {
       initialInterviews={interviews}
       initialJobs={jobs}
       user={userProfile}
-      welcomeBannerFallback={<WelcomeBannerSkeleton />}
-      statsFallback={<StatsGridSkeleton />}
-      cvFallback={<AiInsightCardSkeleton />}
-      funnelFallback={<ApplicationFunnelSkeleton />}
-      appListFallback={<ApplicationListSkeleton />}
-      calendarFallback={<MiniCalendarSkeleton />}
-      recsFallback={<RecommendationsPanelSkeleton />}
     />
   );
 }

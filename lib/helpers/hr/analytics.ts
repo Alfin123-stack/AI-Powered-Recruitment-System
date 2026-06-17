@@ -2,7 +2,7 @@ import { Application, Job } from "@/types/hr/analytics";
 
 // ─── Derived analytics computed server-side ──────────────────────────────────
 
-export function computeStats(apps: Application[], jobs: Job[]) {
+export function analyticStats(apps: Application[], jobs: Job[]) {
   const total = apps.length;
   const shortlisted = apps.filter((a) => a.status === "shortlisted").length;
   const rejected = apps.filter((a) => a.status === "rejected").length;

@@ -5,7 +5,7 @@ import { Users, MapPin, Calendar, Loader2, Search } from "lucide-react";
 
 import { useCandidatesData } from "@/hooks/dashboard/hr/useCandidatesData";
 import { useCandidatesTable } from "@/hooks/dashboard/hr/useCandidatesTable";
-import { getScoreColor, getScoreGradient } from "@/lib/helpers/candidates";
+import { getScoreColor, getScoreGradient } from "@/lib/helpers/candidate/dashboard";
 import { CandidatesHeaderBar } from "./CandidatesHeaderBar";
 import { CandidatesFilterBar } from "./CandidatesFilterBar";
 import { CandidatesStageBadge } from "./CandidatesStageBadge";

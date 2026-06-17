@@ -1,18 +1,15 @@
-// ─── hooks/useNotifications.ts ────────────────────────────────────────────────
-// Custom hook — CLIENT-SIDE ONLY.
-// Token di-refresh dari browser cookie sebelum setiap mutasi,
-// dengan fallback ke tokenProp yang dikirim dari SSR.
+"use client";
 
 import { useState, useCallback } from "react";
 
-import {
-  fetchNotificationsClient,
-  apiMarkRead,
-  apiMarkAllRead,
-  apiDeleteNotif,
-} from "@/lib/fetchers/notifications";
 import type { Notif } from "@/types/notifications";
 import { getBrowserSession } from "@/lib/auth/getBrowserSession";
+import {
+  apiDeleteNotif,
+  apiMarkAllRead,
+  apiMarkRead,
+  fetchNotificationsClient,
+} from "@/lib/fetchers/notifications";
 
 async function getFreshToken(fallback: string): Promise<string> {
   const session = await getBrowserSession();

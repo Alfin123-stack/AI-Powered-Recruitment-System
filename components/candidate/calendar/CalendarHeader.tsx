@@ -1,7 +1,7 @@
 "use client";
 
+import { MONTHS_ID } from "@/constants/calendar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { MONTHS_ID } from "@/constants/candidate/calendar";
 
 interface CalendarHeaderProps {
   year: number;

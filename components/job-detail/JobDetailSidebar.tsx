@@ -13,8 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { JobApplyModal } from "./JobApplyModal";
 import { Job } from "@/types/jobs";
-import { statusConfig } from "@/lib/constants";
 import { formatDeadline } from "@/lib/utils";
+import { STATUS_CONFIG_UI } from "@/constants/shared";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -127,7 +127,7 @@ export default function JobDetailSidebar({
     }
   };
 
-  const status = applicationStatus ? statusConfig[applicationStatus] : null;
+  const status = applicationStatus ? STATUS_CONFIG_UI[applicationStatus] : null;
 
   return (
     <>
@@ -223,7 +223,7 @@ export default function JobDetailSidebar({
               { label: "Job Type", value: job.type },
               { label: "Salary", value: job.salary || "—" },
               { label: "Location", value: job.location },
-              { label: "Deadline", value: formatDeadline(job.deadline) },
+              { label: "Deadline", value: formatDeadline(job.deadline || "-") },
             ].map((row, i, arr) => (
               <div
                 key={i}

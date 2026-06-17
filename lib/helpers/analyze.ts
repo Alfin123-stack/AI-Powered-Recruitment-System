@@ -1,4 +1,4 @@
-import { AnalysisData } from "@/types/analyze";
+import { AnalysisData, ScoreTier } from "@/types/analyze";
 import type {
   TextItem,
   TextMarkedContent,
@@ -11,29 +11,47 @@ export function gradeLabel(score: number): string {
   return "C";
 }
 
-export function scoreColor(score: number): string {
-  if (score >= 70) return "#4ade80";
-  if (score >= 50) return "#f59e0b";
-  return "#f87171";
-}
+const SCORE_TIER_COLORS: Record<
+  ScoreTier,
+  { solid: string; muted: string; bg: string; border: string }
+> = {
+  high: {
+    solid: "#4ade80",
+    muted: "rgba(74,222,128,0.55)",
+    bg: "rgba(74,222,128,0.07)",
+    border: "rgba(74,222,128,0.15)",
+  },
+  mid: {
+    solid: "#f59e0b",
+    muted: "rgba(245,158,11,0.55)",
+    bg: "rgba(245,158,11,0.07)",
+    border: "rgba(245,158,11,0.15)",
+  },
+  low: {
+    solid: "#f87171",
+    muted: "rgba(248,113,113,0.55)",
+    bg: "rgba(248,113,113,0.07)",
+    border: "rgba(248,113,113,0.15)",
+  },
+};
 
-export function scoreColorMuted(score: number): string {
-  if (score >= 70) return "rgba(74,222,128,0.55)";
-  if (score >= 50) return "rgba(245,158,11,0.55)";
-  return "rgba(248,113,113,0.55)";
-}
+const getScoreTier = (score: number): ScoreTier => {
+  if (score >= 70) return "high";
+  if (score >= 50) return "mid";
+  return "low";
+};
 
-export function scoreColorBg(score: number): string {
-  if (score >= 70) return "rgba(74,222,128,0.07)";
-  if (score >= 50) return "rgba(245,158,11,0.07)";
-  return "rgba(248,113,113,0.07)";
-}
+export const scoreColor = (score: number): string =>
+  SCORE_TIER_COLORS[getScoreTier(score)].solid;
 
-export function scoreColorBorder(score: number): string {
-  if (score >= 70) return "rgba(74,222,128,0.15)";
-  if (score >= 50) return "rgba(245,158,11,0.15)";
-  return "rgba(248,113,113,0.15)";
-}
+export const scoreColorMuted = (score: number): string =>
+  SCORE_TIER_COLORS[getScoreTier(score)].muted;
+
+export const scoreColorBg = (score: number): string =>
+  SCORE_TIER_COLORS[getScoreTier(score)].bg;
+
+export const scoreColorBorder = (score: number): string =>
+  SCORE_TIER_COLORS[getScoreTier(score)].border;
 
 export function buildAISummary(data: AnalysisData): string {
   const level =

@@ -10,12 +10,10 @@ import type {
   Interview,
   ShortlistedCandidate,
 } from "@/types/hr/interviews";
-import { fetchWithToken } from "@/lib/fetchers/hr/fetchWithToken";
+import { fetchWithToken } from "@/lib/fetchers/hr/dashboard";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ASYNC DATA LOADER — yang ditunggu oleh <Suspense>
-// Fetch paralel, tidak ada waterfall
-// ─────────────────────────────────────────────────────────────────────────────
+
+
 async function InterviewsData({ token }: { token: string }) {
   const [interviews, shortlisted] = await Promise.all([
     fetchWithToken<Interview[]>("/api/interviews", token),
@@ -34,9 +32,6 @@ async function InterviewsData({ token }: { token: string }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE METADATA
-// ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "Interview Schedule | HR Dashboard",
   description: "Manage and schedule candidate interviews",
@@ -45,9 +40,6 @@ export const metadata: Metadata = {
 // force-dynamic: halaman ini per-user, jangan pernah di-cache di ISR/SSG
 export const dynamic = "force-dynamic";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE — async RSC, ambil session dulu lalu render
-// ─────────────────────────────────────────────────────────────────────────────
 export default async function InterviewsPage() {
   const session = await getServerSession();
 

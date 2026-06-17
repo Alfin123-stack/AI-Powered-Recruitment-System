@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,20 +11,14 @@ import {
   X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type {
-  Application,
-  Interview,
-} from "../../../constants/candidate/applications";
-import { FILTER_OPTIONS } from "../../../constants/candidate/applications";
-import {
-  isToday,
-  getDayLabel,
-  formatTime,
-} from "../../../lib/helpers/candidate/applications";
-import { useApplicationsFilter } from "@/hooks/dashboard/candidate/Useapplicationsfilter";
+
+import { useApplicationsFilter } from "@/hooks/dashboard/candidate/useApplicationsFilter";
 import ApplicationCard from "./ApplicationCard";
 import ApplicationDetailModal from "./ApplicationDetailModal";
 import InterviewsSection from "./ApplicationsInterviewsSection";
+import { formatTime, getDayLabel, isToday } from "@/lib/utils";
+import { FILTER_OPTIONS } from "@/constants/candidate/dashboard";
+import { Application, Interview } from "@/types/candidate/dashboard";
 
 interface ApplicationsClientProps {
   applications: Application[];

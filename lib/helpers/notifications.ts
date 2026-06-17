@@ -1,19 +1,6 @@
 import type { Notif, GroupKey } from "../../types/notifications";
 import { TYPE_CONFIG } from "@/constants/notifications";
-
-// ─── Time ago helper ──────────────────────────────────────────────────────────
-
-export function timeAgo(dateStr: string): string {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 60) return "Baru saja";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m lalu`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}j lalu`;
-  if (diff < 86400 * 7) return `${Math.floor(diff / 86400)}h lalu`;
-  return new Date(dateStr).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-  });
-}
+export { timeAgoNotif as timeAgo } from "@/lib/utils";
 
 // ─── Normalize raw API response to typed Notif ────────────────────────────────
 
@@ -43,6 +30,7 @@ export function normalizeNotif(n: Record<string, unknown>): Notif {
           : false,
   };
 }
+
 // ─── Group order constant ─────────────────────────────────────────────────────
 
 export const GROUP_ORDER: GroupKey[] = [

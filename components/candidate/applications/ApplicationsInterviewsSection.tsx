@@ -16,12 +16,11 @@ import {
   X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Interview,
-  INTERVIEW_TIPS,
-} from "../../../constants/candidate/applications";
-import { groupInterviewsByDate } from "../../../lib/helpers/candidate/applications";
+
 import ApplicationsInterviewCard from "./ApplicationsInterviewCard";
+import { INTERVIEW_TIPS } from "@/constants/candidate/dashboard";
+import { groupInterviewsByDate } from "@/lib/helpers/candidate/applications";
+import { Interview } from "@/types/candidate/dashboard";
 
 // ── Empty State ───────────────────────────────────────────────────────────────
 

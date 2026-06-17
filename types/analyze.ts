@@ -1,4 +1,4 @@
-// ─── ANALYZE TYPES ────────────────────────────────────────────────────────────
+export type ScoreTier = "high" | "mid" | "low";
 
 export type Skill = { name: string; level: number };
 export type Category = { label: string; score: number; feedback?: string };

@@ -1,7 +1,7 @@
 "use client";
 
-import { getRec, getScoreColor } from "@/lib/helpers/candidates";
-import { CandidateExtended, CandidateStatus } from "@/types/candidates";
+import { getRec, getScoreColor } from "@/lib/helpers/candidate/dashboard";
+import { CandidateRaw, CandidateStatus } from "@/types/candidates";
 import { motion } from "framer-motion";
 import {
   X,
@@ -20,7 +20,7 @@ export function CandidatesModal({
   onClose,
   onStatusChange,
 }: {
-  candidate: CandidateExtended;
+  candidate: CandidateRaw;
   onClose: () => void;
   onStatusChange: (id: string, status: CandidateStatus) => void;
 }) {

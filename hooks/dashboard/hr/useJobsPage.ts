@@ -1,21 +1,12 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
-import {
-  apiFetch,
-  getColor,
-  getInitials,
-} from "@/app/(role)/dashboard/hr/_components/shared";
 import { useDashboard } from "@/context/DashboardContext";
-import type {
-  Job,
-  Candidate,
-} from "@/app/(role)/dashboard/hr/_components/shared";
-import type {
-  JobWithStats,
-  JobsSummaryData,
-  RawApplication,
-} from "@/types/hr/jobs";
+import { apiFetch } from "@/lib/api";
+import { getColor, getInitials } from "@/lib/utils";
+import { Candidate } from "@/types/candidates";
+import { Job, RawApplication } from "@/types/hr/dashboard";
+import { JobsSummaryData, JobWithStats } from "@/types/jobs";
+import { useState, useCallback, useMemo } from "react";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

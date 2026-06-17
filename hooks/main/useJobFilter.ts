@@ -1,6 +1,3 @@
-// @/hooks/jobs/useJobFilter.ts
-// State search & filter + logika filtering job list
-
 import { useState, useMemo } from "react";
 import type { Job } from "@/types/jobs";
 

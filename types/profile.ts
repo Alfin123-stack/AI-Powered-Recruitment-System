@@ -1,12 +1,13 @@
-// types/profileShell.types.ts
-
 import { User, Shield, Building2 } from "lucide-react";
+
+// FadeInProps canonical di landing.ts
+export type { FadeInProps } from "./landing";
 
 export type UserRole = "candidate" | "hr";
 
 export interface ProfileUser {
   id: string;
-  email: string; // tetap string — parent wajib fallback ke "" sebelum pass ke sini
+  email: string;
   created_at: string;
   user_metadata: UserMetadata;
 }
@@ -29,7 +30,11 @@ export interface ServerProfileData extends CandidateStats {
   company: CompanyData | null;
 }
 
+// Tab & ProfileTab digabung — dulu keduanya "profile" | "company" | "security"
 export type Tab = "profile" | "company" | "security";
+
+/** @deprecated Gunakan `Tab` */
+export type ProfileTab = Tab;
 
 export interface TabDefinition {
   id: Tab;
@@ -52,28 +57,11 @@ export interface PageHeaderProps {
   role: string;
 }
 
-export interface FadeInProps {
-  children: React.ReactNode;
-  delay?: number;
-}
+// Company canonical di company.ts (sudah include field size?, industry?, website?, logo_url?, description?)
+export type { Company } from "./company";
 
-export type ProfileTab = "profile" | "company" | "security";
-
-export interface Company {
-  id: string;
-  name: string;
-  industry?: string;
-  size?: string;
-  website?: string;
-  logo_url?: string;
-  description?: string;
-}
-
-// ✅ Tambah "info" — cocok dengan types/profile.ts
 export type ToastType = "success" | "error" | "info";
 export type Toast = { id: number; type: ToastType; message: string };
-
-// ✅ Fix: (type, message) — konsisten dengan semua tab
 export type AddToastFn = (type: ToastType, message: string) => void;
 
 type UserMetadata = {

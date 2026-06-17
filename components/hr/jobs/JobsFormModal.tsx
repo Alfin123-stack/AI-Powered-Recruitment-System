@@ -1,33 +1,13 @@
-// @/components/hr/jobs/JobsFormModal.tsx
-// CSR — fully interactive: form state, API calls, keyboard handlers
-// Lazy-loaded from JobsPageClient via dynamic import
-
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  apiFetch,
-  type Job,
-} from "@/app/(role)/dashboard/hr/_components/shared";
+
 import { JobsFormHeader } from "./JobsFormHeader";
-import { JobsFormBody, type FormState } from "./JobsFormBody";
+import { JobsFormBody } from "./JobsFormBody";
 import { JobsFormFooter } from "./JobsFormFooter";
+import { Job } from "@/types/hr/dashboard";
+import { useJobsForm } from "@/hooks/dashboard/hr/useJobsForm";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-function parseReqToArray(raw: string | null | undefined): string[] {
-  if (!raw) return [];
-  return raw
-    .split(/\\n|\n/)
-    .map((s) => s.trim().replace(/^[-•*–]\s*/, ""))
-    .filter(Boolean);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────────────────────
 interface JobsFormModalProps {
   token: string;
   editJob: Job | null;
@@ -35,76 +15,25 @@ interface JobsFormModalProps {
   onClose: () => void;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
 export function JobsFormModal({
   token,
   editJob,
   onDone,
   onClose,
 }: JobsFormModalProps) {
-  const [form, setForm] = useState<FormState>(() =>
-    editJob
-      ? {
-          title: editJob.title,
-          description: editJob.description || "",
-          salary: editJob.salary || "",
-          location: editJob.location || "",
-          type: editJob.type || "Full-time",
-          deadline: editJob.deadline?.split("T")[0] || "",
-        }
-      : {
-          title: "",
-          description: "",
-          salary: "",
-          location: "",
-          type: "Full-time",
-          deadline: "",
-        },
-  );
-  const [requirements, setRequirements] = useState<string[]>(
-    parseReqToArray(editJob?.requirements),
-  );
-  const [skills, setSkills] = useState<string[]>(editJob?.skills ?? []);
-  const [benefits, setBenefits] = useState<string[]>(editJob?.benefits ?? []);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async () => {
-    if (!form.title.trim()) return setError("Job title is required");
-    setLoading(true);
-    setError("");
-    try {
-      const payload = {
-        ...form,
-        requirements: requirements.join("\n"),
-        skills,
-        benefits,
-        deadline: form.deadline || null,
-      };
-      if (editJob) {
-        await apiFetch(`/api/jobs/${editJob.id}`, token, {
-          method: "PUT",
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await apiFetch("/api/jobs/create", token, {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
-      }
-      onDone();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An error occurred");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    form,
+    setForm,
+    requirements,
+    setRequirements,
+    skills,
+    setSkills,
+    benefits,
+    setBenefits,
+    loading,
+    error,
+    handleSubmit,
+  } = useJobsForm({ token, editJob, onDone });
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-[8px]">

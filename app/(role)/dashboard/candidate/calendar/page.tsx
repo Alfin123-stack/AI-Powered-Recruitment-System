@@ -1,27 +1,3 @@
-/**
- * /app/(role)/candidate/calendar/page.tsx
- *
- * ── Rendering Strategy ──────────────────────────────────────────────────────
- *
- * SSR (Server-Side Rendering) untuk shell halaman:
- *   - Metadata halaman (title, description) di-render di server
- *   - Page header (judul + deskripsi) langsung ada di HTML pertama
- *   - Lebih baik untuk SEO dan First Contentful Paint
- *
- * CSR untuk data interview (via CalendarClient):
- *   - Data bersifat personal + membutuhkan token dari AuthContext
- *   - Token hanya tersedia di client → tidak bisa di-fetch di server
- *   - Komponen CalendarClient fetch sendiri setelah mount
- *
- * Suspense + CalendarPageSkeleton:
- *   - Saat JS bundle CalendarClient belum siap, Suspense menampilkan skeleton
- *   - Memberikan UX yang smooth tanpa layout shift
- *
- * Tidak pakai ISR / SSG karena:
- *   - Data berubah per-user dan tidak bisa di-cache secara global
- * ────────────────────────────────────────────────────────────────────────────
- */
-
 import { Suspense } from "react";
 import type { Metadata } from "next";
 
@@ -32,9 +8,6 @@ export const metadata: Metadata = {
   title: "Kalender Interview",
   description: "Lihat dan kelola jadwal interview Anda",
 };
-
-// Tidak ada revalidate → default SSR (tidak di-cache, selalu fresh per request)
-// Jika ingin ISR untuk shell: export const revalidate = 3600;
 
 export default function CalendarPage() {
   return (

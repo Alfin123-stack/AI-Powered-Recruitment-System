@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 
 import { getColor, parseRequirements } from "@/lib/utils";
-import { getJob, getPopularJobIds } from "@/lib/fetchers/jobs";
+
 import JobDetailHero from "@/components/job-detail/JobDetailHero";
 import JobDetailBody from "@/components/job-detail/JobDetailBody";
 import JobDetailSidebar from "@/components/job-detail/JobDetailSidebar";
@@ -11,6 +11,7 @@ import {
   JobDetailContentSkeleton,
   JobDetailSidebarSkeleton,
 } from "@/components/job-detail/JobDetailSkeleton";
+import { getJob, getPopularJobIds } from "@/lib/fetchers/jobs";
 
 export const revalidate = 60;
 

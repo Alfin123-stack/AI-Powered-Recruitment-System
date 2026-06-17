@@ -4,13 +4,12 @@
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { Plus, Briefcase, Search, X } from "lucide-react";
-import { FadeIn } from "@/app/(role)/dashboard/hr/_components/shared";
-import type { Job } from "@/app/(role)/dashboard/hr/_components/shared";
 import { JobsCard } from "./JobsCard";
 import { JobsSummaryStats } from "./JobsSummaryStats";
 import { JobFormSkeleton } from "./JobsSkeleton";
 import { useJobsPage } from "@/hooks/dashboard/hr/useJobsPage";
-import type { RawApplication } from "../../../types/hr/jobs";
+import { Job, RawApplication } from "@/types/hr/dashboard";
+import { FadeIn } from "@/components/shared/FadeIn";
 
 const JobFormModal = dynamic(
   () => import("./JobsFormModal").then((m) => ({ default: m.JobsFormModal })),

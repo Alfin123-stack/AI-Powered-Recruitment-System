@@ -7,8 +7,10 @@ const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 import type { CompanyData, ToastType } from "@/types/profile";
 import { ProfileErrorBanner } from "./ProfileErrorBanner";
 import { ProfileFormField } from "./ProfileFormField";
-import { inputCls } from "./profileInputStyles";
 import { ProfileSaveButton } from "./ProfileSaveButton";
+import { inputCls } from "../shared/input";
+
+
 
 interface ProfileTabCompanyProps {
   token: string;

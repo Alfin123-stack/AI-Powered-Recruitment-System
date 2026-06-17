@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Brain, Target, Clock, Star } from "lucide-react";
-import { CandidateExtended } from "@/types/hr-dashboard";
-import { generateInsights } from "@/lib/helpers/dashboardHR";
+import { generateInsights } from "@/lib/helpers/hr/dashboard";
+import { CandidateUI } from "@/types/hr/dashboard";
 
 const ICON_MAP = {
   Target,
@@ -14,7 +14,7 @@ const ICON_MAP = {
 };
 
 interface AIInsightPanelProps {
-  candidates: CandidateExtended[];
+  candidates: CandidateUI[];
 }
 
 export function AIInsightPanel({ candidates }: AIInsightPanelProps) {

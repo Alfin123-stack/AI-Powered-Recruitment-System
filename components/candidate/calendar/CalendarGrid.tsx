@@ -1,6 +1,6 @@
 "use client";
 
-import { DAYS_ID } from "@/constants/candidate/calendar";
+import { DAYS_ID } from "@/constants/calendar";
 import CalendarGridCell from "./CalendarGridCell";
 import type { Interview } from "@/types/calendar";
 

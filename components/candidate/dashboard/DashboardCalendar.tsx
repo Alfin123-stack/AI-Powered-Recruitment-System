@@ -1,8 +1,5 @@
 "use client";
 
-// components/candidate/dashboard/MiniCalendar.tsx
-// CSR — interactive calendar, month navigation, interview markers
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,12 +10,10 @@ import {
   Video,
   Monitor,
 } from "lucide-react";
-import {
-  formatDate,
-  formatTime,
-} from "../../../lib/helpers/candidate/dashboard";
+
 import { DAYS_ID, MONTHS_ID } from "@/constants/candidate/dashboard";
-import type { Interview } from "@/types/candidate-dashboard";
+import type { Interview } from "@/types/candidate/dashboard";
+import { formatDate, formatTime } from "@/lib/helpers/hr/interviews";
 
 export function DashboardCalendar({ interviews }: { interviews: Interview[] }) {
   const today = new Date();

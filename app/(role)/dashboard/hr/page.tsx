@@ -16,7 +16,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "@/lib/auth/getServerSession";
 
 import { HRDashboardSkeleton } from "@/components/hr/dashboard/DashboardSkeleton";
-import { fetchDashboardData } from "@/lib/fetchers/hr/dashboardHR";
+import { fetchDashboardData } from "@/lib/fetchers/hr/dashboard";
 import { DashboardClient } from "@/components/hr/dashboard/DashboardClient";
 
 export const revalidate = 60;

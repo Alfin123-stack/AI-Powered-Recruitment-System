@@ -14,10 +14,7 @@ import {
 import { JobsSection } from "./JobsSection";
 import { JobsField } from "./JobsField";
 import { JobsTagInput } from "./JobsTagInput";
-
-// shared input class
-export const inputCls =
-  "w-full bg-[#080f0b] border border-emerald-500/15 rounded-[10px] px-3 py-[10px] text-[0.85rem] text-[#e8f0ec] placeholder:text-[#2d4a38] focus:outline-none focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/8 transition-all";
+import { inputCls } from "@/components/shared/input";
 
 export type FormState = {
   title: string;

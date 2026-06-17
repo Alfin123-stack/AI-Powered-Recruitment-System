@@ -1,3 +1,6 @@
+// constants/candidates.ts
+// Status, warna, dan pagination untuk tabel kandidat di sisi HR.
+
 import { CandidateStatus, StatusFilter } from "@/types/candidates";
 
 export const STATUS_CONFIG: Record<
@@ -36,16 +39,8 @@ export const STATUS_CONFIG: Record<
   },
 } as const;
 
-export const JOB_COLORS = [
-  "#6366f1",
-  "#0ea5e9",
-  "#f59e0b",
-  "#10b981",
-  "#ec4899",
-  "#8b5cf6",
-  "#14b8a6",
-  "#f97316",
-];
+/** @deprecated Gunakan getPaletteColor dari @/constants/shared */
+export { PALETTE_COLORS as JOB_COLORS } from "./shared";
 
 export const ROWS_PER_PAGE = 8;
 

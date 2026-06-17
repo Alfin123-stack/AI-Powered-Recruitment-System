@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Bell,
-  Download,
   Plus,
   Settings,
   X,
@@ -17,6 +16,7 @@ import {
   ChevronDown,
   Building2,
   FileText,
+  LayoutDashboard,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -430,6 +430,31 @@ function UserDropdown({
           />
         </Link>
 
+        <Link
+          href="/"
+          onClick={onClose}
+          title="Kembali ke halaman beranda"
+          aria-label="Navigasi ke beranda"
+          className="flex items-center gap-3 px-3 py-[9px] rounded-lg no-underline
+            hover:bg-white/[0.04] transition-colors group">
+          <div className="w-7 h-7 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#3a5245] group-hover:text-emerald-400 transition-colors flex-shrink-0">
+            <LayoutDashboard size={13} aria-hidden="true" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[0.82rem] font-semibold text-[#c5d8cc] group-hover:text-[#dff0e8] transition-colors leading-none mb-[3px]">
+              Beranda
+            </p>
+            <p className="text-[0.68rem] text-[#3a5245] leading-none">
+              Kembali ke halaman utama
+            </p>
+          </div>
+          <ArrowRight
+            size={11}
+            aria-hidden="true"
+            className="text-[#253b2e] group-hover:text-emerald-400 group-hover:translate-x-[2px] transition-all flex-shrink-0"
+          />
+        </Link>
+
         <div className="h-px bg-white/[0.05] mx-1 my-1" />
 
         <button
@@ -637,12 +662,6 @@ export default function Topbar({
 
       {/* Right: Actions */}
       <nav aria-label="Aksi topbar" className="flex items-center gap-[6px]">
-        {isHR && (
-          <IconBtn title="Export laporan HR" onClick={() => {}}>
-            <Download size={14} aria-hidden="true" />
-          </IconBtn>
-        )}
-
         {isHR && !isJobsPage && (
           <Link href="/dashboard/hr/jobs" title="Buat lowongan baru">
             <Button

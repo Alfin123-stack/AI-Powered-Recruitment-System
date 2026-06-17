@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, Building2 } from "lucide-react";
-import { getInitials } from "@/app/(role)/dashboard/candidate/_components/shared";
+import { getInitials } from "@/lib/utils";
 
 export type SidebarNavItem = {
   href: string;
@@ -16,10 +16,19 @@ export type SidebarNavSection = {
   items: SidebarNavItem[];
 };
 
+type SidebarUser = {
+  full_name?: string;
+  email?: string;
+  user_metadata?: {
+    full_name?: string;
+    [key: string]: string | undefined;
+  };
+};
+
 export interface SidebarProps {
   role: "hr" | "candidate";
   sections: SidebarNavSection[];
-  user?: any;
+  user?: SidebarUser;
   company?: { name: string } | null;
   token?: string;
   displayName?: string;
@@ -77,17 +86,18 @@ export default function Sidebar({
   sections,
   user,
   company,
-  token,
+  token: _token,
   displayName,
   roleLabel,
 }: SidebarProps) {
   const resolvedName =
-    displayName ||
-    user?.full_name ||
-    user?.user_metadata?.full_name ||
-    user?.email ||
+    displayName ??
+    user?.full_name ??
+    user?.user_metadata?.full_name ??
+    user?.email ??
     (role === "hr" ? "HR User" : "Kandidat");
-  const resolvedRole = roleLabel || (role === "hr" ? "HR Manager" : "Kandidat");
+
+  const resolvedRole = roleLabel ?? (role === "hr" ? "HR Manager" : "Kandidat");
   const initials = getInitials(resolvedName);
 
   return (

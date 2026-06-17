@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Building2,
   MapPin,
@@ -18,10 +19,110 @@ type MatchesCardProps = {
   index: number;
 };
 
+// ── Match score color → Tailwind class maps ───────────────────────────────────
+const ACCENT_COLOR_MAP: Record<
+  string,
+  {
+    border: string;
+    icon: string;
+    scoreText: string;
+    skillBg: string;
+    skillText: string;
+    skillBorder: string;
+    typeBg: string;
+    typeText: string;
+    typeBorder: string;
+    bar: string;
+    logoBg: string;
+  }
+> = {
+  "#10b981": {
+    border: "border-emerald-500/20 hover:border-emerald-500/40",
+    icon: "text-emerald-400",
+    scoreText: "text-emerald-400",
+    skillBg: "bg-emerald-500/[0.07]",
+    skillText: "text-emerald-400",
+    skillBorder: "border-emerald-500/20",
+    typeBg: "bg-emerald-500/10",
+    typeText: "text-emerald-400",
+    typeBorder: "border-emerald-500/15",
+    bar: "from-emerald-500 to-cyan-400",
+    logoBg: "bg-emerald-500/[0.08]",
+  },
+  "#06b6d4": {
+    border: "border-cyan-500/20 hover:border-cyan-500/40",
+    icon: "text-cyan-400",
+    scoreText: "text-cyan-400",
+    skillBg: "bg-cyan-500/[0.07]",
+    skillText: "text-cyan-400",
+    skillBorder: "border-cyan-500/20",
+    typeBg: "bg-cyan-500/10",
+    typeText: "text-cyan-400",
+    typeBorder: "border-cyan-500/15",
+    bar: "from-cyan-500 to-blue-400",
+    logoBg: "bg-cyan-500/[0.08]",
+  },
+  "#8b5cf6": {
+    border: "border-violet-500/20 hover:border-violet-500/40",
+    icon: "text-violet-400",
+    scoreText: "text-violet-400",
+    skillBg: "bg-violet-500/[0.07]",
+    skillText: "text-violet-400",
+    skillBorder: "border-violet-500/20",
+    typeBg: "bg-violet-500/10",
+    typeText: "text-violet-400",
+    typeBorder: "border-violet-500/15",
+    bar: "from-violet-500 to-purple-400",
+    logoBg: "bg-violet-500/[0.08]",
+  },
+  "#f59e0b": {
+    border: "border-amber-500/20 hover:border-amber-500/40",
+    icon: "text-amber-400",
+    scoreText: "text-amber-400",
+    skillBg: "bg-amber-500/[0.07]",
+    skillText: "text-amber-400",
+    skillBorder: "border-amber-500/20",
+    typeBg: "bg-amber-500/10",
+    typeText: "text-amber-400",
+    typeBorder: "border-amber-500/15",
+    bar: "from-amber-500 to-orange-400",
+    logoBg: "bg-amber-500/[0.08]",
+  },
+  "#ef4444": {
+    border: "border-red-500/20 hover:border-red-500/40",
+    icon: "text-red-400",
+    scoreText: "text-red-400",
+    skillBg: "bg-red-500/[0.07]",
+    skillText: "text-red-400",
+    skillBorder: "border-red-500/20",
+    typeBg: "bg-red-500/10",
+    typeText: "text-red-400",
+    typeBorder: "border-red-500/15",
+    bar: "from-red-500 to-rose-400",
+    logoBg: "bg-red-500/[0.08]",
+  },
+  "#ec4899": {
+    border: "border-pink-500/20 hover:border-pink-500/40",
+    icon: "text-pink-400",
+    scoreText: "text-pink-400",
+    skillBg: "bg-pink-500/[0.07]",
+    skillText: "text-pink-400",
+    skillBorder: "border-pink-500/20",
+    typeBg: "bg-pink-500/10",
+    typeText: "text-pink-400",
+    typeBorder: "border-pink-500/15",
+    bar: "from-pink-500 to-fuchsia-400",
+    logoBg: "bg-pink-500/[0.08]",
+  },
+};
+
+const DEFAULT_ACCENT = ACCENT_COLOR_MAP["#10b981"];
+
 export default function MatchesCard({ job, index }: MatchesCardProps) {
   const { color, matchScore, matchedSkills, missingSkills, alreadyApplied } =
     job;
   const match = getMatchLabel(matchScore);
+  const accent = ACCENT_COLOR_MAP[color] ?? DEFAULT_ACCENT;
 
   return (
     <motion.div
@@ -37,29 +138,27 @@ export default function MatchesCard({ job, index }: MatchesCardProps) {
         ${
           alreadyApplied
             ? "border-white/[0.05] opacity-55"
-            : "border-white/[0.07] hover:border-white/[0.13] hover:-translate-y-[2px]"
+            : `${accent.border} hover:-translate-y-[2px]`
         }`}>
       {/* Top accent line */}
       <div
-        className="absolute top-0 left-0 right-0 h-[1.5px]"
-        style={{
-          background: alreadyApplied ? "rgba(255,255,255,0.05)" : color,
-        }}
+        className={`absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r ${alreadyApplied ? "from-white/5 to-white/5" : `${accent.bar}`}`}
       />
 
       <div className="flex items-start gap-4">
-        {/* Company logo / icon */}
+        {/* Company logo */}
         <div
-          className="w-11 h-11 rounded-[10px] flex items-center justify-center flex-shrink-0 border border-white/[0.06]"
-          style={{ background: `${color}15` }}>
+          className={`w-11 h-11 rounded-[10px] flex items-center justify-center flex-shrink-0 border border-white/[0.06] ${accent.logoBg}`}>
           {job.companies?.logo_url ? (
-            <img
+            <Image
               src={job.companies.logo_url}
-              alt={job.companies.name}
+              alt={job.companies.name ?? "company"}
+              width={44}
+              height={44}
               className="w-full h-full object-cover rounded-[10px]"
             />
           ) : (
-            <Building2 size={17} style={{ color }} />
+            <Building2 size={17} className={accent.icon} />
           )}
         </div>
 
@@ -76,28 +175,23 @@ export default function MatchesCard({ job, index }: MatchesCardProps) {
               </div>
             </div>
 
-            {/* Match score block */}
+            {/* Match score */}
             <div className="flex flex-col items-end flex-shrink-0">
               <div
-                className="font-extrabold text-[1.25rem] leading-none tabular-nums"
-                style={{ color: match.color }}>
+                className={`font-extrabold text-[1.25rem] leading-none tabular-nums ${accent.scoreText}`}>
                 {matchScore}%
               </div>
               <span
-                className="text-[0.6rem] font-semibold px-[7px] py-[2px] rounded-full mt-[4px]"
-                style={{ background: match.bg, color: match.color }}>
+                className={`text-[0.6rem] font-semibold px-[7px] py-[2px] rounded-full mt-[4px] ${accent.typeBg} ${accent.typeText}`}>
                 {match.label}
               </span>
             </div>
           </div>
 
-          {/* Match progress bar */}
+          {/* Progress bar */}
           <div className="h-[3px] rounded-full bg-white/[0.05] overflow-hidden mb-4">
             <motion.div
-              className="h-full rounded-full"
-              style={{
-                background: `linear-gradient(90deg, ${color}, #06b6d4)`,
-              }}
+              className={`h-full rounded-full bg-gradient-to-r ${accent.bar}`}
               initial={{ width: 0 }}
               animate={{ width: `${matchScore}%` }}
               transition={{
@@ -108,7 +202,7 @@ export default function MatchesCard({ job, index }: MatchesCardProps) {
             />
           </div>
 
-          {/* Skills: matched + missing */}
+          {/* Skills */}
           <div className="flex gap-4 flex-wrap mb-4">
             {matchedSkills.length > 0 && (
               <div className="flex items-start gap-[6px] flex-wrap">
@@ -119,12 +213,7 @@ export default function MatchesCard({ job, index }: MatchesCardProps) {
                 {matchedSkills.slice(0, 4).map((s) => (
                   <span
                     key={s}
-                    className="px-[7px] py-[2px] rounded-[4px] text-[0.65rem] font-mono"
-                    style={{
-                      background: `${color}12`,
-                      color,
-                      border: `1px solid ${color}25`,
-                    }}>
+                    className={`px-[7px] py-[2px] rounded-[4px] text-[0.65rem] font-mono border ${accent.skillBg} ${accent.skillText} ${accent.skillBorder}`}>
                     {s}
                   </span>
                 ))}
@@ -173,12 +262,7 @@ export default function MatchesCard({ job, index }: MatchesCardProps) {
               )}
               {job.type && (
                 <span
-                  className="px-[7px] py-[1px] rounded-[4px] text-[0.62rem] font-medium"
-                  style={{
-                    background: `${color}10`,
-                    color,
-                    border: `1px solid ${color}18`,
-                  }}>
+                  className={`px-[7px] py-[1px] rounded-[4px] text-[0.62rem] font-medium border ${accent.typeBg} ${accent.typeText} ${accent.typeBorder}`}>
                   {job.type}
                 </span>
               )}

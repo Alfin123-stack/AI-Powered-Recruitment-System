@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { apiFetch } from "@/app/(role)/dashboard/hr/_components/shared";
 
 import {
   type Interview,
@@ -10,6 +9,8 @@ import {
   type SortOption,
   type AdvancedFilters,
 } from "@/types/hr/interviews";
+
+import { apiFetch } from "@/lib/api";
 import { applySort } from "@/lib/helpers/hr/interviews";
 
 export function useInterviewsClient(

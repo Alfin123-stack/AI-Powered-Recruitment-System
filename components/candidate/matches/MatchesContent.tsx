@@ -3,15 +3,18 @@
 
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/getServerSession";
-import {
-  fetchCvAnalysis,
-  fetchJobs,
-  fetchMyApplications,
-} from "@/lib/fetchers/candidate/matchesFetchers";
-import { calcMatchScore, getColor } from "../../../lib/helpers/candidate/matches";
+
 import type { JobWithMatch } from "../../../types/candidate/matches";
 import MatchesList from "./MatchesList";
 import MatchesNoCVState from "./MatchesNoCVState";
+
+import { getColor } from "@/lib/utils";
+import {
+  fetchCvAnalysis,
+  fetchJobs,
+} from "@/lib/fetchers/candidate/dashboard";
+import { fetchMyApplications } from "@/lib/fetchers/candidate/matches";
+import { calcMatchScore } from "@/lib/helpers/candidate/matches";
 
 // ── Private sub-component ─────────────────────────────────────────────────────
 

@@ -5,8 +5,11 @@ import { Mail } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";
-import { inputCls } from "@/types/hr/interviews";
+
 import type { TabHRProfileProps } from "@/types/profile";
+import { inputCls } from "../shared/input";
+
+
 
 export function ProfileTabHRProfile({ user, addToast }: TabHRProfileProps) {
   const [fullName, setFullName] = useState(user.user_metadata?.full_name ?? "");
@@ -35,16 +38,16 @@ export function ProfileTabHRProfile({ user, addToast }: TabHRProfileProps) {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-[1.1rem] font-bold text-[#e8f0ec]">Account Profile</h2>
+        <h2 className="text-[1.1rem] font-bold text-[#e8f0ec]">
+          Account Profile
+        </h2>
         <p className="text-[#4d6b5a] text-[0.82rem] mt-0.5">
           Your HR account information
         </p>
       </div>
 
       <div className="flex flex-col gap-4 mb-6">
-        <ProfileFormField
-          label="Full Name"
-          hint="Enter your full name">
+        <ProfileFormField label="Full Name" hint="Enter your full name">
           <input
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}

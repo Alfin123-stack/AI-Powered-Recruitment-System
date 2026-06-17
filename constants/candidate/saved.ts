@@ -1,17 +1,12 @@
-// ── Constants ─────────────────────────────────────────────────────────────────
+// constants/candidate/saved.ts
 
 import { FilterValue, InsightType } from "@/types/candidate/saved";
 import { AlertCircle, Brain, Sparkles } from "lucide-react";
 
-export const COLORS = [
-  "#10b981",
-  "#06b6d4",
-  "#8b5cf6",
-  "#f59e0b",
-  "#ef4444",
-  "#ec4899",
-];
+// COLORS (palet warna) dikonsolidasi ke shared.ts sebagai PALETTE_COLORS
+export { PALETTE_COLORS as COLORS } from "../shared";
 
+// ── Filter Options (khusus halaman saved — beda dari dashboard) ───────────────
 export const FILTER_OPTIONS: { val: FilterValue; label: string }[] = [
   { val: "all", label: "Semua" },
   { val: "active", label: "Aktif" },
@@ -20,7 +15,6 @@ export const FILTER_OPTIONS: { val: FilterValue; label: string }[] = [
 ];
 
 // ── Insight Config ────────────────────────────────────────────────────────────
-
 export const INSIGHT_CONFIG: Record<
   InsightType,
   {

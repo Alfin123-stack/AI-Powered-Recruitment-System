@@ -1,13 +1,12 @@
 "use client";
 
-import { Suspense } from "react";
 import type {
   Application,
   CvAnalysis,
   Interview,
   Job,
   UserProfile,
-} from "@/types/candidate-dashboard";
+} from "@/types/candidate/dashboard";
 
 import { DashboardWelcome } from "./DashboardWelcome";
 import { DashboardStatsGrid } from "./DashboardStatsGrid";
@@ -27,13 +26,6 @@ interface DashboardShellProps {
   initialInterviews: Interview[];
   initialJobs: Job[];
   user: UserProfile | null;
-  welcomeBannerFallback: React.ReactNode;
-  statsFallback: React.ReactNode;
-  cvFallback: React.ReactNode;
-  funnelFallback: React.ReactNode;
-  appListFallback: React.ReactNode;
-  calendarFallback: React.ReactNode;
-  recsFallback: React.ReactNode;
 }
 
 export function DashboardShell({
@@ -42,13 +34,6 @@ export function DashboardShell({
   initialInterviews,
   initialJobs,
   user,
-  welcomeBannerFallback,
-  statsFallback,
-  cvFallback,
-  funnelFallback,
-  appListFallback,
-  calendarFallback,
-  recsFallback,
 }: DashboardShellProps) {
   const {
     activeTab,
@@ -67,57 +52,43 @@ export function DashboardShell({
 
   return (
     <div>
-      <Suspense fallback={welcomeBannerFallback}>
-        <DashboardWelcome
-          user={user}
-          shortlistedCount={shortlistedCount}
-          upcomingInterviewCount={upcomingInterviews.length}
-        />
-      </Suspense>
+      <DashboardWelcome
+        user={user}
+        shortlistedCount={shortlistedCount}
+        upcomingInterviewCount={upcomingInterviews.length}
+      />
 
-      <Suspense fallback={statsFallback}>
-        <DashboardStatsGrid
-          totalApplications={initialApplications.length}
-          shortlistedCount={shortlistedCount}
-          upcomingInterviewCount={upcomingInterviews.length}
-          avgMatchScore={avgMatchScore}
-          hasCv={!!initialCvAnalysis}
-        />
-      </Suspense>
+      <DashboardStatsGrid
+        totalApplications={initialApplications.length}
+        shortlistedCount={shortlistedCount}
+        upcomingInterviewCount={upcomingInterviews.length}
+        avgMatchScore={avgMatchScore}
+        hasCv={!!initialCvAnalysis}
+      />
 
-      <Suspense fallback={cvFallback}>
-        <DashboardAIInsight cv={initialCvAnalysis} />
-      </Suspense>
+      <DashboardAIInsight cv={initialCvAnalysis} />
 
       <div className="grid gap-5" style={{ gridTemplateColumns: "1fr 310px" }}>
         <div>
-          <Suspense fallback={funnelFallback}>
-            {initialApplications.length > 0 && (
-              <DashboardAppFunnel applications={initialApplications} />
-            )}
-          </Suspense>
+          {initialApplications.length > 0 && (
+            <DashboardAppFunnel applications={initialApplications} />
+          )}
 
-          <Suspense fallback={appListFallback}>
-            <DashboardAppList
-              applications={initialApplications}
-              filteredApplications={filteredApplications}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-          </Suspense>
+          <DashboardAppList
+            applications={initialApplications}
+            filteredApplications={filteredApplications}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
 
         <div>
-          <Suspense fallback={calendarFallback}>
-            <DashboardCalendar interviews={initialInterviews} />
-          </Suspense>
+          <DashboardCalendar interviews={initialInterviews} />
 
-          <Suspense fallback={recsFallback}>
-            <DashboardRecommendations
-              recommendations={recommendations}
-              hasCv={!!initialCvAnalysis}
-            />
-          </Suspense>
+          <DashboardRecommendations
+            recommendations={recommendations}
+            hasCv={!!initialCvAnalysis}
+          />
 
           <DashboardUploadCTA hasCv={!!initialCvAnalysis} />
         </div>

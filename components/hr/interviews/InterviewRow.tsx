@@ -15,20 +15,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
-  apiFetch,
-  getInitials,
-} from "@/app/(role)/dashboard/hr/_components/shared";
-import {
   Interview,
   InterviewConfirmType,
   InterviewStatusKey,
-  roundConfig,
 } from "@/types/hr/interviews";
-import {
-  formatTimeRange,
-  interviewIsTimePast,
-  isToday,
-} from "@/lib/helpers/hr/interviews";
 
 import { InterviewActionBtn } from "./InterviewActionBtn";
 import { InterviewIconBtn } from "./InterviewIconBtn";
@@ -40,6 +30,14 @@ import {
 import { InterviewConfirmModal } from "./InterviewConfirmModal";
 import { InterviewRescheduleModal } from "./InterviewRescheduleModal";
 import { InterviewStartMeetingModal } from "./InterviewStartMeetingModal";
+
+import { getInitials, isToday } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
+import {
+  formatTimeRange,
+  interviewIsTimePast,
+} from "@/lib/helpers/hr/interviews";
+import { roundConfig } from "@/lib/helpers/hr/dashboard";
 
 interface InterviewRowProps {
   interview: Interview;
@@ -95,7 +93,7 @@ export function InterviewRow({
         {confirm && (
           <InterviewConfirmModal
             type={confirm}
-            candidateName={interview.candidate_name}
+            candidateName={interview.candidate_name || "candidate name"}
             onConfirm={() => updateStatus(confirm)}
             onCancel={() => setConfirm(null)}
             loading={confirmLoading}
@@ -212,7 +210,7 @@ export function InterviewRow({
                 accent.bg,
                 accent.text,
               ].join(" ")}>
-              {getInitials(interview.candidate_name)}
+              {getInitials(interview.candidate_name || "candidate name")}
             </div>
 
             <div className="min-w-0">
@@ -246,7 +244,7 @@ export function InterviewRow({
           <button
             onClick={() =>
               router.push(
-                `/dashboard/hr/candidates?job=${encodeURIComponent(interview.job_title)}`,
+                `/dashboard/hr/candidates?job=${encodeURIComponent(interview.job_title || "job title")}`,
               )
             }
             className="flex items-center gap-1 text-[0.67rem] text-[rgba(122,149,133,0.55)] bg-transparent border-0 p-0 cursor-pointer transition-colors duration-150 hover:text-emerald-400">

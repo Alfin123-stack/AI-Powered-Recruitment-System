@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Calendar,
   Clock,
@@ -14,13 +13,13 @@ import {
   FileText,
 } from "lucide-react";
 import { Interview } from "@/types/hr/interviews";
-import { formatDate, formatTime } from "@/lib/helpers/hr/interviews";
-import { AnyInputEvent, inputCls, inputErrorCls } from "@/types/hr/interviews";
-import { apiFetch } from "@/app/(role)/dashboard/hr/_components/shared";
 import { InterviewField } from "./InterviewField";
 import { InterviewSection } from "./InterviewSection";
 import { InterviewModalShell } from "./InterviewModalShell";
 import { InterviewTypeToggle } from "./InterviewTypeToggle";
+import { formatDate, formatTime } from "@/lib/helpers/hr/interviews";
+import { inputCls, inputErrorCls } from "@/components/shared/input";
+import { useInterviewReschedule } from "@/hooks/dashboard/hr/useInterviewReschedule";
 
 export function InterviewRescheduleModal({
   interview,
@@ -33,63 +32,8 @@ export function InterviewRescheduleModal({
   onDone: () => void;
   onClose: () => void;
 }) {
-  const existing = new Date(interview.scheduled_at);
-  const pad = (n: number) => String(n).padStart(2, "0");
-
-  const [form, setForm] = useState({
-    date: `${existing.getFullYear()}-${pad(existing.getMonth() + 1)}-${pad(existing.getDate())}`,
-    time: `${pad(existing.getHours())}:${pad(existing.getMinutes())}`,
-    type: interview.type,
-    location: interview.location || "",
-    notes: interview.notes || "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
-
-  const set = (key: string) => (e: AnyInputEvent) => {
-    setForm((p) => ({ ...p, [key]: e.target.value }));
-    setErrors((p) => ({ ...p, [key]: "" }));
-  };
-
-  const validate = () => {
-    const errs: Record<string, string> = {};
-    if (!form.date) errs.date = "Tanggal wajib diisi";
-    if (!form.time) errs.time = "Jam wajib diisi";
-    return errs;
-  };
-
-  const handleSubmit = async () => {
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
-    }
-    setLoading(true);
-    try {
-      const scheduled_at = new Date(
-        `${form.date}T${form.time}:00`,
-      ).toISOString();
-      await apiFetch(`/api/interviews/${interview.id}`, token, {
-        method: "PUT",
-        body: JSON.stringify({
-          status: "scheduled",
-          scheduled_at,
-          type: form.type,
-          location: form.location || null,
-          notes: form.notes || null,
-        }),
-      });
-      onDone();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrors({ submit: err.message });
-      } else {
-        setErrors({ submit: "Terjadi kesalahan" });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { form, errors, loading, set, setType, handleSubmit } =
+    useInterviewReschedule({ interview, token, onDone });
 
   return (
     <InterviewModalShell
@@ -147,10 +91,7 @@ export function InterviewRescheduleModal({
       </div>
 
       <InterviewField label="Tipe Interview" icon={<Video size={11} />}>
-        <InterviewTypeToggle
-          value={form.type}
-          onChange={(val) => setForm((p) => ({ ...p, type: val }))}
-        />
+        <InterviewTypeToggle value={form.type} onChange={setType} />
       </InterviewField>
 
       <InterviewField

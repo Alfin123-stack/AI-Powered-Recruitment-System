@@ -1,6 +1,6 @@
 "use client";
 
-import { MONTHS_ID } from "@/constants/candidate/calendar";
+import { MONTHS_ID } from "@/constants/calendar";
 import type { Interview } from "@/types/calendar";
 
 interface CalendarGridCellProps {

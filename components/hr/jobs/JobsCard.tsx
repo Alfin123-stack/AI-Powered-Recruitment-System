@@ -17,22 +17,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import type { JobWithStats } from "../../../types/hr/jobs";
-import { getColor } from "@/app/(role)/dashboard/hr/_components/shared";
+import { getColor } from "@/lib/utils";
+import { JobWithStats } from "@/types/jobs";
+import { getMatchColor } from "@/lib/helpers/hr/dashboard";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-export function getMatchColor(score: number) {
-  if (score >= 80) return "#10b981";
-  if (score >= 65) return "#06b6d4";
-  if (score >= 50) return "#f59e0b";
-  return "#f43f5e";
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MATCH SCORE DOTS — 5 lingkaran mengisi sesuai avg score
-// ─────────────────────────────────────────────────────────────────────────────
 function MatchScoreDots({ score, color }: { score: number; color: string }) {
   const filled = Math.round((score / 100) * 5);
   return (

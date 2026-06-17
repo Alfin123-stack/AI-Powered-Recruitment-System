@@ -1,6 +1,22 @@
-// @/components/hr/calendar/constants.ts
+// constants/calendar.ts
+// ─────────────────────────────────────────────────────────────────────────────
+// Gabungan dari: calendar.ts (root), hr/calendar.ts, candidate/calendar.ts
+// DAYS_ID, MONTHS_ID, IV_STATUS_MAP → dikonsolidasi ke shared.ts
+// ─────────────────────────────────────────────────────────────────────────────
 
-// ─── STATUS CONFIG ────────────────────────────────────────────────────────────
+import { ViewMode } from "@/types/calendar";
+
+// Re-export dari shared agar consumer lama tidak perlu ubah import
+export { DAYS_ID, MONTHS_ID, IV_STATUS_MAP } from "./shared";
+
+// ─── View Modes (dari hr/calendar.ts) ────────────────────────────────────────
+export const VIEW_MODES: { key: ViewMode; label: string }[] = [
+  { key: "month", label: "Month" },
+  { key: "week", label: "Week" },
+  { key: "day", label: "Day" },
+];
+
+// ─── Status Config (dari calendar.ts root — dipakai HR calendar) ─────────────
 export const STATUS_CFG: Record<
   string,
   { label: string; color: string; bg: string; border: string; dot: string }
@@ -35,7 +51,7 @@ export const STATUS_CFG: Record<
   },
 };
 
-// ─── CARD COLORS ──────────────────────────────────────────────────────────────
+// ─── Card Colors ──────────────────────────────────────────────────────────────
 export const CARD_COLORS = [
   {
     bg: "rgba(99,102,241,0.18)",
@@ -75,7 +91,7 @@ export const CARD_COLORS = [
   },
 ];
 
-// ─── DATE CONSTANTS ───────────────────────────────────────────────────────────
+// ─── Date Constants (English) ─────────────────────────────────────────────────
 export const MONTHS_EN = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -87,7 +103,7 @@ export const VISIBLE_HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 export const CELL_H = 80;
 
-// ─── SCROLLBAR CSS ────────────────────────────────────────────────────────────
+// ─── Scrollbar CSS ────────────────────────────────────────────────────────────
 export const SCROLLBAR_STYLE = `
   .cal-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
   .cal-scroll::-webkit-scrollbar-track { background: transparent; }

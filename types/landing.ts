@@ -1,53 +1,5 @@
 import { ReactNode } from "react";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export type Step = {
-  num: string;
-  title: string;
-  desc: string;
-  icon: ReactNode;
-};
-
-export type Feature = {
-  icon: ReactNode;
-  title: string;
-  badge: string;
-  desc: string;
-  bullets: string[];
-  color: string;
-  href: string;
-};
-
-export type Problem = {
-  icon: ReactNode;
-  title: string;
-  stat: string;
-  statLabel: string;
-  desc: string;
-};
-
-export type Faq = { q: string; a: string };
-
-export type Testimonial = {
-  quote: string;
-  name: string;
-  role: string;
-  company: string;
-  avatar: string;
-  color: string;
-  rating: number;
-  tag: string;
-};
-
-export type TabCard = {
-  icon: ReactNode;
-  title: string;
-  desc: string;
-  href: string;
-};
-
-
 // ── Shared ────────────────────────────────────────────────────────────────────
 
 export interface WithClassName {
@@ -84,6 +36,9 @@ export interface ProblemItem {
   desc: string;
 }
 
+/** @deprecated Gunakan `ProblemItem` */
+export type Problem = ProblemItem;
+
 // ── Step ──────────────────────────────────────────────────────────────────────
 
 export interface StepItem {
@@ -92,6 +47,9 @@ export interface StepItem {
   title: string;
   desc: string;
 }
+
+/** @deprecated Gunakan `StepItem` */
+export type Step = StepItem;
 
 // ── Feature ───────────────────────────────────────────────────────────────────
 
@@ -104,6 +62,35 @@ export interface FeatureItem {
   href: string;
   color: string;
 }
+
+/** @deprecated Gunakan `FeatureItem` */
+export type Feature = FeatureItem;
+
+// ── Faq ───────────────────────────────────────────────────────────────────────
+
+export type Faq = { q: string; a: string };
+
+// ── Testimonial ───────────────────────────────────────────────────────────────
+
+export type Testimonial = {
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  avatar: string;
+  color: string;
+  rating: number;
+  tag: string;
+};
+
+// ── Tab Card ──────────────────────────────────────────────────────────────────
+
+export type TabCard = {
+  icon: ReactNode;
+  title: string;
+  desc: string;
+  href: string;
+};
 
 // ── Visual Step ───────────────────────────────────────────────────────────────
 

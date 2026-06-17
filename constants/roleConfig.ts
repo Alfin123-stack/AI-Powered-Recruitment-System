@@ -1,13 +1,11 @@
 import { Briefcase, Calendar, Target, User, Users } from "lucide-react";
-import type { NavItem } from "../types/notifications";
+import type { NotifNavItem } from "@/types/notifications";
 
 // ─── Per-role navigation config ───────────────────────────────────────────────
-// Defined server-side so it can be imported by the Server Component page
-// without bundling into the client JS.
 
 export const ROLE_CONFIG: Record<
   "hr" | "candidate",
-  { backHref: string; navItems: NavItem[] }
+  { backHref: string; navItems: NotifNavItem[] }
 > = {
   candidate: {
     backHref: "/dashboard/candidate",

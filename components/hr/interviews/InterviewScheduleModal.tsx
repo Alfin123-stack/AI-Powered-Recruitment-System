@@ -16,16 +16,15 @@ import {
   ChevronDown,
   User,
 } from "lucide-react";
-import {
-  apiFetch,
-  getColor,
-  getInitials,
-} from "@/app/(role)/dashboard/hr/_components/shared";
-import { AnyInputEvent, inputCls, inputErrorCls, ShortlistedCandidate } from "@/types/hr/interviews";
+import { AnyInputEvent, ShortlistedCandidate } from "@/types/hr/interviews";
 import { InterviewField } from "./InterviewField";
 import { InterviewSection } from "./InterviewSection";
 import { InterviewModalShell } from "./InterviewModalShell";
 import { InterviewTypeToggle } from "./InterviewTypeToggle";
+
+import { getColor, getInitials } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
+import { inputCls, inputErrorCls } from "@/components/shared/input";
 
 export function InterviewScheduleModal({
   token,
@@ -183,7 +182,10 @@ export function InterviewScheduleModal({
         </div>
       )}
 
-      <InterviewSection label="Detail Interview" icon={<CalendarClock size={12} />} />
+      <InterviewSection
+        label="Detail Interview"
+        icon={<CalendarClock size={12} />}
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <InterviewField label="Round" icon={<Sparkles size={11} />}>

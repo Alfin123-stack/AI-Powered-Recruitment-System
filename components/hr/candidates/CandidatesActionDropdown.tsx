@@ -10,14 +10,14 @@ import {
   RotateCcw,
   MoreHorizontal,
 } from "lucide-react";
-import { CandidateExtended, CandidateStatus } from "@/types/candidates";
+import { CandidateRaw, CandidateStatus } from "@/types/candidates";
 
 export function CandidatesActionDropdown({
   candidate,
   onStatusChange,
   onView,
 }: {
-  candidate: CandidateExtended;
+  candidate: CandidateRaw;
   onStatusChange: (id: string, status: CandidateStatus) => void;
   onView: () => void;
 }) {

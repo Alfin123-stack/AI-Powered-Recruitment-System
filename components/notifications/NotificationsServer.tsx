@@ -1,18 +1,15 @@
-// ─── NotificationsServer (React Server Component) ─────────────────────────────
-// Rendering strategy:
-//   • SSR  → rendered per-request when token is user-specific
-//   • ISR  → fetchNotificationsServer uses `next: { revalidate: 30 }` so
-//             static/shared pages revalidate every 30 s without a full rebuild
-//   • This RSC wraps NotificationsClient, passing server-fetched data as props
-//     so the client shell hydrates with data already available (no waterfall).
-
 import { Suspense } from "react";
 import NotificationsHeader from "./NotificationsHeader";
 import AmbientBackground from "./NotificationsBackground";
 import NotificationsClient from "./NotificationsClient";
 import NotificationsSkeleton from "./NotificationsSkeleton";
-import { fetchNotificationsServer } from "../../lib/fetchers/notifications";
-import type { NavItem, StatDef, UserMeta, Notif } from "../../types/notifications";
+import type {
+  NavItem,
+  StatDef,
+  UserMeta,
+  Notif,
+} from "../../types/notifications";
+import { fetchNotificationsServer } from "@/lib/fetchers/notifications";
 
 export interface NotificationsServerProps {
   role: "hr" | "candidate";
@@ -31,8 +28,6 @@ async function NotificationsData({
   subtitle,
   user,
 }: Pick<NotificationsServerProps, "token" | "stats" | "subtitle" | "user">) {
-  // ISR: revalidate every 30 seconds.
-  // For per-user data this behaves as SSR (token changes each request).
   const initialNotifs: Notif[] = await fetchNotificationsServer(token, 30);
 
   return (

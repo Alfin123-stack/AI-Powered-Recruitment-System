@@ -68,17 +68,14 @@ export default function DashboardLayout({
   return (
     <DashboardContext.Provider value={{ user, token, company, setCompany }}>
       {isHR && hasCompany === false && (
-        <CompanySetupModal
-          token={token}
-          onDone={handleCompanySetupDone}
-        />
+        <CompanySetupModal token={token} onDone={handleCompanySetupDone} />
       )}
 
       <div className="flex min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
         <Sidebar
           role={isHR ? "hr" : "candidate"}
           sections={sections}
-          user={user}
+          user={user ?? undefined}
           company={company ?? undefined}
           token={token}
           displayName={user?.full_name}

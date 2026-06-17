@@ -13,15 +13,13 @@ import {
   MapPin,
 } from "lucide-react";
 import { SavedJob } from "../../../types/candidate/saved";
-import {
-  getJobInsights,
-  isDeadlineSoon,
-  isExpired,
-  timeAgo,
-} from "@/lib/helpers/candidate/saved";
+
 import SavedJobsDeadlineBar from "./SavedJobsDeadlineBar";
 import SavedJobsInsightsPanel from "./SavedJobsInsightsPanel";
 import SavedJobsScoreBars from "./SavedJobsScoreBars";
+
+import { timeAgo } from "@/lib/utils";
+import { getJobInsights, isDeadlineSoon, isExpired } from "@/lib/helpers/candidate/saved";
 
 type SavedJobsCardProps = {
   job: SavedJob;

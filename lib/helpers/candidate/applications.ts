@@ -1,35 +1,14 @@
-import { Application, Interview, AIInsight, CARD_COLORS } from "../../../constants/candidate/applications";
+import { getDayLabel } from "@/lib/utils";
+import { Application, Insight, Interview } from "@/types/candidate/dashboard";
 
-// ── Date Helpers ──────────────────────────────────────────────────────────────
-
-export const formatDateLong = (d: string) =>
-  new Date(d).toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-export const formatTime = (d: string) =>
-  new Date(d).toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-export const isToday = (d: string) =>
-  new Date(d).toDateString() === new Date().toDateString();
-
-export const isTomorrow = (d: string) => {
-  const tom = new Date();
-  tom.setDate(tom.getDate() + 1);
-  return new Date(d).toDateString() === tom.toDateString();
-};
-
-export const getDayLabel = (d: string): string => {
-  if (isToday(d)) return "Hari Ini";
-  if (isTomorrow(d)) return "Besok";
-  return formatDateLong(d);
-};
+export {
+  isToday,
+  isTomorrow,
+  formatTime,
+  formatDateLong,
+  getDayLabel,
+  getCardColor,
+} from "@/lib/utils";
 
 export const groupSortKey = (label: string, dateStr: string): string => {
   if (label === "Hari Ini") return "0";
@@ -47,18 +26,13 @@ export const getCountdown = (targetDate: string): string => {
   return `${m} menit lagi`;
 };
 
-// ── Color Helpers ─────────────────────────────────────────────────────────────
-
-export const getCardColor = (index: number) =>
-  CARD_COLORS[index % CARD_COLORS.length];
-
 // ── AI Insights ───────────────────────────────────────────────────────────────
 
 export const getAIInsights = (
   app: Application,
   interviews: Interview[],
-): AIInsight[] => {
-  const insights: AIInsight[] = [];
+): Insight[] => {
+  const insights: Insight[] = [];
   const hasInterview = interviews.some(
     (iv) => iv.application_id === app.id && iv.status === "scheduled",
   );

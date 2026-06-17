@@ -7,8 +7,8 @@ import type {
   CvAnalysis,
   Interview,
   Job,
-} from "@/types/candidate-dashboard";
-import { calcMatchScore } from "@/lib/helpers/candidate/dashboard";
+} from "@/types/candidate/dashboard";
+import { calcMatchScore } from "@/lib/helpers/candidate/matches";
 
 export type JobRecommendation = {
   id: string;
@@ -68,9 +68,9 @@ export function useDashboardDerived(
         company: j.companies?.name ?? "",
         match: calcMatchScore(candidateSkills, j.skills || []).score,
         color: SCORE_COLORS[i % SCORE_COLORS.length],
-        location: j.location,
-        type: j.type,
-        salary: j.salary,
+        location: j.location ?? undefined, // ← fix
+        type: j.type ?? undefined, // ← fix
+        salary: j.salary ?? undefined, // ← fix
         skills: j.skills || [],
       }))
       .sort((a, b) => b.match - a.match)

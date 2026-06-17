@@ -1,4 +1,7 @@
-// ── Types ─────────────────────────────────────────────────────────────────────
+// types/candidate/saved.ts
+// InsightType & Insight → canonical di types/candidate-dashboard.ts
+
+export type { InsightType, Insight } from "@/types/candidate/dashboard";
 
 export type SavedJob = {
   saved_id: string;
@@ -22,11 +25,3 @@ export type SavedJobRaw = Omit<SavedJob, "color">;
 export type SortOption = "saved_at" | "deadline" | "matching_score" | "title";
 
 export type FilterValue = "all" | "active" | "expiring" | "expired";
-
-export type InsightType = "tip" | "warning" | "success";
-
-export type Insight = {
-  type: InsightType;
-  text: string;
-};
-

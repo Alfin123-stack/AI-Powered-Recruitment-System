@@ -13,17 +13,12 @@ import {
   MapPin,
   Video,
 } from "lucide-react";
-import {
-  Interview,
-  IV_STATUS_MAP,
-} from "../../../constants/candidate/applications";
-import {
-  getDayLabel,
-  formatTime,
-  isToday,
-  getPlatformInfo,
-} from "../../../lib/helpers/candidate/applications";
+
 import ApplicationsLiveCountdown from "./ApplicationsLiveCountdown";
+import { formatTime, getDayLabel, isToday } from "@/lib/utils";
+import { getPlatformInfo } from "@/lib/helpers/candidate/applications";
+import { IV_STATUS_MAP } from "@/constants/calendar";
+import { Interview } from "@/types/candidate/dashboard";
 
 interface InterviewCardProps {
   iv: Interview;

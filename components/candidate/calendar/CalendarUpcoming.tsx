@@ -1,12 +1,9 @@
 "use client";
 
 import { Calendar, CalendarDays, ChevronRight } from "lucide-react";
-import {
-  formatTime,
-  getDayLabel,
-  isToday,
-} from "@/lib/helpers/candidate/calendar";
+
 import type { Interview } from "@/types/calendar";
+import { formatTime, getDayLabel, isToday } from "@/lib/utils";
 
 interface CalendarUpcomingProps {
   upcomingInterviews: Interview[];
@@ -50,7 +47,10 @@ export default function CalendarUpcoming({
                     {formatTime(iv.scheduled_at)}
                   </div>
                 </div>
-                <ChevronRight size={12} className="text-[#7a9585] flex-shrink-0" />
+                <ChevronRight
+                  size={12}
+                  className="text-[#7a9585] flex-shrink-0"
+                />
               </button>
             ))}
           </div>

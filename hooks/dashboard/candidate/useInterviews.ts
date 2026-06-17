@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDashboard } from "@/context/DashboardContext";
-import { Interview } from "@/types/candidate-dashboard";
+import { Interview } from "@/types/candidate/dashboard";
 
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";

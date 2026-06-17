@@ -4,6 +4,8 @@ import { Bookmark, Timer, Target, AlertCircle } from "lucide-react";
 import { SavedJob } from "../../../types/candidate/saved";
 import { isDeadlineSoon, isExpired } from "@/lib/helpers/candidate/saved";
 
+
+
 export default function SavedJobsStatsBar({ jobs }: { jobs: SavedJob[] }) {
   const total = jobs.length;
   const expiring = jobs.filter(

@@ -1,13 +1,12 @@
-// @/components/hr/calendar/CalendarWeekView.tsx
-// Week view calendar grid — CSR, displays interviews per day of the week
 "use client";
 
 import { useMemo, useRef, useEffect } from "react";
 
 import { EventCard } from "./CalendarEventCard";
 import { Interview } from "@/types/calendar";
-import { getWeekDays, sameDay } from "@/lib/helpers/hr/calendar";
+
 import { CELL_H, DAYS_SHORT, VISIBLE_HOURS } from "@/constants/calendar";
+import { getWeekDays, sameDay } from "@/lib/helpers/hr/calendar";
 
 export function WeekView({
   currentDate,

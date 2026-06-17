@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Upload, Trophy, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { UserProfile } from "@/types/candidate-dashboard";
+import type { UserProfile } from "@/types/candidate/dashboard";
 
 interface DashboardWelcomeProps {
   user: UserProfile | null;

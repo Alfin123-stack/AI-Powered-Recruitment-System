@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -26,10 +26,12 @@ export default function CompanyDetailJobCard({
   accent,
   index,
 }: CompanyDetailJobCardProps) {
+  const [now] = useState(() => Date.now());
+
   const daysAgo = useMemo(
     () =>
-      Math.floor((Date.now() - new Date(job.created_at).getTime()) / 86400000),
-    [job.created_at],
+      Math.floor((now - new Date(job.created_at ?? 0).getTime()) / 86400000),
+    [now, job.created_at],
   );
 
   return (
@@ -55,7 +57,7 @@ export default function CompanyDetailJobCard({
             {job.title}
           </h3>
           <div className="flex items-center gap-[10px] flex-wrap">
-            <CompanyDetailTypeBadge type={job.type} />
+            <CompanyDetailTypeBadge type={job.type || "type"} />
             <span className="flex items-center gap-[3px] text-[#5d7a6a] text-[0.68rem]">
               <Clock size={10} />
               {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}

@@ -14,9 +14,10 @@ import {
   Target,
   ArrowUpRight,
 } from "lucide-react";
-import type { Application } from "@/types/candidate-dashboard";
+import type { Application } from "@/types/candidate/dashboard";
 import { STATUS_MAP, TABS } from "@/constants/candidate/dashboard";
-import { getCardColor } from "@/lib/helpers/candidate/dashboard";
+import { getCardColor } from "@/lib/utils";
+
 
 // ── Radial Score (mini) ───────────────────────────────────────────────────────
 function RadialScoreMini({ score, color }: { score: number; color: string }) {

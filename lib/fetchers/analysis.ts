@@ -1,7 +1,7 @@
 import { AnalysisData } from "@/types/analyze";
 import { mapApiToAnalysisData } from "../mappers/analysis";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API } from "@/lib/api";
 
 export async function fetchLatestAnalysis(
   accessToken: string,

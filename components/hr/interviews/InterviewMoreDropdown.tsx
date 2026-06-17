@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, MoreHorizontal, RefreshCw, X } from "lucide-react";
 import { Interview } from "@/types/hr/interviews";
 import { InterviewDropItem } from "./InterviewDropItem";
+import { useInterviewMoreDropdown } from "@/hooks/dashboard/hr/useInterviewMoreDropdown";
 
 interface InterviewMoreDropdownProps {
   interview: Interview;
@@ -19,37 +19,15 @@ export function InterviewMoreDropdown({
   onCancel,
   onReschedule,
 }: InterviewMoreDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const dropRef = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState({ top: 0, right: 0 });
-
-  useEffect(() => {
-    if (open && btnRef.current) {
-      const r = btnRef.current.getBoundingClientRect();
-      setPos({ top: r.bottom + window.scrollY + 6, right: window.innerWidth - r.right });
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: MouseEvent) => {
-      if (
-        !btnRef.current?.contains(e.target as Node) &&
-        !dropRef.current?.contains(e.target as Node)
-      )
-        setOpen(false);
-    };
-    document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
-  }, [open]);
+  const { open, toggle, close, pos, btnRef, dropRef } =
+    useInterviewMoreDropdown();
 
   return (
     <>
       <button
         ref={btnRef}
         title="more options"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         className="w-7 h-7 rounded-[6px] flex items-center justify-center cursor-pointer transition-all duration-150 bg-white/[0.03] border border-emerald-500/[0.12] text-[#7a9585] hover:border-emerald-500/35 hover:text-[#e8f0ec]">
         <MoreHorizontal size={13} />
       </button>
@@ -70,20 +48,29 @@ export function InterviewMoreDropdown({
                   icon={Check}
                   label="Tandai Selesai"
                   hoverClass="hover:bg-emerald-500/10 hover:text-emerald-400"
-                  onClick={() => { setOpen(false); onMarkDone(); }}
+                  onClick={() => {
+                    close();
+                    onMarkDone();
+                  }}
                 />
                 <InterviewDropItem
                   icon={RefreshCw}
                   label="Reschedule"
                   hoverClass="hover:bg-cyan-500/10 hover:text-cyan-400"
-                  onClick={() => { setOpen(false); onReschedule(); }}
+                  onClick={() => {
+                    close();
+                    onReschedule();
+                  }}
                 />
                 <div className="h-px bg-white/[0.06] my-[3px]" />
                 <InterviewDropItem
                   icon={X}
                   label="Batalkan"
                   hoverClass="hover:bg-rose-500/10 hover:text-rose-400"
-                  onClick={() => { setOpen(false); onCancel(); }}
+                  onClick={() => {
+                    close();
+                    onCancel();
+                  }}
                 />
               </>
             )}
@@ -94,7 +81,10 @@ export function InterviewMoreDropdown({
                 icon={RefreshCw}
                 label="Jadwalkan Ulang"
                 hoverClass="hover:bg-emerald-500/10 hover:text-emerald-400"
-                onClick={() => { setOpen(false); onReschedule(); }}
+                onClick={() => {
+                  close();
+                  onReschedule();
+                }}
               />
             )}
           </motion.div>

@@ -10,8 +10,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import AnimatedBar from "./AnalyzeAnimatedBar";
-import { scoreColor } from "../../lib/helpers/analyze";
 import type { AnalysisData } from "@/types/analyze";
+import { getColor } from "@/lib/utils";
 
 // ─── OVERVIEW TAB ─────────────────────────────────────────────────────────────
 type Props = { data: AnalysisData };
@@ -44,7 +44,7 @@ export default function OverviewTab({ data }: Props) {
           <>
             <div className="space-y-[10px]">
               {visibleSkills.map((s, i) => {
-                const col = scoreColor(s.level);
+                const col = getColor(s.level);
                 return (
                   <div key={i} className="flex items-center gap-3">
                     <div
@@ -111,7 +111,7 @@ export default function OverviewTab({ data }: Props) {
         ) : (
           <div className="space-y-[12px]">
             {data.categories.map((c, i) => {
-              const col = scoreColor(c.score);
+              const col = getColor(c.score);
               return (
                 <div key={i}>
                   <div className="flex justify-between mb-[5px]">

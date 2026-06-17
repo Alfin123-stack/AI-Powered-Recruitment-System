@@ -9,15 +9,15 @@ import { AnalyticsSection } from "./DashboardAnalyticsSection";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { CandidateRanking } from "./DashboardCandidateRanking";
 import {
-  CandidateExtended,
   Interview,
   JobGroup,
   CompanyInfo,
-} from "@/types/hr-dashboard";
-import { JOB_COLORS } from "@/lib/helpers/dashboardHR";
+  CandidateUI,
+} from "@/types/hr/dashboard";
+import { PALETTE_COLORS } from "@/constants/shared";
 
 interface DashboardClientProps {
-  initialCandidates: CandidateExtended[];
+  initialCandidates: CandidateUI[];
   initialInterviews: Interview[];
   company: CompanyInfo | null;
 }
@@ -45,7 +45,7 @@ export function DashboardClient({
   company,
 }: DashboardClientProps) {
   const [candidates, setCandidates] =
-    useState<CandidateExtended[]>(initialCandidates);
+    useState<CandidateUI[]>(initialCandidates);
   const [interviews] = useState<Interview[]>(initialInterviews);
 
   const updateStatus = async (id: string, status: string) => {
@@ -86,7 +86,7 @@ export function DashboardClient({
           : 0;
         return {
           title,
-          color: JOB_COLORS[i % JOB_COLORS.length],
+          color: PALETTE_COLORS[i % PALETTE_COLORS.length],
           candidates: all,
           allCandidates: all,
           shortlisted: all.filter((c) => c.status === "shortlisted").length,

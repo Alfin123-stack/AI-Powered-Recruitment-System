@@ -12,8 +12,8 @@ import {
 
 import LiveCountdown from "./CalendarLiveCountdown";
 import { Interview } from "@/types/calendar";
-import { IV_STATUS_MAP } from "@/constants/candidate/calendar";
-import { formatTime, isToday } from "@/lib/helpers/candidate/calendar";
+import { formatTime, isToday } from "@/lib/utils";
+import { IV_STATUS_MAP } from "@/constants/calendar";
 
 interface InterviewDetailCardProps {
   iv: Interview;

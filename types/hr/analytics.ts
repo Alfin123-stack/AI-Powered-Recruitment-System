@@ -1,23 +1,10 @@
-// ─── Types ───────────────────────────────────────────────────────────────────
+// types/hr/analytics.ts
+// Application & Job → canonical di candidate-dashboard.ts & jobs.ts
 
-export interface Application {
-  id: string;
-  job_id: string;
-  job_title?: string;
-  candidate_name?: string;
-  status: "applied" | "review" | "shortlisted" | "rejected" | "hired";
-  resume_score?: number;
-  matching_score?: number;
-  created_at?: string;
-}
-
-export interface Job {
-  id: string;
-  title?: string;
-  is_active?: boolean;
-}
+export type { Application } from "../candidate/dashboard";
+export type { Job } from "../jobs";
 
 export interface AnalyticsData {
-  apps: Application[];
-  jobs: Job[];
+  apps: import("../candidate/dashboard").Application[];
+  jobs: import("../jobs").Job[];
 }

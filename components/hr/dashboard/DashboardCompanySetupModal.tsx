@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Building,
@@ -19,30 +18,10 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { apiFetch } from "../../../app/(role)/dashboard/hr/_components/shared";
 import { createPortal } from "react-dom";
 import { Company } from "@/types/company";
-
-const COMPANY_SIZES = ["1–10", "11–50", "51–200", "201–500", "500+"] as const;
-type CompanySize = (typeof COMPANY_SIZES)[number];
-
-const INDUSTRIES = [
-  "Teknologi & Software",
-  "E-commerce & Retail",
-  "Keuangan & Fintech",
-  "Kesehatan & Medis",
-  "Pendidikan",
-  "Manufaktur",
-  "Lainnya",
-] as const;
-type Industry = (typeof INDUSTRIES)[number] | "";
-
-interface CompanyForm {
-  name: string;
-  description: string;
-  company_size: CompanySize | "";
-  industry: Industry;
-}
+import { useCompanySetup } from "@/hooks/dashboard/hr/useCompanySetup";
+import { COMPANY_SIZES, INDUSTRIES } from "@/constants/hr/dashboard";
 
 interface Step {
   label: string;
@@ -63,58 +42,16 @@ export default function CompanySetupModal({
   token: string;
   onDone: (c: Company) => void;
 }) {
-  const [form, setForm] = useState<CompanyForm>({
-    name: "",
-    description: "",
-    company_size: "",
-    industry: "",
-  });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-
-  const handleSubmit = async (): Promise<void> => {
-    if (!form.name.trim()) return setError("Nama perusahaan wajib diisi");
-    setLoading(true);
-    setError("");
-    try {
-      const data = await apiFetch("/api/companies/create", token, {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
-      onDone(data);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Terjadi kesalahan yang tidak diketahui.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setForm((prev) => ({ ...prev, name: e.target.value }));
-  };
-
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ): void => {
-    setForm((prev) => ({
-      ...prev,
-      description: e.target.value.slice(0, 200),
-    }));
-  };
-
-  const handleIndustryChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
-    setForm((prev) => ({ ...prev, industry: e.target.value as Industry }));
-  };
-
-  const handleSizeSelect = (size: CompanySize): void => {
-    setForm((prev) => ({ ...prev, company_size: size }));
-  };
+  const {
+    form,
+    loading,
+    error,
+    handleSubmit,
+    handleNameChange,
+    handleDescriptionChange,
+    handleIndustryChange,
+    handleSizeSelect,
+  } = useCompanySetup({ token, onDone });
 
   const modalContent = (
     <AnimatePresence>

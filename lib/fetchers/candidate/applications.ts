@@ -1,9 +1,7 @@
-import type {
-  Application,
-  Interview,
-} from "@/constants/candidate/applications";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+import { API } from "@/lib/api";
+import { Application, Interview } from "@/types/candidate/dashboard";
 
 export async function fetchApplications(
   accessToken: string,

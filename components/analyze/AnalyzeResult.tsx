@@ -11,10 +11,9 @@ import OverviewTab from "./AnalyzeOverviewTab";
 import ATSTab from "./AnalyzeATSTab";
 import FeedbackTab from "./AnalyzeFeedbackTab";
 import WritingTab from "./AnalyzeWritingTab";
-import { scoreColor } from "../../lib/helpers/analyze";
 import type { AnalysisData, Tab } from "@/types/analyze";
+import { getColor } from "@/lib/utils";
 
-// ─── ANALYSIS RESULT ─────────────────────────────────────────────────────────
 type Props = {
   data: AnalysisData;
   onReanalyze: (f: File) => void;
@@ -147,14 +146,14 @@ export default function AnalyzeResult({ data, onReanalyze, isLoading }: Props) {
               <div className="flex-1">
                 <AnimatedBar
                   value={readability}
-                  color={scoreColor(readability)}
+                  color={getColor(readability)}
                   delay={700}
                   height={4}
                 />
               </div>
               <div
                 className="text-[12px] font-bold flex-shrink-0"
-                style={{ color: scoreColor(readability) }}>
+                style={{ color: getColor(readability) }}>
                 {readability}/100
               </div>
             </div>

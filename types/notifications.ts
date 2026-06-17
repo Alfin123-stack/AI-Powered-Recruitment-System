@@ -1,9 +1,15 @@
-// ─── types/notifications.ts ───────────────────────────────────────────────────
+// types/notifications.ts
+// ─────────────────────────────────────────────────────────────────────────────
+// NavItem di sini (icon: LucideIcon) berbeda dari NavItem di dashboard.ts
+// (icon: React.ComponentType). Keduanya dipertahankan dengan nama berbeda:
+//   - NotifNavItem  → untuk navigasi di halaman notifikasi (LucideIcon)
+//   - DashboardNavItem → di types/dashboard.ts (React.ComponentType)
+// Alias NavItem tetap diekspor untuk backward-compat.
+// ─────────────────────────────────────────────────────────────────────────────
 
 import type { LucideIcon } from "lucide-react";
 
-// ─── Notification Types ───────────────────────────────────────────────────────
-
+// ── Notification Types ─────────────────────────────────────────────────────────
 export type NotifType = "status_update" | "interview" | "general";
 
 export type Notif = {
@@ -15,18 +21,22 @@ export type Notif = {
   read: boolean;
 };
 
-export type NavItem = {
+/** NavItem khusus notifikasi — icon adalah LucideIcon (bukan React.ComponentType). */
+export type NotifNavItem = {
   href: string;
   icon: LucideIcon;
   label: string;
 };
+
+/** @deprecated Gunakan `NotifNavItem` agar tidak ambigu dengan NavItem di dashboard.ts */
+export type NavItem = NotifNavItem;
 
 export type StatDef = {
   label: string;
   getValue: (notifs: Notif[]) => number;
   color: string;
   bg: string;
-  icon: LucideIcon; // render di komponen: const Icon = stat.icon; <Icon size={18} />
+  icon: LucideIcon;
 };
 
 export type UserMeta = {
@@ -51,7 +61,7 @@ export type GroupKey = "Hari ini" | "Kemarin" | "Minggu ini" | "Lebih lama";
 export interface NotificationsPageProps {
   role: "hr" | "candidate";
   backHref: string;
-  navItems: NavItem[];
+  navItems: NotifNavItem[];
   stats?: StatDef[];
   subtitle?: (opts: { unreadCount: number; user?: UserMeta }) => string;
   token?: string;

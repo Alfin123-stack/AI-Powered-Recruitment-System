@@ -86,7 +86,10 @@ export default function JobDetailHero({
                 {[
                   { Icon: MapPin, text: job.location },
                   { Icon: Briefcase, text: job.type },
-                  { Icon: Clock, text: `Posted ${timeAgo(job.created_at)}` },
+                  {
+                    Icon: Clock,
+                    text: `Posted ${timeAgo(job.created_at || "-")}`,
+                  },
                 ]
                   .filter((m) => m.text)
                   .map(({ Icon, text }) => (

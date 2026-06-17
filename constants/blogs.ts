@@ -1,7 +1,7 @@
+// constants/blogs.ts
+
 import { createElement } from "react";
-
 import { EditorialArticle } from "@/types/blogs";
-
 import {
   Bot,
   Laptop,
@@ -19,6 +19,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+// getPaletteColor dikonsolidasi ke shared.ts — import dari sana
+export { getPaletteColor } from "./shared";
+
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "1": Bot,
   "2": Laptop,
@@ -35,6 +38,7 @@ export function getCategoryIcon(id: string): LucideIcon {
 }
 
 export const ARTICLES_PER_PAGE = 6;
+
 // ── Static data ───────────────────────────────────────────────────────────────
 
 export const EDITORIAL_ARTICLES: EditorialArticle[] = [
@@ -119,8 +123,7 @@ export const EDITORIAL_ARTICLES: EditorialArticle[] = [
   },
   {
     slug: "bangun-personal-branding-linkedin",
-    title:
-      "Membangun Personal Branding di LinkedIn untuk Karier yang Lebih Baik",
+    title: "Membangun Personal Branding di LinkedIn untuk Karier yang Lebih Baik",
     excerpt:
       "LinkedIn bukan sekadar CV online — ini platform di mana rekruter aktif mencari kandidat. Pelajari cara mengoptimalkan profil dan membangun jaringan yang bermakna.",
     category: "Karier",
@@ -135,26 +138,5 @@ export const CATEGORIES = ["Semua", "Tips CV", "Tren Industri", "Karier"];
 
 export const DEVTO_TOPIC_TAGS = ["career", "productivity", "ai", "programming"];
 
-// Palette warna dipakai untuk assign accent color per index company.
-// Warna tidak disimpan di DB — di-generate di sisi server saat fetch.
-
-const PALETTES = [
-  "#10b981",
-  "#3b82f6",
-  "#8b5cf6",
-  "#f59e0b",
-  "#ef4444",
-  "#ec4899",
-];
-
-export const getPaletteColor = (i: number): string =>
-  PALETTES[i % PALETTES.length];
-
-// Filter lokasi untuk toolbar — UI concern, bukan dari DB
-export const LOCATION_FILTERS = [
-  "Semua",
-  "Jakarta",
-  "Bandung",
-  "Surabaya",
-  "Remote",
-];
+// Filter lokasi — canonical di constants/shared.ts
+export { LOCATION_FILTERS } from "./shared";

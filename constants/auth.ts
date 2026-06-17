@@ -1,3 +1,4 @@
+// constants/auth.ts
 
 export const STEP_META = [
   { title: "Informasi Dasar", sub: "Nama lengkap & alamat email" },

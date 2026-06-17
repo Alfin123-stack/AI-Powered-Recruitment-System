@@ -4,9 +4,9 @@ import type {
   Interview,
   Job,
   UserProfile,
-} from "@/types/candidate-dashboard";
+} from "@/types/candidate/dashboard";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API } from "@/lib/api";
 
 export async function fetchApplications(token: string): Promise<Application[]> {
   try {

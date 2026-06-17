@@ -1,7 +1,5 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
-import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
@@ -14,8 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Job } from "@/types/jobs";
-
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { useJobApply } from "@/hooks/main/useJobApply";
 
 export function JobApplyModal({
   job,
@@ -30,107 +27,19 @@ export function JobApplyModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [file, setFile] = useState<File | null>(null);
-  const [step, setStep] = useState<"upload" | "analyzing" | "done" | "error">(
-    "upload",
-  );
-  const [errorMsg, setErrorMsg] = useState("");
-  const [dragging, setDragging] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = (f: File) => {
-    if (f.type !== "application/pdf" && !f.name.endsWith(".pdf")) {
-      setErrorMsg("Only PDF files are supported");
-      return;
-    }
-    if (f.size > 5 * 1024 * 1024) {
-      setErrorMsg("Maximum file size is 5MB");
-      return;
-    }
-    setErrorMsg("");
-    setFile(f);
-  };
-
-  const extractTextFromPDF = async (f: File): Promise<string> => {
-    const pdfjsLib = await import("pdfjs-dist");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-      "pdfjs-dist/build/pdf.worker.mjs",
-      import.meta.url,
-    ).toString();
-    const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() })
-      .promise;
-    let text = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      text += text +=
-        content.items.map((item) => ("str" in item ? item.str : "")).join(" ") +
-        "\n";
-    }
-    return text.trim();
-  };
-
-  const handleSubmit = async () => {
-    if (!file) return setErrorMsg("Please select a CV file first");
-    setStep("analyzing");
-    setErrorMsg("");
-
-    try {
-      // 1. Upload CV to Supabase Storage
-      const filePath = `${userId}/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("cv_candidate")
-        .upload(filePath, file);
-      if (uploadError)
-        throw new Error("Failed to upload CV: " + uploadError.message);
-
-      // 2. Public URL
-      const { data: urlData } = supabase.storage
-        .from("cv_candidate")
-        .getPublicUrl(filePath);
-      const cv_url = urlData.publicUrl;
-
-      // 3. Extract PDF text
-      const cvText = await extractTextFromPDF(file);
-
-      // 4. Analyze CV vs JD via AI backend
-      const aiRes = await fetch(`${API}/api/ai/analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: cvText,
-          jobDescription: `${job.title}\n${job.description}\n${job.requirements}`,
-        }),
-      });
-      if (!aiRes.ok) throw new Error("Failed to analyze CV");
-      const analysis = await aiRes.json();
-
-      // 5. Submit application
-      const applyRes = await fetch(`${API}/api/applications/apply`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ job_id: job.id, cv_url, analysis }),
-      });
-      if (!applyRes.ok) {
-        const err = await applyRes.json();
-        throw new Error(err.error || "Failed to apply");
-      }
-
-      setStep("done");
-      onSuccess();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
-      } else {
-        setErrorMsg("An error occurred");
-      }
-
-      setStep("error");
-    }
-  };
+  const {
+    file,
+    step,
+    errorMsg,
+    dragging,
+    inputRef,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleRemoveFile,
+    handleInputChange,
+    handleSubmit,
+  } = useJobApply({ job, token, userId, onSuccess });
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
@@ -172,17 +81,9 @@ export function JobApplyModal({
 
                 {/* Drop zone */}
                 <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragging(true);
-                  }}
-                  onDragLeave={() => setDragging(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setDragging(false);
-                    const f = e.dataTransfer.files[0];
-                    if (f) handleFile(f);
-                  }}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
                   onClick={() => inputRef.current?.click()}
                   className={`border-2 border-dashed rounded-[12px] p-7 text-center cursor-pointer transition-all duration-200 mb-4
                     ${
@@ -198,10 +99,7 @@ export function JobApplyModal({
                     type="file"
                     accept=".pdf"
                     className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handleFile(f);
-                    }}
+                    onChange={handleInputChange}
                   />
 
                   {file ? (
@@ -219,10 +117,7 @@ export function JobApplyModal({
                       </div>
                       <button
                         title="Remove file"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setFile(null);
-                        }}
+                        onClick={handleRemoveFile}
                         className="ml-auto text-[#7a9585] hover:text-red-400 transition-colors">
                         <X size={14} />
                       </button>
