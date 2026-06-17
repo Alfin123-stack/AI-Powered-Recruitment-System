@@ -23,14 +23,6 @@ export default function CalendarPage() {
         </p>
       </div>
 
-      {/**
-       * Suspense boundary:
-       * - fallback: CalendarPageSkeleton (semua skeleton dalam satu file)
-       * - children: CalendarClient (CSR, lazy-loaded)
-       *
-       * Saat bundle CalendarClient belum tiba di browser,
-       * React menampilkan skeleton secara otomatis.
-       */}
       <Suspense fallback={<CalendarPageSkeleton />}>
         <CalendarClient />
       </Suspense>
