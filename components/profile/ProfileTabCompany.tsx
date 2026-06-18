@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-import type { CompanyData, ToastType } from "@/types/profile";
+import type { CompanyData, ToastType } from "@/types/main/profile";
 import { ProfileErrorBanner } from "./ProfileErrorBanner";
 import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";

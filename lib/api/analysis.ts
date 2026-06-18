@@ -1,4 +1,4 @@
-import { AnalyzeApiResult } from "@/types/analyze";
+import { AnalyzeApiResult } from "@/types/main/analyze";
 
 import { API } from "@/lib/api";
 

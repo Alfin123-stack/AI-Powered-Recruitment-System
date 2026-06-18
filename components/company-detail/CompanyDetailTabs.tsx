@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, Layers } from "lucide-react";
-import type { Company } from "@/types/company";
+import type { Company } from "@/types/main/company";
 import CompanyDetailJobGrid from "./CompanyDetailJobGrid";
 import CompanyDetailAbout from "./CompanyDetailAbout";
 import { Job } from "@/types/jobs";

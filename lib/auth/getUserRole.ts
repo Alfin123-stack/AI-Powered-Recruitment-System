@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────
 
 import { createSupabaseServerClient } from "./supabaseServer";
-import type { UserRole } from "@/types/profile";
+import type { UserRole } from "@/types/main/profile";
 
 export async function getUserRole(userId: string): Promise<UserRole> {
   const supabase = await createSupabaseServerClient();

@@ -10,7 +10,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import AnimatedBar from "./AnalyzeAnimatedBar";
-import type { AnalysisData } from "@/types/analyze";
+import type { AnalysisData } from "@/types/main/analyze";
 import { getColor } from "@/lib/utils";
 
 // ─── OVERVIEW TAB ─────────────────────────────────────────────────────────────

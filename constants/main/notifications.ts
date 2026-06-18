@@ -1,7 +1,7 @@
 // ─── components/notifications/config.ts ──────────────────────────────────────
 
 import { BarChart3, Bell, Calendar, FileText } from "lucide-react";
-import type { FilterId, StatDef } from "@/types/notifications";
+import type { FilterId, StatDef } from "@/types/main/notifications";
 
 // ─── Filter tabs ──────────────────────────────────────────────────────────────
 

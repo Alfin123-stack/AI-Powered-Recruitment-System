@@ -11,9 +11,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Tab, TabDefinition } from "@/types/profile";
-import { CANDIDATE_TABS, HR_TABS } from "@/constants/profile";
-import { ServerProfileData } from "@/types/profile";
+import { Tab, TabDefinition } from "@/types/main/profile";
+import { CANDIDATE_TABS, HR_TABS } from "@/constants/main/profile";
+import { ServerProfileData } from "@/types/main/profile";
 
 interface UseProfileShellReturn {
   displayName: string;

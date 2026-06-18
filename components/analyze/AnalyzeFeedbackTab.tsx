@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
-import type { LineFeedback } from "@/types/analyze";
+import { LineFeedback } from "@/types/main/analyze";
+import { ITEM_STYLES } from "@/constants/main/analyze";
 
 // ─── EMPTY STATE ──────────────────────────────────────────────────────────────
 function EmptyTabState({ message }: { message: string }) {
@@ -21,68 +21,7 @@ function EmptyTabState({ message }: { message: string }) {
   );
 }
 
-// ─── FEEDBACK TAB ─────────────────────────────────────────────────────────────
 type Props = { feedback: LineFeedback[] | undefined };
-
-type ItemStyle = {
-  border: string;
-  bg: string;
-  icon: React.ReactNode;
-  badge: { bg: string; color: string; label: string };
-};
-
-function itemStyle(type: LineFeedback["type"]): ItemStyle {
-  return {
-    good: {
-      border: "rgba(74,222,128,0.1)",
-      bg: "rgba(74,222,128,0.03)",
-      icon: (
-        <CheckCircle2
-          size={13}
-          className="flex-shrink-0 mt-[2px]"
-          style={{ color: "rgba(74,222,128,0.65)" }}
-        />
-      ),
-      badge: {
-        bg: "rgba(74,222,128,0.08)",
-        color: "rgba(74,222,128,0.75)",
-        label: "Sudah bagus",
-      },
-    },
-    warn: {
-      border: "rgba(245,158,11,0.1)",
-      bg: "rgba(245,158,11,0.03)",
-      icon: (
-        <AlertTriangle
-          size={13}
-          className="flex-shrink-0 mt-[2px]"
-          style={{ color: "rgba(245,158,11,0.65)" }}
-        />
-      ),
-      badge: {
-        bg: "rgba(245,158,11,0.08)",
-        color: "rgba(245,158,11,0.75)",
-        label: "Bisa diperkuat",
-      },
-    },
-    bad: {
-      border: "rgba(248,113,113,0.1)",
-      bg: "rgba(248,113,113,0.03)",
-      icon: (
-        <XCircle
-          size={13}
-          className="flex-shrink-0 mt-[2px]"
-          style={{ color: "rgba(248,113,113,0.65)" }}
-        />
-      ),
-      badge: {
-        bg: "rgba(248,113,113,0.08)",
-        color: "rgba(248,113,113,0.75)",
-        label: "Kritis",
-      },
-    },
-  }[type];
-}
 
 export default function FeedbackTab({ feedback }: Props) {
   const [active, setActive] = useState("All");
@@ -128,7 +67,8 @@ export default function FeedbackTab({ feedback }: Props) {
 
       <div className="space-y-[7px]">
         {visible.map((f, i) => {
-          const st = itemStyle(f.type);
+          const st = ITEM_STYLES[f.type];
+          const Icon = st.icon;
           return (
             <motion.div
               key={i}
@@ -138,7 +78,11 @@ export default function FeedbackTab({ feedback }: Props) {
               className="rounded-[10px] p-4"
               style={{ background: st.bg, border: `1px solid ${st.border}` }}>
               <div className="flex items-start gap-3">
-                {st.icon}
+                <Icon
+                  size={13}
+                  className="flex-shrink-0 mt-[2px]"
+                  style={{ color: st.iconColor }}
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-[6px] flex-wrap">
                     <span
@@ -161,7 +105,7 @@ export default function FeedbackTab({ feedback }: Props) {
                   <div
                     className="text-[12.5px] font-medium mb-[5px] truncate"
                     style={{ color: "rgba(255,255,255,0.55)" }}>
-                    "{f.line}"
+                    &ldquo;{f.line}&rdquo;
                   </div>
                   <p
                     className="text-[12px] leading-[1.6]"

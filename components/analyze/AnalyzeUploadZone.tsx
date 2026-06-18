@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// ─── UPLOAD ZONE ─────────────────────────────────────────────────────────────
 type Props = {
   onFileSelect: (f: File) => void;
   isLoading: boolean;

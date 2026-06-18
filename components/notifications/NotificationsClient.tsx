@@ -14,8 +14,8 @@ import type {
   NotificationsClientProps,
   FilterId,
   UserMeta,
-} from "../../types/notifications";
-import { DEFAULT_STATS } from "@/constants/notifications";
+} from "../../types/main/notifications";
+import { DEFAULT_STATS } from "@/constants/main/notifications";
 
 // ── Helper subtitle default ─────────────────────────────────────────────────
 function defaultSubtitle({

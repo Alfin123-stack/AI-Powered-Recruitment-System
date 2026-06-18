@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { extractTextFromPDF } from "@/lib/helpers/analyze";
 import { persistAnalysis } from "@/lib/api/analysis";
 import { mapResultToAnalysisData } from "@/lib/mappers/analysis";
-import { AnalysisData } from "@/types/analyze";
+import { AnalysisData } from "@/types/main/analyze";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 

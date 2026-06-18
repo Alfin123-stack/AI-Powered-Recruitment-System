@@ -1,4 +1,4 @@
-import type { ArticleContent } from "@/types/blogs";
+import type { ArticleContent } from "@/types/main/blogs";
 interface BlogDetailBodyProps {
   article: ArticleContent;
 }

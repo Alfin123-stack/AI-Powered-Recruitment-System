@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────
 
 import { User, Shield, Building2 } from "lucide-react";
-import { Tab, TabDefinition } from "@/types/profile";
+import { Tab, TabDefinition } from "@/types/main/profile";
 
 // ── Tab Definitions ────────────────────────────────────────────────────────
 export const CANDIDATE_TABS: TabDefinition[] = [

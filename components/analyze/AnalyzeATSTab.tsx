@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCheck, XCircle, Info } from "lucide-react";
 import AnimatedBar from "./AnalyzeAnimatedBar";
-import type { ATSCheck } from "@/types/analyze";
+import type { ATSCheck } from "@/types/main/analyze";
 import { getColor } from "@/lib/utils";
 
 // ─── EMPTY STATE (local, reused in tab files) ─────────────────────────────────

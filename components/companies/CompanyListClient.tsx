@@ -4,7 +4,7 @@
 
 "use client";
 
-import type { Company } from "@/types/company";
+import type { Company } from "@/types/main/company";
 import { useCompanyFilter } from "@/hooks/main/useCompanyFilter";
 import CompanyToolbar from "./CompanyToolbar";
 import { CompanyGrid } from "./CompanyGrid";

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-// ─── ANIMATED PROGRESS BAR ────────────────────────────────────────────────────
 type Props = {
   value: number;
   color: string;
@@ -10,7 +9,12 @@ type Props = {
   height?: number;
 };
 
-export default function AnimatedBar({ value, color, delay = 0, height = 4 }: Props) {
+export default function AnimatedBar({
+  value,
+  color,
+  delay = 0,
+  height = 4,
+}: Props) {
   const [width, setWidth] = useState(0);
 
   useEffect(() => {

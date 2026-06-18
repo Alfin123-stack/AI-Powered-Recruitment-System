@@ -2,7 +2,7 @@
 // Settings page header: role subtitle + "Settings" title.
 // Pure presentational — no state or side-effects.
 
-import { UserRole } from "@/types/profile";
+import { UserRole } from "@/types/main/profile";
 
 interface ProfilePageHeaderProps {
   role: UserRole;

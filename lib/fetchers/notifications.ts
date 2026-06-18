@@ -1,5 +1,5 @@
 import { normalizeNotif } from "../helpers/notifications";
-import type { Notif } from "../../types/notifications";
+import type { Notif } from "../../types/main/notifications";
 
 import { API } from "@/lib/api";
 

@@ -11,7 +11,7 @@ import OverviewTab from "./AnalyzeOverviewTab";
 import ATSTab from "./AnalyzeATSTab";
 import FeedbackTab from "./AnalyzeFeedbackTab";
 import WritingTab from "./AnalyzeWritingTab";
-import type { AnalysisData, Tab } from "@/types/analyze";
+import type { AnalysisData, Tab } from "@/types/main/analyze";
 import { getColor } from "@/lib/utils";
 
 type Props = {

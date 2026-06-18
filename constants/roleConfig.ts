@@ -1,5 +1,5 @@
 import { Briefcase, Calendar, Target, User, Users } from "lucide-react";
-import type { NotifNavItem } from "@/types/notifications";
+import type { NotifNavItem } from "@/types/main/notifications";
 
 // ─── Per-role navigation config ───────────────────────────────────────────────
 

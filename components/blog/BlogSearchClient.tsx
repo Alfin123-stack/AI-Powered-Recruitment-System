@@ -3,7 +3,7 @@
 
 "use client";
 
-import { EditorialArticle } from "@/types/blogs";
+import { EditorialArticle } from "@/types/main/blogs";
 import { useBlogFilter } from "@/hooks/main/useBlogFilter";
 import { BlogSearchBar } from "./BlogSearchBar";
 import EditorialSection from "./EditorialSection";

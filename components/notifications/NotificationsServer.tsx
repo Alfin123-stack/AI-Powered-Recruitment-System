@@ -8,7 +8,7 @@ import type {
   StatDef,
   UserMeta,
   Notif,
-} from "../../types/notifications";
+} from "../../types/main/notifications";
 import { fetchNotificationsServer } from "@/lib/fetchers/notifications";
 
 export interface NotificationsServerProps {

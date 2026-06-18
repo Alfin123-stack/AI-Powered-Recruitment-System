@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-import { CompanyData, ToastType } from "@/types/profile";
+import { CompanyData, ToastType } from "@/types/main/profile";
 
 const getInitials = (name: string) =>
   (name || "U")

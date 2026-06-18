@@ -1,7 +1,7 @@
 import { Target, TrendingUp, Heart } from "lucide-react";
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingTag } from "./LandingTag";
-import { MissionCardItem } from "@/types/landing";
+import { MissionCardItem } from "@/types/main/landing";
 
 const MISSION_CARDS: MissionCardItem[] = [
   {

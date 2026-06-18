@@ -4,7 +4,7 @@
 // Hanya dipanggil dari Server Component / Route Handler.
 // ─────────────────────────────────────────────
 
-import type { CandidateStats, CompanyData } from "@/types/profile";
+import type { CandidateStats, CompanyData } from "@/types/main/profile";
 
 import { API } from "@/lib/api";
 

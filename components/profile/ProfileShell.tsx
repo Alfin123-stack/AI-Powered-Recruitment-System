@@ -9,7 +9,7 @@ import { ProfileAmbientBackground } from "@/components/profile/ProfileAmbientBac
 import { ProfilePageHeader } from "@/components/profile/ProfilePageHeader";
 import { ProfileSidebarNav } from "@/components/profile/ProfileSidebarNav";
 import { ProfileTabContent } from "@/components/profile/ProfileTabContent";
-import { ServerProfileData } from "@/types/profile";
+import { ServerProfileData } from "@/types/main/profile";
 import { useProfileShell } from "@/hooks/main/useProfileShell";
 
 export function ProfileShell({ data }: { data: ServerProfileData }) {

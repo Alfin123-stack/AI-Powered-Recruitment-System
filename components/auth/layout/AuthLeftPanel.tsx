@@ -1,39 +1,19 @@
-import { BrainCircuit, Target, Zap } from "lucide-react";
-
-const features = [
-  {
-    icon: BrainCircuit,
-    label: "Analisis CV berbasis AI dalam 30 detik",
-    sub: "Ekstraksi skill, skor, dan rekomendasi otomatis",
-  },
-  {
-    icon: Target,
-    label: "Job matching otomatis sesuai profilmu",
-    sub: "Cocokkan dengan ratusan lowongan relevan",
-  },
-  {
-    icon: Zap,
-    label: "Rekrutmen 10× lebih cepat untuk HR",
-    sub: "Ranking kandidat, shortlist, dan update status",
-  },
-];
-
-const stats = [
-  { value: "5.000+", label: "CV Dianalisis" },
-  { value: "200+", label: "Perusahaan" },
-  { value: "98%", label: "Akurasi AI" },
-];
+import Image from "next/image";
+import { FEATURES, STATS } from "@/constants/auth/auth";
 
 export default function AuthLeftPanel() {
   return (
     <div className="hidden lg:flex flex-col relative w-[52%] xl:w-[55%] flex-shrink-0 overflow-hidden">
       {/* Background photo */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=85"
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover"
+          fill
+          priority
+          sizes="(min-width: 1280px) 55vw, 52vw"
+          className="object-cover"
         />
         {/* Multi-layer overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f0d]/95 via-[#0a0f0d]/80 to-[#0a0f0d]/60" />
@@ -72,21 +52,22 @@ export default function AuthLeftPanel() {
 
           {/* Features */}
           <div className="space-y-4 mb-10">
-            {features.map(({ icon: Icon, label, sub }) => (
+            {FEATURES.map(({ icon: Icon, label, sub }) => (
               <div key={label} className="flex items-start gap-[14px] group">
                 <div
                   className="w-9 h-9 rounded-[10px] bg-emerald-500/10 border border-emerald-500/20
                   flex items-center justify-center flex-shrink-0 mt-[1px]
                   group-hover:bg-emerald-500/15 group-hover:border-emerald-500/35
-                  transition-all duration-200"
-                >
+                  transition-all duration-200">
                   <Icon size={15} className="text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-[0.86rem] font-semibold text-[#d4e8dd] leading-snug">
                     {label}
                   </p>
-                  <p className="text-[0.76rem] text-[#5a7a6a] mt-[2px]">{sub}</p>
+                  <p className="text-[0.76rem] text-[#5a7a6a] mt-[2px]">
+                    {sub}
+                  </p>
                 </div>
               </div>
             ))}
@@ -95,12 +76,11 @@ export default function AuthLeftPanel() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          {stats.map((s) => (
+          {STATS.map((s) => (
             <div
               key={s.label}
               className="bg-white/[0.03] border border-emerald-500/12 rounded-[12px] px-3 py-4 text-center
-                backdrop-blur-sm hover:bg-white/[0.05] hover:border-emerald-500/22 transition-all duration-200"
-            >
+                backdrop-blur-sm hover:bg-white/[0.05] hover:border-emerald-500/22 transition-all duration-200">
               <p className="font-syne text-[1.4rem] font-extrabold text-emerald-400 leading-none mb-[4px]">
                 {s.value}
               </p>

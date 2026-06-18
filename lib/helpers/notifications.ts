@@ -1,5 +1,5 @@
-import type { Notif, GroupKey } from "../../types/notifications";
-import { TYPE_CONFIG } from "@/constants/notifications";
+import type { Notif, GroupKey } from "../../types/main/notifications";
+import { TYPE_CONFIG } from "@/constants/main/notifications";
 export { timeAgoNotif as timeAgo } from "@/lib/utils";
 
 // ─── Normalize raw API response to typed Notif ────────────────────────────────

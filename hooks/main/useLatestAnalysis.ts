@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { fetchLatestAnalysis } from "@/lib/fetchers/analysis";
-import { AnalysisData } from "@/types/analyze";
+import { AnalysisData } from "@/types/main/analyze";
 
 export function useLatestAnalysis(initialData: AnalysisData | null) {
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(

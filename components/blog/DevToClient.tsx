@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Globe, RefreshCw, AlertCircle } from "lucide-react";
-import { DevToArticle } from "@/types/blogs";
+import { DevToArticle } from "@/types/main/blogs";
 import { DevToCard } from "./DevToCard";
 import { useFilteredPagination } from "@/hooks/main/useFilteredPagination";
 import Pagination from "@/components/Pagination";

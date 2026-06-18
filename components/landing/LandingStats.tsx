@@ -1,6 +1,6 @@
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingCounter } from "./LandingCounter";
-import { STATS } from "@/constants/landing";
+import { STATS } from "@/constants/main/landing";
 
 export function LandingStats() {
   return (

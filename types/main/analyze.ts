@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
 export type ScoreTier = "high" | "mid" | "low";
 
 export type Skill = { name: string; level: number };
@@ -76,4 +78,12 @@ export type AnalyzeApiResult = {
   aiSummary?: string | null;
   jobTitle?: string | null;
   experienceLevel?: string | null;
+};
+
+export type ItemStyleConfig = {
+  border: string;
+  bg: string;
+  icon: LucideIcon;
+  iconColor: string;
+  badge: { bg: string; color: string; label: string };
 };

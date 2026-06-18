@@ -12,13 +12,13 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-import { useApplicationsFilter } from "@/hooks/dashboard/candidate/useApplicationsFilter";
 import ApplicationCard from "./ApplicationCard";
 import ApplicationDetailModal from "./ApplicationDetailModal";
 import InterviewsSection from "./ApplicationsInterviewsSection";
 import { formatTime, getDayLabel, isToday } from "@/lib/utils";
 import { FILTER_OPTIONS } from "@/constants/candidate/dashboard";
 import { Application, Interview } from "@/types/candidate/dashboard";
+import { useApplicationFilter } from "@/hooks/dashboard/candidate/useApplicationFilter";
 
 interface ApplicationsClientProps {
   applications: Application[];
@@ -40,7 +40,7 @@ export default function ApplicationsClient({
     setSelectedApp,
     upcomingInterviews,
     filteredApps,
-  } = useApplicationsFilter(applications, interviews);
+  } = useApplicationFilter(applications, interviews);
 
   const TABS = [
     {

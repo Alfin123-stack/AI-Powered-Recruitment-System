@@ -1,4 +1,4 @@
-import { AnalysisData } from "@/types/analyze";
+import { AnalysisData } from "@/types/main/analyze";
 import { mapApiToAnalysisData } from "../mappers/analysis";
 
 import { API } from "@/lib/api";

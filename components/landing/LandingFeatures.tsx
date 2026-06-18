@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { FEATURES } from "@/constants/landing";
+import { FEATURES } from "@/constants/main/landing";
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingTag } from "./LandingTag";
 import { LandingCard } from "./LandingCard";

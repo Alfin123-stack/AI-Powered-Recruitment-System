@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingTag } from "./LandingTag";
-import { FAQS } from "@/constants/landing";
+import { FAQS } from "@/constants/main/landing";
 
 export function LandingFAQ() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);

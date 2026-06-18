@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 
-import type { FilterId, Notif } from "../../types/notifications";
-import { FILTERS } from "@/constants/notifications";
+import type { FilterId, Notif } from "../../types/main/notifications";
+import { FILTERS } from "@/constants/main/notifications";
 
 interface NotificationsFilterProps {
   activeFilter: FilterId;

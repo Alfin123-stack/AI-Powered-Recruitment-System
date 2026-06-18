@@ -10,7 +10,7 @@ import type {
   ProfileTab,
   AddToastFn,
   ServerProfileData,
-} from "@/types/profile";
+} from "@/types/main/profile";
 
 interface ProfileTabContentProps {
   activeTab: ProfileTab;

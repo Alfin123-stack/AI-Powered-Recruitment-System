@@ -1,5 +1,5 @@
 import { StepProgress } from "@/components/auth/register/StepProgress";
-import { STEP_META, TOTAL_STEPS } from "@/constants/auth";
+import { STEP_META, TOTAL_STEPS } from "@/constants/auth/auth";
 
 interface RegisterStepMetaProps {
   step: number;

@@ -1,7 +1,7 @@
 // constants/blogs.ts
 
 import { createElement } from "react";
-import { EditorialArticle } from "@/types/blogs";
+import { EditorialArticle } from "@/types/main/blogs";
 import {
   Bot,
   Laptop,
@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 // getPaletteColor dikonsolidasi ke shared.ts — import dari sana
-export { getPaletteColor } from "./shared";
+export { getPaletteColor } from "../shared";
 
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "1": Bot,
@@ -139,4 +139,4 @@ export const CATEGORIES = ["Semua", "Tips CV", "Tren Industri", "Karier"];
 export const DEVTO_TOPIC_TAGS = ["career", "productivity", "ai", "programming"];
 
 // Filter lokasi — canonical di constants/shared.ts
-export { LOCATION_FILTERS } from "./shared";
+export { LOCATION_FILTERS } from "../shared";

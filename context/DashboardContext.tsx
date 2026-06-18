@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 import type { DashboardUser } from "@/types/dashboard";
-import { Company } from "@/types/company";
+import { Company } from "@/types/main/company";
 
 type DashboardContextType = {
   user: DashboardUser | null;

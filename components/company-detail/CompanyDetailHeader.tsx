@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Building2, Users, MapPin, ArrowLeft, Tag } from "lucide-react";
-import type { Company } from "@/types/company";
+import type { Company } from "@/types/main/company";
 
 type CompanyDetailHeaderProps = {
   company: Company;

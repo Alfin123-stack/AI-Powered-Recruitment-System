@@ -2,7 +2,7 @@
 // Mengelola state search & category filter, serta logika filtering artikel
 
 import { useState, useMemo } from "react";
-import { EditorialArticle } from "@/types/blogs";
+import { EditorialArticle } from "@/types/main/blogs";
 
 interface UseBlogFilterReturn {
   search: string;

@@ -1,7 +1,7 @@
 // ── Static data ───────────────────────────────────────────────────────────────
 // Imported in components to keep JSX files free of long arrays.
 
-import { Faq, Feature, Problem, Step, Testimonial } from "@/types/landing";
+import { Faq, Feature, Problem, Step, Testimonial } from "@/types/main/landing";
 import {
   Upload,
   Brain,

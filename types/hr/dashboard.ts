@@ -5,7 +5,7 @@ export type {
   ApplicationStatus,
   RawApplication,
 } from "../candidate/dashboard";
-export type { Company as CompanyInfo } from "../company";
+export type { Company as CompanyInfo } from "../main/company";
 
 export type CandidateUI = {
   id: string;
@@ -55,7 +55,7 @@ export type DashboardStats = {
 
 import { COMPANY_SIZES, INDUSTRIES } from "@/constants/hr/dashboard";
 // ── Fetch Result ──────────────────────────────────────────────────────────────
-import type { Company } from "../company";
+import type { Company } from "../main/company";
 
 export type FetchDashboardResult = {
   candidates: CandidateUI[];

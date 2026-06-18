@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight, LogOut } from "lucide-react";
-import { ProfileTab, TabDefinition } from "@/types/profile";
+import { ProfileTab, TabDefinition } from "@/types/main/profile";
 
 interface ProfileSidebarNavProps {
   tabs: TabDefinition[];

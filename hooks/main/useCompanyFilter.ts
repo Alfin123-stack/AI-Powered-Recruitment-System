@@ -2,7 +2,7 @@
 // State search & filter + logika filtering company list
 
 import { useState, useMemo } from "react";
-import type { Company } from "@/types/company";
+import type { Company } from "@/types/main/company";
 
 interface UseCompanyFilterReturn {
   search: string;

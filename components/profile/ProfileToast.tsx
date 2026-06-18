@@ -4,7 +4,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, XCircle, Info, X } from "lucide-react";
-import { Toast, ToastType } from "@/types/profile";
+import { Toast, ToastType } from "@/types/main/profile";
 
 let toastCounter = 0;
 

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Search, Brain } from "lucide-react";
 
-import { EditorialArticle } from "@/types/blogs";
-import { CATEGORIES } from "@/constants/blogs";
+import { EditorialArticle } from "@/types/main/blogs";
+import { CATEGORIES } from "@/constants/main/blogs";
 import { BlogFadeIn } from "./BlogFadeIn";
 
 // ── Editorial card ─────────────────────────────────────────────────────────────

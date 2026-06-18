@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 
-import type { Notif } from "@/types/notifications";
+import type { Notif } from "@/types/main/notifications";
 import { getBrowserSession } from "@/lib/auth/getBrowserSession";
 import {
   apiDeleteNotif,

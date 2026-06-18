@@ -5,7 +5,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Building2 } from "lucide-react";
 import CompanyCard from "./CompanyCard";
-import type { Company } from "@/types/company";
+import type { Company } from "@/types/main/company";
 
 interface CompanyGridProps {
   companies: Company[];

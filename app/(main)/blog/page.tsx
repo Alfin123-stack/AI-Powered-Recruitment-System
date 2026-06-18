@@ -3,7 +3,7 @@ import BlogHero from "@/components/blog/BlogHero";
 import BlogSearchClient from "@/components/blog/BlogSearchClient";
 import DevToSection from "@/components/blog/DevToSection";
 import DevToSkeleton from "@/components/blog/DevToSkeleton";
-import { EDITORIAL_ARTICLES } from "@/constants/blogs";
+import { EDITORIAL_ARTICLES } from "@/constants/main/blogs";
 
 export const revalidate = 3600;
 

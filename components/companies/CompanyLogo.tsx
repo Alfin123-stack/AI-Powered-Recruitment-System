@@ -3,7 +3,7 @@
 import { createElement } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getCategoryIcon } from "@/constants/blogs";
+import { getCategoryIcon } from "@/constants/main/blogs";
 
 type CompanyLogoProps = {
   id: string;

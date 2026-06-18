@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { CheckCheck, Clock } from "lucide-react";
 import { timeAgo } from "../../lib/helpers/notifications";
-import type { Notif } from "../../types/notifications";
-import { TYPE_CONFIG } from "@/constants/notifications";
+import type { Notif } from "../../types/main/notifications";
+import { TYPE_CONFIG } from "@/constants/main/notifications";
 
 interface NotifCardProps {
   notif: Notif;

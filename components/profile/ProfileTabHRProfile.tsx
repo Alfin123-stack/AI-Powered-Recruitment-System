@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";
 
-import type { TabHRProfileProps } from "@/types/profile";
+import type { TabHRProfileProps } from "@/types/main/profile";
 import { inputCls } from "../shared/input";
 
 

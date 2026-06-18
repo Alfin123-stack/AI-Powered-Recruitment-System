@@ -2,8 +2,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter }             from "next/navigation";
-import { supabase }              from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import {
   type AuthFieldErrors,
   validateEmail,
@@ -12,63 +12,45 @@ import {
   validateRole,
   validateStrongPassword,
 } from "@/lib/auth/validation";
-import { TOTAL_STEPS }        from "@/constants/auth";
-import { useFieldErrors }     from "@/hooks/auth/useFieldErrors";
-import { usePasswordToggle }  from "@/hooks/auth/usePasswordToggle";
+
+import { useFieldErrors } from "@/hooks/auth/useFieldErrors";
+import { usePasswordToggle } from "@/hooks/auth/usePasswordToggle";
+import { TOTAL_STEPS } from "@/constants/auth/auth";
 
 type AuthMode = "login" | "register";
 
-/**
- * useAuthForm
- * ─────────────────────────────────────────────────────────────────────────────
- * Satu hook universal untuk LoginForm dan RegisterForm.
- * Internally menggunakan useFieldErrors dan usePasswordToggle.
- *
- * Pemakaian di LoginForm:
- *   const { email, setEmail, password, setPassword,
- *           loading, error, fieldErrors, clearError,
- *           showPass, togglePass, inputType,
- *           handleLogin } = useAuthForm("login");
- *
- * Pemakaian di RegisterForm:
- *   const { email, setEmail, password, setPassword,
- *           fullName, setFullName, role, setRole,
- *           step, isFirstStep, isLastStep,
- *           loading, error, fieldErrors, clearError,
- *           showPass, togglePass, inputType,
- *           handleNext, handleBack, handleRegister } = useAuthForm("register");
- */
 export function useAuthForm(mode: AuthMode) {
   const router = useRouter();
 
   // ── Sub-hooks ────────────────────────────────────────────────────────────
-  const { fieldErrors, setFieldErrors, clearError, clearAll } = useFieldErrors();
+  const { fieldErrors, setFieldErrors, clearError, clearAll } =
+    useFieldErrors();
   const { showPass, togglePass, inputType } = usePasswordToggle();
 
   // ── Shared field state ───────────────────────────────────────────────────
-  const [email, setEmail]       = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // ── Register-only field state ────────────────────────────────────────────
   const [fullName, setFullName] = useState("");
-  const [role, setRole]         = useState("");
+  const [role, setRole] = useState("");
 
   // ── Multi-step state (register only) ────────────────────────────────────
   const [step, setStep] = useState(1);
 
   // ── Async state ──────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
 
   // ── Per-step validation (register) ──────────────────────────────────────
   const validateRegisterStep = useCallback(
     (currentStep: number): AuthFieldErrors => {
       const errors: AuthFieldErrors = {};
       if (currentStep === 1) {
-        const nameErr  = validateFullName(fullName);
+        const nameErr = validateFullName(fullName);
         const emailErr = validateEmail(email);
-        if (nameErr)  errors.fullName = nameErr;
-        if (emailErr) errors.email    = emailErr;
+        if (nameErr) errors.fullName = nameErr;
+        if (emailErr) errors.email = emailErr;
       }
       if (currentStep === 2) {
         const passErr = validateStrongPassword(password);
@@ -80,7 +62,7 @@ export function useAuthForm(mode: AuthMode) {
       }
       return errors;
     },
-    [fullName, email, password, role]
+    [fullName, email, password, role],
   );
 
   // ── Register navigation ──────────────────────────────────────────────────
@@ -107,9 +89,9 @@ export function useAuthForm(mode: AuthMode) {
 
       const errors: AuthFieldErrors = {};
       const emailErr = validateEmail(email);
-      const passErr  = validatePassword(password);
-      if (emailErr) errors.email    = emailErr;
-      if (passErr)  errors.password = passErr;
+      const passErr = validatePassword(password);
+      if (emailErr) errors.email = emailErr;
+      if (passErr) errors.password = passErr;
 
       if (Object.keys(errors).length > 0) {
         setFieldErrors(errors);
@@ -120,7 +102,7 @@ export function useAuthForm(mode: AuthMode) {
       setLoading(true);
 
       const { data, error: authError } = await supabase.auth.signInWithPassword(
-        { email, password }
+        { email, password },
       );
 
       setLoading(false);
@@ -133,7 +115,7 @@ export function useAuthForm(mode: AuthMode) {
       const userRole = data.session?.user?.user_metadata?.role;
       router.push(userRole === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
     },
-    [email, password, router, setFieldErrors, clearAll]
+    [email, password, router, setFieldErrors, clearAll],
   );
 
   // ── Register submit ──────────────────────────────────────────────────────
@@ -165,26 +147,41 @@ export function useAuthForm(mode: AuthMode) {
 
       router.push("/login?registered=1");
     },
-    [step, validateRegisterStep, setFieldErrors, email, password, fullName, role, router]
+    [
+      step,
+      validateRegisterStep,
+      setFieldErrors,
+      email,
+      password,
+      fullName,
+      role,
+      router,
+    ],
   );
 
   // ── Return ───────────────────────────────────────────────────────────────
   return {
     // shared fields
-    email,    setEmail,
-    password, setPassword,
+    email,
+    setEmail,
+    password,
+    setPassword,
 
     // register-only fields
-    fullName, setFullName,
-    role,     setRole,
+    fullName,
+    setFullName,
+    role,
+    setRole,
 
     // step helpers (register)
     step,
     isFirstStep: step === 1,
-    isLastStep:  step === TOTAL_STEPS,
+    isLastStep: step === TOTAL_STEPS,
 
     // from usePasswordToggle
-    showPass, togglePass, inputType,
+    showPass,
+    togglePass,
+    inputType,
 
     // async state
     loading,

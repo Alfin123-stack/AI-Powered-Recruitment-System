@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 
 import NotificationsServer from "@/components/notifications/NotificationsServer";
 import { ROLE_CONFIG } from "@/constants/roleConfig";
-import type { UserMeta } from "@/types/notifications";
+import type { UserMeta } from "@/types/main/notifications";
 import { getServerSession } from "@/lib/auth/getServerSession";
 import { getUserRole } from "@/lib/auth/getUserRole";
 

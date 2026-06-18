@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
-import { PROBLEMS } from "@/constants/landing";
+import { PROBLEMS } from "@/constants/main/landing";
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingTag } from "./LandingTag";
 import { LandingCard } from "./LandingCard";

@@ -2,7 +2,7 @@ import type {
   AnalysisApiResponse,
   AnalysisData,
   AnalyzeApiResult,
-} from "@/types/analyze";
+} from "@/types/main/analyze";
 
 // ─── DB response (snake_case) → AnalysisData ─────────────────────────────────
 export function mapApiToAnalysisData(data: AnalysisApiResponse): AnalysisData {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Application, Interview } from "@/types/candidate/dashboard";
 
-export function useApplicationsFilter(
+export function useApplicationFilter(
   applications: Application[],
   interviews: Interview[],
 ) {

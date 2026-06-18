@@ -1,4 +1,4 @@
-import { DevToArticle, DevToRaw } from "@/types/blogs";
+import { DevToArticle, DevToRaw } from "@/types/main/blogs";
 
 const PER_TAG = 6;
 

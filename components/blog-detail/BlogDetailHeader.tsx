@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Calendar, Clock, ChevronRight, Sparkles } from "lucide-react";
-import type { ArticleContent } from "@/types/blogs";
+import type { ArticleContent } from "@/types/main/blogs";
 
 interface BlogDetailHeaderProps {
   article: ArticleContent;

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createPortal } from "react-dom";
-import { Company } from "@/types/company";
+import { Company } from "@/types/main/company";
 import { useCompanySetup } from "@/hooks/dashboard/hr/useCompanySetup";
 import { COMPANY_SIZES, INDUSTRIES } from "@/constants/hr/dashboard";
 

@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import AnalyzeHero from "./AnalyzeHero";
 import AnalyzeResult from "./AnalyzeResult";
 import EmptyState from "./AnalyzeEmptyState";
-import { AnalysisData } from "@/types/analyze";
+import { AnalysisData } from "@/types/main/analyze";
 
 interface AnalyzeViewProps {
   analysisData: AnalysisData | null;

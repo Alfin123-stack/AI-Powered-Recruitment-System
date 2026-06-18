@@ -1,9 +1,6 @@
-// @/components/analyze/AnalyzeClient.tsx
-// CSR orchestrator — wiring dua hook ke AnalyzeView, tidak ada logika di sini
-
 "use client";
 
-import { AnalysisData } from "@/types/analyze";
+import { AnalysisData } from "@/types/main/analyze";
 import { useLatestAnalysis } from "@/hooks/main/useLatestAnalysis";
 import { useAnalyzeFile } from "@/hooks/main/useAnalyzeFile";
 import { AnalyzeView } from "./AnalyzeView";

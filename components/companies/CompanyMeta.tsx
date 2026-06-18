@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Users, Briefcase } from "lucide-react";
-import type { Company } from "@/types/company";
+import type { Company } from "@/types/main/company";
 
 type CompanyMetaProps = {
   id: string;

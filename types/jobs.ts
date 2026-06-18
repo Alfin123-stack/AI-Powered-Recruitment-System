@@ -1,14 +1,3 @@
-// types/jobs.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// Single source of truth untuk Job, JobForm.
-//
-// Menggabungkan:
-//   - types/jobs.ts
-//   - shared/types/recruiter.ts :: Job      (subset — semua field ada di sini)
-//   - shared/types/recruiter.ts :: JobForm  (dipindahkan ke sini)
-//   - types/candidate/matches.ts :: JobWithMatch (dipindahkan ke sini)
-// ─────────────────────────────────────────────────────────────────────────────
-
 export type Job = {
   id: string;
   title: string;
@@ -32,9 +21,6 @@ export type Job = {
   } | null;
 };
 
-/** Form state untuk membuat / mengedit lowongan.
- *  skills & benefits disimpan sebagai string (comma-separated) di form,
- *  diparse ke array sebelum dikirim ke API. */
 export type JobForm = {
   title: string;
   description: string;
@@ -47,7 +33,6 @@ export type JobForm = {
   deadline: string;
 };
 
-/** Job yang sudah dihitung skor kecocokannya dengan kandidat. */
 export type JobWithMatch = Job & {
   matchScore: number;
   matchedSkills: string[];
@@ -55,8 +40,6 @@ export type JobWithMatch = Job & {
   alreadyApplied: boolean;
   color: string;
 };
-
-// ── Local Types ───────────────────────────────────────────────────────────────
 
 export type JobWithStats = Job & {
   applicantCount: number;

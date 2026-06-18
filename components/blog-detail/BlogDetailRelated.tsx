@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
-import type { ArticleContent } from "@/types/blogs";
+import type { ArticleContent } from "@/types/main/blogs";
 
 interface BlogDetailRelatedProps {
   articles: ArticleContent[];

@@ -1,4 +1,4 @@
-import { AnalysisData, ScoreTier } from "@/types/analyze";
+import { AnalysisData, ScoreTier } from "@/types/main/analyze";
 import type {
   TextItem,
   TextMarkedContent,

@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingTag } from "./LandingTag";
-import { TESTIMONIALS } from "@/constants/landing";
+import { TESTIMONIALS } from "@/constants/main/landing";
 
 export function LandingTestimonials() {
   return (
@@ -45,11 +45,11 @@ export function LandingTestimonials() {
 
                 <blockquote className="text-[#c8d9d0] text-[0.88rem] leading-[1.75] flex-1">
                   <span className="text-emerald-400 text-[1.4rem] font-syne leading-none mr-1">
-                    "
+                    &ldquo;
                   </span>
                   {t.quote}
                   <span className="text-emerald-400 text-[1.4rem] font-syne leading-none ml-1">
-                    "
+                    &rdquo;
                   </span>
                 </blockquote>
 

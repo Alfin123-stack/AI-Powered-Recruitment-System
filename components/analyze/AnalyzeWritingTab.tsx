@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
-import type { WritingSuggestion } from "@/types/analyze";
+import type { WritingSuggestion } from "@/types/main/analyze";
 
-// ─── EMPTY STATE ──────────────────────────────────────────────────────────────
 function EmptyTabState({ message }: { message: string }) {
   return (
     <div
@@ -21,7 +20,6 @@ function EmptyTabState({ message }: { message: string }) {
   );
 }
 
-// ─── WRITING TAB ─────────────────────────────────────────────────────────────
 type Props = { suggestions: WritingSuggestion[] | undefined };
 
 export default function WritingTab({ suggestions }: Props) {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import type { DashboardUser } from "@/types/dashboard";
-import { Company } from "@/types/company";
+import { Company } from "@/types/main/company";
 
 export function useDashboardInit() {
   const [user, setUser] = useState<DashboardUser | null>(null);

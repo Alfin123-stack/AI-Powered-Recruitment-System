@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Company } from "@/types/company";
+import { Company } from "@/types/main/company";
 import { apiFetch } from "@/lib/api";
 import { CompanyForm, CompanySize, Industry } from "@/types/hr/dashboard";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { User, Mail, Phone, MapPin, Briefcase } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { ProfileForm, TabProfileProps } from "@/types/profile";
+import { ProfileForm, TabProfileProps } from "@/types/main/profile";
 import { ProfileErrorBanner } from "./ProfileErrorBanner";
 import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";

@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import type { NavItem } from "../../types/notifications";
+import type { NavItem } from "../../types/main/notifications";
 
 interface NotificationsHeaderProps {
   backHref: string;

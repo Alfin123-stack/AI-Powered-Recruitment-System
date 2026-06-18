@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Shield } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { ProfileSaveButton } from "./ProfileSaveButton";
-import { ToastType } from "@/types/profile";
+import { ToastType } from "@/types/main/profile";
 import { ProfilePasswordInput } from "./ProfilePasswordInput";
 
 interface ProfileTabSecurityProps {

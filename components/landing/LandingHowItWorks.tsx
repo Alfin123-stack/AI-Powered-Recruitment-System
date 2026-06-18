@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   CheckCircle2,
   Sparkles,
@@ -5,7 +6,7 @@ import {
   Search,
   ArrowRight,
 } from "lucide-react";
-import { STEPS } from "@/constants/landing";
+import { STEPS } from "@/constants/main/landing";
 import { LandingFadeIn } from "./LandingFadeIn";
 import { LandingTag } from "./LandingTag";
 
@@ -30,10 +31,12 @@ export function LandingHowItWorks() {
             className="relative h-[260px] rounded-[20px] overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-[#0f1612]/50 to-transparent z-10" />
             <div className="absolute inset-0 bg-cyan-900/20 z-[5] mix-blend-multiply" />
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80"
               alt="Analisis data AI"
-              className="w-full h-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover"
             />
           </LandingFadeIn>
         </div>
@@ -148,7 +151,7 @@ export function LandingHowItWorks() {
                 <ul className="list-disc pl-4 text-[#7a9585] text-[0.8rem] leading-[1.7]">
                   <li>
                     Tambahkan angka kuantitatif pada pencapaian (mis.
-                    "meningkatkan performa 40%")
+                    &ldquo;meningkatkan performa 40%&rdquo;)
                   </li>
                   <li>
                     Bagian ringkasan perlu diperkuat dengan nilai jual yang

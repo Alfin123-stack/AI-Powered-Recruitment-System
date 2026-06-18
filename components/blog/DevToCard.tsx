@@ -1,5 +1,5 @@
 import { Globe, Clock, Heart, ExternalLink, User, Tag } from "lucide-react";
-import { DevToArticle } from "@/types/blogs";
+import { DevToArticle } from "@/types/main/blogs";
 import { BlogFadeIn } from "./BlogFadeIn";
 
 interface DevToCardProps {

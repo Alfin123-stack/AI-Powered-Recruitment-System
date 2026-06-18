@@ -2,19 +2,12 @@
 
 import { motion } from "framer-motion";
 import UploadZone from "./AnalyzeUploadZone";
+import { FEATURES } from "@/constants/main/analyze";
 
-// ─── EMPTY STATE ─────────────────────────────────────────────────────────────
 type Props = {
   onFileSelect: (f: File) => void;
   isLoading: boolean;
 };
-
-const FEATURES = [
-  { label: "Skor CV", desc: "Resume score, ATS score, impact, dan readability" },
-  { label: "ATS Check", desc: "8 titik cek kompatibilitas sistem rekrutmen otomatis" },
-  { label: "Feedback", desc: "Komentar AI spesifik per bagian dan baris CV" },
-  { label: "Saran Penulisan", desc: "AI menulis ulang kalimat lemah menjadi versi lebih kuat" },
-];
 
 export default function EmptyState({ onFileSelect, isLoading }: Props) {
   return (

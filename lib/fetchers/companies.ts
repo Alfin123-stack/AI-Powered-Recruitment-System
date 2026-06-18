@@ -1,5 +1,5 @@
-import { getPaletteColor } from "@/constants/blogs";
-import { Company } from "@/types/company";
+import { getPaletteColor } from "@/constants/main/blogs";
+import { Company } from "@/types/main/company";
 import { Job } from "@/types/jobs";
 
 import { API } from "@/lib/api";

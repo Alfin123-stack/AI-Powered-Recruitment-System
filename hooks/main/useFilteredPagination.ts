@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { DevToArticle } from "@/types/blogs";
-import { ARTICLES_PER_PAGE } from "@/constants/blogs";
+import { DevToArticle } from "@/types/main/blogs";
+import { ARTICLES_PER_PAGE } from "@/constants/main/blogs";
 
 interface UseFilteredPaginationResult {
   filtered: DevToArticle[];
