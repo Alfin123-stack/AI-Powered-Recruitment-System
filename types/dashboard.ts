@@ -1,10 +1,3 @@
-// types/dashboard.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// NavItem di sini (icon: React.ComponentType) berbeda dari NavItem di
-// notifications.ts (icon: LucideIcon). Diganti nama DashboardNavItem
-// agar tidak ambigu. Alias NavItem tetap diekspor untuk backward-compat.
-// ─────────────────────────────────────────────────────────────────────────────
-
 export type DashboardUser = {
   id: string;
   email: string;

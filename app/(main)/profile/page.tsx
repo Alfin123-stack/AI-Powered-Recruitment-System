@@ -1,13 +1,4 @@
-// app/profile/page.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: SSR (Server-Side Rendering)
-//
-// Kenapa SSR di sini?
-// - Data user bersifat private & per-request (tidak bisa SSG/ISR)
-// - Middleware (proxy.ts) sudah validasi session via cookies
-// - Server fetch data SEBELUM HTML dikirim ke browser
-//   → tidak ada loading spinner awal, tidak ada layout shift
-// ─────────────────────────────────────────────
+
 
 import { Suspense } from "react";
 

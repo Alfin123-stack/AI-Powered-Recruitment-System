@@ -10,21 +10,16 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-[#e8f0ec]">
       <main className="pt-16">
-        {/* 1. Hero + floating badges */}
         <LandingHero />
 
-        {/* 2. Stats bar */}
         <LandingStats />
 
         <LandingContent />
 
-        {/* 9. Testimoni */}
         <LandingTestimonials />
 
-        {/* 10. FAQ */}
         <LandingFAQ />
 
-        {/* 11. CTA final */}
         <LandingCTA />
       </main>
     </div>

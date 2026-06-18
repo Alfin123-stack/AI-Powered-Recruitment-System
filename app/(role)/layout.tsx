@@ -59,7 +59,6 @@ export default function DashboardLayout({
   const handleCompanySetupDone = (c: Company) => {
     setCompany(c);
     setHasCompany(true);
-    // Persist ke localStorage agar modal tidak muncul lagi setelah setup selesai
     if (user?.id) {
       localStorage.setItem(`company_setup_done_${user.id}`, "1");
     }

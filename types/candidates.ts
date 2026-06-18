@@ -41,8 +41,6 @@ export interface JobMeta {
   todayCount: number;
 }
 
-// CandidateRaw meng-extend Candidate dari _components/shared (raw DB shape).
-// Berbeda dari CandidateUI di hr-dashboard.ts yang merupakan representasi UI (camelCase).
 export interface CandidateRaw extends Candidate {
   created_at: string;
   email: string;
