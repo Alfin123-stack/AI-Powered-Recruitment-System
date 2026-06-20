@@ -1,9 +1,5 @@
 "use client";
 
-// ─── components/notifications/NotificationsClient.tsx ─────────────────────────
-// CSR boundary — menerima data dari SSR, mendelegasikan semua logic ke
-// useNotifications hook. Komponen ini murni sebagai orkestrator UI.
-
 import { useState } from "react";
 import NotificationsHeading from "./NotificationsHeading";
 import FilterBar from "./NotificationsFilter";

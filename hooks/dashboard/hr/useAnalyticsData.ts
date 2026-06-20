@@ -6,7 +6,7 @@ import type { Application, Job } from "@/types/hr/analytics";
 import { apiFetch } from "@/lib/api";
 import { analyticStats } from "@/lib/helpers/hr/analytics";
 
-// ── Status narrowing ──────────────────────────────────────────────────────────
+
 const VALID_STATUSES = [
   "applied",
   "review",
@@ -36,11 +36,12 @@ function normalizeApplication(raw: unknown): Application | null {
     candidate_name:
       r.candidate_name != null ? String(r.candidate_name) : undefined,
     status: r.status,
-    resume_score: typeof r.resume_score === "number" ? r.resume_score : null,
+    resume_score:
+      typeof r.resume_score === "number" ? r.resume_score : undefined,
     matching_score:
-      typeof r.matching_score === "number" ? r.matching_score : null,
-    cv_url: r.cv_url != null ? String(r.cv_url) : null,
-    created_at: r.created_at != null ? String(r.created_at) : "", // ← fallback "" karena required
+      typeof r.matching_score === "number" ? r.matching_score : undefined,
+    cv_url: r.cv_url != null ? String(r.cv_url) :  undefined,
+    created_at: r.created_at != null ? String(r.created_at) : "", 
   };
 }
 

@@ -1,5 +1,4 @@
-// Server Component — purely decorative static markup.
-// No JS needed; rendered as pure HTML/CSS.
+
 
 export default function NotificationsBackground() {
   return (

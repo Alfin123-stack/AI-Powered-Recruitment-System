@@ -4,17 +4,17 @@ import AmbientBackground from "./NotificationsBackground";
 import NotificationsClient from "./NotificationsClient";
 import NotificationsSkeleton from "./NotificationsSkeleton";
 import type {
-  NavItem,
   StatDef,
   UserMeta,
   Notif,
 } from "../../types/main/notifications";
 import { fetchNotificationsServer } from "@/lib/fetchers/notifications";
+import { NotifNavItem } from "@/types/main/notifications";
 
 export interface NotificationsServerProps {
   role: "hr" | "candidate";
   backHref: string;
-  navItems: NavItem[];
+  navItems: NotifNavItem[];
   stats?: StatDef[];
   subtitle?: (opts: { unreadCount: number; user?: UserMeta }) => string;
   token: string;

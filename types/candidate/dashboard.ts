@@ -28,10 +28,10 @@ export type Application = {
   company_name?: string;
   candidate_name?: string;
   status: ApplicationStatus;
-  matching_score?: number | null;
-  resume_score?: number | null;
+  matching_score?: number;
+  resume_score?: number;
   cv_url?: string | null;
-  extracted_skills?: Array<{ name?: string } | string>;
+  extracted_skills?: Array<{ name: string; level?: number }>;
   candidate_email?: string;
   candidate_phone?: string;
   location?: string;
@@ -49,7 +49,7 @@ export type RawApplication = {
   job_id?: string | null;
   resume_score?: number | null;
   matching_score?: number | null;
-  extracted_skills?: Array<string | { name?: string }>;
+  extracted_skills?: Array<string | { name: string }>;
   status: string;
   created_at?: string;
   cv_url?: string | null;

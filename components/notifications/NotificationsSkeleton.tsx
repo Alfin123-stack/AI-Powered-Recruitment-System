@@ -1,5 +1,4 @@
-// Skeleton UI for the notifications list.
-// Used by Suspense fallback — pure server-renderable, no "use client" needed.
+
 
 export default function NotificationsSkeleton() {
   return (

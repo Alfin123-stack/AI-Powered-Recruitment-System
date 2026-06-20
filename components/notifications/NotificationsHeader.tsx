@@ -1,13 +1,12 @@
-// Server Component — no interactivity, purely static markup.
-// Rendered once at build/request time; no "use client" needed.
+
 
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import type { NavItem } from "../../types/main/notifications";
+import { NotifNavItem } from "@/types/main/notifications";
 
 interface NotificationsHeaderProps {
   backHref: string;
-  navItems: NavItem[];
+  navItems: NotifNavItem[];
 }
 
 export default function NotificationsHeader({

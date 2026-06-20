@@ -12,9 +12,6 @@ export type DashboardNavItem = {
   matchPrefix?: boolean;
 };
 
-/** @deprecated Gunakan `DashboardNavItem` */
-export type NavItem = DashboardNavItem;
-
 export type NavSection = {
   heading: string;
   items: DashboardNavItem[];
