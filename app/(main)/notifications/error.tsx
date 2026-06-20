@@ -1,8 +1,5 @@
 "use client";
 
-// ─── /app/dashboard/notifications/error.tsx ──────────────────────────────────
-// Next.js special file: error boundary for the notifications segment.
-// Must be a Client Component (requires "use client").
 
 import { useEffect } from "react";
 import { RefreshCw, AlertTriangle } from "lucide-react";

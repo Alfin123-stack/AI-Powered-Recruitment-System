@@ -1,7 +1,4 @@
-// ─── /app/dashboard/notifications/loading.tsx ────────────────────────────────
-// Next.js special file: shown automatically while the page segment is loading.
-// This is the ROUTE-level loading state (wraps the entire page in Suspense).
-// No "use client" needed — pure static markup streamed from the server.
+
 
 import NotificationsSkeleton from "@/components/notifications/NotificationsSkeleton";
 
