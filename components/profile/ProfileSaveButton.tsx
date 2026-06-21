@@ -5,7 +5,7 @@ export function ProfileSaveButton({
   loading,
   saved,
   onClick,
-  label = "Simpan Perubahan",
+  label = "Save Changes",
 }: {
   loading: boolean;
   saved: boolean;
@@ -28,7 +28,7 @@ export function ProfileSaveButton({
       ) : saved ? (
         <Check size={15} className="mr-2" />
       ) : null}
-      {loading ? "Menyimpan..." : saved ? "Tersimpan!" : label}
+      {loading ? "Saving..." : saved ? "Saved!" : label}
     </Button>
   );
 }

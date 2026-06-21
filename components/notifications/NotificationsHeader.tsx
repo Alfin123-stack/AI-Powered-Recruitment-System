@@ -1,5 +1,4 @@
 
-
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { NotifNavItem } from "@/types/main/notifications";

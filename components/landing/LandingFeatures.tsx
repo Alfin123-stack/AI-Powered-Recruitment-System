@@ -10,13 +10,13 @@ export function LandingFeatures() {
     <section className="py-[100px] bg-[#0f1612]">
       <div className="max-w-[1180px] mx-auto px-6">
         <LandingFadeIn className="text-center mb-[60px]">
-          <LandingTag>Fitur Utama</LandingTag>
+          <LandingTag>Core Features</LandingTag>
           <h2 className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
-            Semua yang Anda Butuhkan, Dalam Satu Platform
+            Everything You Need, In One Platform
           </h2>
           <p className="text-[#7a9585] max-w-[520px] mx-auto leading-[1.7]">
-            Dari analisis CV untuk kandidat hingga dashboard rekrutmen untuk HR
-            — semua tersedia dan terintegrasi.
+            From CV analysis for candidates to a recruitment dashboard for HR
+            — all available and fully integrated.
           </p>
         </LandingFadeIn>
 
@@ -62,7 +62,7 @@ export function LandingFeatures() {
                   href={f.href}
                   className="mt-auto text-[0.78rem] font-semibold flex items-center gap-1 transition-colors"
                   style={{ color: f.color }}>
-                  Coba fitur ini <ArrowRight size={13} />
+                  Try this feature <ArrowRight size={13} />
                 </Link>
               </LandingCard>
             </LandingFadeIn>

@@ -1,5 +1,5 @@
 // @/components/blog/BlogSearchClient.tsx
-// CSR orchestrator — wiring hook ke komponen, tidak ada logika filtering di sini
+// CSR orchestrator — wires the hook to the components, no filtering logic here
 
 "use client";
 

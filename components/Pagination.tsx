@@ -6,7 +6,7 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  /** ID elemen yang akan di-scroll ke atas saat ganti halaman */
+  /** ID of the element to scroll to the top when changing pages */
   scrollTargetId?: string;
 }
 
@@ -39,7 +39,7 @@ export default function Pagination({
   return (
     <div className="flex items-center justify-between mt-10 pt-6 border-t border-emerald-500/[0.08]">
       <span className="text-[#3a5545] text-[0.75rem]">
-        Halaman <span className="text-emerald-400/70">{currentPage}</span> dari{" "}
+        Page <span className="text-emerald-400/70">{currentPage}</span> of{" "}
         <span className="text-emerald-400/70">{totalPages}</span>
       </span>
 
@@ -48,7 +48,7 @@ export default function Pagination({
           onClick={() => handleChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
           className="flex items-center gap-1 px-3 py-[7px] rounded-[8px] border border-emerald-500/10 text-[#4a6b58] text-[0.78rem] hover:border-emerald-500/25 hover:text-emerald-400 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
-          <ChevronLeft size={13} /> Sebelumnya
+          <ChevronLeft size={13} /> Previous
         </button>
 
         <div className="flex items-center gap-1">
@@ -79,7 +79,7 @@ export default function Pagination({
           onClick={() => handleChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
           className="flex items-center gap-1 px-3 py-[7px] rounded-[8px] border border-emerald-500/10 text-[#4a6b58] text-[0.78rem] hover:border-emerald-500/25 hover:text-emerald-400 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
-          Berikutnya <ChevronRight size={13} />
+          Next <ChevronRight size={13} />
         </button>
       </div>
     </div>

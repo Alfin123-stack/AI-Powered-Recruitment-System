@@ -15,7 +15,7 @@ export default function BlogDetailRelated({ articles }: BlogDetailRelatedProps) 
         {/* Heading */}
         <div className="flex items-center gap-3 mb-7">
           <span className="font-syne font-bold text-[0.85rem] text-[#e8f0ec]">
-            Artikel Terkait
+            Related Articles
           </span>
           <div className="flex-1 h-[1px] bg-emerald-500/10" />
         </div>
@@ -50,7 +50,7 @@ export default function BlogDetailRelated({ articles }: BlogDetailRelatedProps) 
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[9px] rounded-[9px] no-underline text-[0.84rem] transition-all">
-            <ArrowLeft size={13} /> Kembali ke Semua Artikel
+            <ArrowLeft size={13} /> Back to All Articles
           </Link>
         </div>
       </div>

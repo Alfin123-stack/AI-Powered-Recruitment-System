@@ -70,10 +70,10 @@ function getInitials(name: string): string {
 
 function timeAgo(dateStr: string): string {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 60) return "Baru saja";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m lalu`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}j lalu`;
-  return `${Math.floor(diff / 86400)}h lalu`;
+  if (diff < 60) return "Just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
 }
 
 const NOTIF_TYPE_CFG: Record<
@@ -176,7 +176,7 @@ function NotifPopup({
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
       role="dialog"
-      aria-label="Panel notifikasi"
+      aria-label="Notification panel"
       className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[370px] overflow-hidden rounded-xl
         bg-[#0a0f0c] border border-white/[0.08]
         shadow-[0_16px_40px_rgba(0,0,0,0.6)]">
@@ -184,17 +184,17 @@ function NotifPopup({
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <span className="font-bold text-[0.88rem] text-[#dff0e8]">
-            Notifikasi
+            Notifications
           </span>
           {loading && (
             <span
-              aria-label="Memuat notifikasi"
+              aria-label="Loading notifications"
               className="w-[5px] h-[5px] rounded-full animate-pulse bg-emerald-500/40"
             />
           )}
           {unread > 0 && (
             <span
-              aria-label={`${unread} notifikasi belum dibaca`}
+              aria-label={`${unread} unread notifications`}
               className="rounded-full font-extrabold bg-emerald-500 text-black py-[1px] px-[7px] text-[10px]">
               {unread}
             </span>
@@ -204,19 +204,19 @@ function NotifPopup({
           {unread > 0 && (
             <button
               onClick={onMarkAllRead}
-              title="Tandai semua notifikasi sebagai sudah dibaca"
-              aria-label="Tandai semua sebagai sudah dibaca"
+              title="Mark all notifications as read"
+              aria-label="Mark all as read"
               className="flex items-center gap-[5px] text-[11px] font-semibold text-emerald-400 cursor-pointer
                 bg-emerald-500/[0.07] hover:bg-emerald-500/[0.13]
                 border border-emerald-500/20
                 rounded-md px-[8px] py-[4px] transition-colors">
-              <CheckCheck size={11} aria-hidden="true" /> Baca semua
+              <CheckCheck size={11} aria-hidden="true" /> Mark all read
             </button>
           )}
           <button
             onClick={onClose}
-            title="Tutup notifikasi"
-            aria-label="Tutup panel notifikasi"
+            title="Close notifications"
+            aria-label="Close notification panel"
             className="w-6 h-6 rounded-md flex items-center justify-center cursor-pointer transition-colors
               bg-white/[0.04] border border-white/[0.07] text-[#3a5245]
               hover:bg-white/[0.08] hover:text-[#dff0e8]">
@@ -234,10 +234,10 @@ function NotifPopup({
             </div>
             <div className="text-center">
               <p className="text-[0.8rem] font-semibold text-[#3d5a4a]">
-                Tidak ada notifikasi
+                No notifications
               </p>
               <p className="text-[0.7rem] text-[#253b2e] mt-[2px]">
-                Pembaruan akan muncul di sini
+                Updates will appear here
               </p>
             </div>
           </div>
@@ -284,8 +284,8 @@ function NotifPopup({
                     </div>
                     {isUnread && (
                       <button
-                        title="Tandai notifikasi ini sebagai sudah dibaca"
-                        aria-label={`Tandai "${n.title}" sebagai sudah dibaca`}
+                        title="Mark this notification as read"
+                        aria-label={`Mark "${n.title}" as read`}
                         onClick={(e) => {
                           e.stopPropagation();
                           onMarkOneRead(n.id);
@@ -319,17 +319,17 @@ function NotifPopup({
       <div className="flex items-center justify-between px-4 py-[9px] border-t border-white/[0.06]">
         <span className="text-[0.67rem] text-[#253b2e]">
           {hasMore
-            ? `${POPUP_LIMIT} dari ${notifs.length} notifikasi`
+            ? `${POPUP_LIMIT} of ${notifs.length} notifications`
             : notifs.length > 0
-              ? `${notifs.length} notifikasi`
+              ? `${notifs.length} notifications`
               : ""}
         </span>
         <Link
           href="/notifications"
           onClick={onClose}
-          aria-label="Lihat semua notifikasi"
+          aria-label="View all notifications"
           className="flex items-center gap-1 font-semibold no-underline text-emerald-400 text-[11px] transition-colors hover:text-emerald-300">
-          Lihat semua <ArrowRight size={11} aria-hidden="true" />
+          View all <ArrowRight size={11} aria-hidden="true" />
         </Link>
       </div>
     </motion.div>
@@ -370,7 +370,7 @@ function UserDropdown({
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
       role="dialog"
-      aria-label="Menu akun pengguna"
+      aria-label="User account menu"
       className="absolute right-0 top-[calc(100%+10px)] z-[200] w-[260px] overflow-hidden rounded-xl
         bg-[#0a0f0c] border border-white/[0.08]
         shadow-[0_16px_40px_rgba(0,0,0,0.6)]">
@@ -393,7 +393,7 @@ function UserDropdown({
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-[3px] rounded text-[0.62rem] font-bold">
-            ✓ {isHR ? "HR Manager" : "Kandidat"}
+            ✓ {isHR ? "HR Manager" : "Candidate"}
           </span>
           {isHR && company && (
             <span className="inline-flex items-center gap-1 bg-sky-500/10 border border-sky-500/20 text-sky-400 px-2 py-[3px] rounded text-[0.62rem] font-medium truncate max-w-[140px]">
@@ -408,8 +408,8 @@ function UserDropdown({
         <Link
           href={PROFILE_HREF}
           onClick={onClose}
-          title="Buka halaman pengaturan profil"
-          aria-label="Pengaturan profil, password dan akun"
+          title="Open profile settings page"
+          aria-label="Profile, password and account settings"
           className="flex items-center gap-3 px-3 py-[9px] rounded-lg no-underline
             hover:bg-white/[0.04] transition-colors group">
           <div className="w-7 h-7 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#3a5245] group-hover:text-emerald-400 transition-colors flex-shrink-0">
@@ -417,10 +417,10 @@ function UserDropdown({
           </div>
           <div className="flex-1">
             <p className="text-[0.82rem] font-semibold text-[#c5d8cc] group-hover:text-[#dff0e8] transition-colors leading-none mb-[3px]">
-              Pengaturan
+              Settings
             </p>
             <p className="text-[0.68rem] text-[#3a5245] leading-none">
-              Profil, password &amp; akun
+              Profile, password &amp; account
             </p>
           </div>
           <ArrowRight
@@ -433,8 +433,8 @@ function UserDropdown({
         <Link
           href="/"
           onClick={onClose}
-          title="Kembali ke halaman beranda"
-          aria-label="Navigasi ke beranda"
+          title="Back to home page"
+          aria-label="Navigate to home"
           className="flex items-center gap-3 px-3 py-[9px] rounded-lg no-underline
             hover:bg-white/[0.04] transition-colors group">
           <div className="w-7 h-7 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#3a5245] group-hover:text-emerald-400 transition-colors flex-shrink-0">
@@ -442,10 +442,10 @@ function UserDropdown({
           </div>
           <div className="flex-1">
             <p className="text-[0.82rem] font-semibold text-[#c5d8cc] group-hover:text-[#dff0e8] transition-colors leading-none mb-[3px]">
-              Beranda
+              Home
             </p>
             <p className="text-[0.68rem] text-[#3a5245] leading-none">
-              Kembali ke halaman utama
+              Back to main page
             </p>
           </div>
           <ArrowRight
@@ -460,9 +460,9 @@ function UserDropdown({
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          title={isLoggingOut ? "Sedang keluar..." : "Keluar dari sesi ini"}
+          title={isLoggingOut ? "Logging out..." : "Sign out of this session"}
           aria-label={
-            isLoggingOut ? "Sedang proses keluar" : "Keluar dari akun"
+            isLoggingOut ? "Logout in progress" : "Sign out of account"
           }
           className={`w-full flex items-center gap-3 px-3 py-[9px] rounded-lg transition-colors group
             ${
@@ -488,10 +488,10 @@ function UserDropdown({
             <p
               className={`text-[0.82rem] font-semibold leading-none mb-[3px] transition-colors
                 ${isLoggingOut ? "text-red-400" : "text-[#7a5555] group-hover:text-red-400"}`}>
-              {isLoggingOut ? "Keluar..." : "Keluar"}
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </p>
             <p className="text-[0.68rem] text-[#3a2525] leading-none">
-              {isLoggingOut ? "Mohon tunggu sebentar" : "Logout dari sesi ini"}
+              {isLoggingOut ? "Please wait" : "Log out of this session"}
             </p>
           </div>
 
@@ -661,13 +661,13 @@ export default function Topbar({
       </div>
 
       {/* Right: Actions */}
-      <nav aria-label="Aksi topbar" className="flex items-center gap-[6px]">
+      <nav aria-label="Topbar actions" className="flex items-center gap-[6px]">
         {isHR && !isJobsPage && (
-          <Link href="/dashboard/hr/jobs" title="Buat lowongan baru">
+          <Link href="/dashboard/hr/jobs" title="Create new job posting">
             <Button
-              aria-label="Buat lowongan baru"
+              aria-label="Create new job posting"
               className="inline-flex items-center gap-[6px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.8rem] px-4 h-[34px] rounded-lg transition-colors">
-              <Plus size={13} aria-hidden="true" /> Buat Lowongan
+              <Plus size={13} aria-hidden="true" /> Post Job
             </Button>
           </Link>
         )}
@@ -675,13 +675,13 @@ export default function Topbar({
         {!isHR && (
           <Link
             href="/analyze"
-            title="Upload dan analisis CV kamu"
-            aria-label="Analisis CV — Upload dan analisis CV kamu"
+            title="Upload and analyze your CV"
+            aria-label="CV Analyzer — Upload and analyze your CV"
             className="hidden sm:inline-flex items-center gap-[6px] h-[34px] px-[14px] rounded-lg
               bg-white/[0.04] border border-white/[0.08]
               text-[#a0c0b0] text-[0.78rem] font-semibold no-underline
               hover:bg-white/[0.07] hover:text-[#d0e8dc] transition-colors">
-            <FileText size={13} aria-hidden="true" /> Analisis CV
+            <FileText size={13} aria-hidden="true" /> CV Analyzer
           </Link>
         )}
 
@@ -691,7 +691,7 @@ export default function Topbar({
         <div className="relative" ref={notifRef}>
           <IconBtn
             active={showNotif}
-            title="Lihat notifikasi"
+            title="View notifications"
             onClick={() => {
               setShowNotif((v) => !v);
               setShowProfile(false);
@@ -701,7 +701,7 @@ export default function Topbar({
           </IconBtn>
           {hasUnread && (
             <span
-              aria-label={`${unreadCount} notifikasi belum dibaca`}
+              aria-label={`${unreadCount} unread notifications`}
               className="absolute -top-[5px] -right-[5px] min-w-[16px] h-4 rounded-full
                 bg-emerald-500 text-black text-[9px] font-extrabold
                 flex items-center justify-center px-[3px]
@@ -732,8 +732,8 @@ export default function Topbar({
               setShowProfile((v) => !v);
               setShowNotif(false);
             }}
-            title="Buka menu akun"
-            aria-label="Buka menu akun pengguna"
+            title="Open account menu"
+            aria-label="Open user account menu"
             className={`flex items-center gap-[7px] h-[34px] pl-[4px] pr-[10px] rounded-lg border transition-colors duration-150 cursor-pointer
               ${
                 showProfile

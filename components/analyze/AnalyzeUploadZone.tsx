@@ -66,18 +66,18 @@ export default function UploadZone({ onFileSelect, isLoading }: Props) {
       <div
         className="font-semibold text-[1rem] mb-[6px]"
         style={{ color: "rgba(255,255,255,0.7)" }}>
-        {isLoading ? "Menganalisis CV..." : "Upload CV kamu"}
+        {isLoading ? "Analyzing your CV..." : "Upload your CV"}
       </div>
       <p
         className="text-[0.82rem] mb-6"
         style={{ color: "rgba(255,255,255,0.22)" }}>
         {isLoading
-          ? "AI sedang memproses, mohon tunggu sebentar"
-          : "Drag & drop atau klik tombol di bawah · Maks. 5MB · PDF"}
+          ? "AI is processing, please wait a moment"
+          : "Drag & drop or click the button below · Max. 5MB · PDF"}
       </p>
       {!isLoading && (
         <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-[0.85rem] px-6 py-[9px] rounded-[9px] inline-flex items-center gap-2">
-          <Upload size={13} /> Pilih File CV
+          <Upload size={13} /> Choose CV File
         </Button>
       )}
     </div>

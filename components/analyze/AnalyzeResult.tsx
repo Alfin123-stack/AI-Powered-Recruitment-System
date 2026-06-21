@@ -49,7 +49,7 @@ export default function AnalyzeResult({
               <div
                 className="font-semibold text-[14px] flex items-center gap-2"
                 style={{ color: "rgba(255,255,255,0.75)" }}>
-                Hasil analisis CV
+                CV Analysis Results
                 {data.isFromDB && (
                   <span
                     className="text-[10px] px-[7px] py-[2px] rounded-full"
@@ -57,7 +57,7 @@ export default function AnalyzeResult({
                       background: "rgba(255,255,255,0.05)",
                       color: "rgba(255,255,255,0.22)",
                     }}>
-                    Analisis terakhir
+                    Latest analysis
                   </span>
                 )}
               </div>
@@ -106,7 +106,7 @@ export default function AnalyzeResult({
                     ) : (
                       <RefreshCw size={12} />
                     )}
-                    Analisis CV lain
+                    Analyze another CV
                   </button>
                 </>
               )}
@@ -118,26 +118,26 @@ export default function AnalyzeResult({
             <ScoreBlock
               label="Overall Score"
               value={data.overallScore}
-              sub="Skor gabungan analisis"
+              sub="Combined analysis score"
               primary
               delay={0.05}
             />
             <ScoreBlock
               label="Resume Score"
               value={data.resumeScore}
-              sub="Kualitas konten"
+              sub="Content quality"
               delay={0.1}
             />
             <ScoreBlock
               label="ATS Score"
               value={data.atsScore}
-              sub="Kompatibilitas sistem"
+              sub="System compatibility"
               delay={0.15}
             />
             <ScoreBlock
               label="Impact Score"
               value={impact}
-              sub="Kekuatan bahasa"
+              sub="Language strength"
               delay={0.2}
             />
           </div>

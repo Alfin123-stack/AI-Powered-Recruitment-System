@@ -4,28 +4,28 @@ import { LandingTag } from "./LandingTag";
 const VISUAL_STEPS = [
   {
     num: "01",
-    title: "Upload CV kamu",
-    desc: "Cukup upload file CV dalam format PDF. Sistem kami langsung memulai proses ekstraksi dan analisis secara otomatis tanpa perlu konfigurasi tambahan.",
+    title: "Upload Your CV",
+    desc: "Simply upload your CV as a PDF file. Our system immediately begins extracting and analyzing it automatically — no extra configuration needed.",
     img: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=700&q=80",
-    alt: "Upload dokumen CV",
+    alt: "Uploading a CV document",
     reverse: false,
     color: "#10b981",
   },
   {
     num: "02",
-    title: "AI Menganalisis dalam Detik",
-    desc: "Sistem kecerdasan buatan kami membaca setiap bagian CV — mengekstraksi skill, pengalaman, dan pendidikan untuk menghasilkan skor objektif yang komprehensif.",
+    title: "AI Analyzes in Seconds",
+    desc: "Our artificial intelligence system reads every section of your CV — extracting skills, experience, and education to produce a comprehensive, objective score.",
     img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=700&q=80",
-    alt: "Tim berdiskusi dan menganalisis",
+    alt: "Team discussing and analyzing",
     reverse: true,
     color: "#06b6d4",
   },
   {
     num: "03",
-    title: "Temukan Lowongan yang Cocok",
-    desc: "Berdasarkan profil CV-mu, platform secara otomatis mencocokkan dengan ratusan lowongan yang relevan dari perusahaan terpercaya di seluruh Indonesia.",
+    title: "Find Your Matching Jobs",
+    desc: "Based on your CV profile, the platform automatically matches you with hundreds of relevant openings from trusted companies across the country.",
     img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80",
-    alt: "Kandidat mendapat pekerjaan",
+    alt: "Candidate landing a job",
     reverse: false,
     color: "#f59e0b",
   },
@@ -36,12 +36,12 @@ export function LandingVisualSteps() {
     <section className="py-[100px]">
       <div className="max-w-[1180px] mx-auto px-6">
         <LandingFadeIn className="text-center mb-[60px]">
-          <LandingTag>Proses Nyata</LandingTag>
+          <LandingTag>The Real Process</LandingTag>
           <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.5rem)]">
-            Tiga Langkah yang Mengubah Kariermu
+            Three Steps That Transform Your Career
           </h2>
           <p className="text-[#7a9585] max-w-[480px] mx-auto mt-4 leading-[1.7] text-[0.95rem]">
-            Dari unggah CV hingga dapat panggilan interview — prosesnya sederhana, hasilnya nyata.
+            From uploading your CV to landing an interview — the process is simple, the results are real.
           </p>
         </LandingFadeIn>
 

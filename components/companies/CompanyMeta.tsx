@@ -1,4 +1,4 @@
-// SERVER Component — tidak ada directive "use client".
+// SERVER Component — no "use client" directive.
 
 import Link from "next/link";
 import { Users, Briefcase } from "lucide-react";
@@ -7,7 +7,7 @@ import type { Company } from "@/types/main/company";
 type CompanyMetaProps = {
   id: string;
   name: string;
-  companySize: Company["company_size"]; // ✅ ambil tipe dari Company, nama prop bebas
+  companySize: Company["company_size"]; // ✅ type taken from Company, prop name is free
   openJobs: Company["openJobs"];
   accent: string | undefined;
 };
@@ -41,7 +41,7 @@ export default function CompanyMeta({
           border: `0.5px solid ${accent}35`,
         }}>
         <Briefcase size={10} />
-        {openJobs} lowongan
+        {openJobs} open jobs
       </div>
     </>
   );

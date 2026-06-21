@@ -26,7 +26,7 @@ function EditorialCard({
             <div className="flex items-center gap-2 flex-wrap justify-end">
               {article.featured && (
                 <span className="inline-flex items-center gap-1 bg-amber-500/10 border border-amber-500/25 text-amber-400 px-[9px] py-[3px] rounded-full text-[0.62rem] font-bold tracking-[0.08em] uppercase">
-                  <Sparkles size={9} /> Pilihan Editor
+                  <Sparkles size={9} /> Editor&apos;s Pick
                 </span>
               )}
               <span className="bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-300 px-[9px] py-[3px] rounded-full text-[0.62rem] font-semibold">
@@ -71,17 +71,17 @@ function EditorialCTAStrip() {
         <div className="absolute right-0 top-0 w-[300px] h-full pointer-events-none bg-[radial-gradient(ellipse_at_right,rgba(16,185,129,0.06)_0%,transparent_70%)]" />
         <div className="relative">
           <p className="font-syne font-extrabold text-[1.2rem] text-[#e8f0ec] mb-2">
-            Sudah tahu cara optimasi CV yang benar?
+            Already know how to optimize your CV the right way?
           </p>
           <p className="text-[#7a9585] text-[0.875rem] max-w-[440px] leading-[1.65]">
-            Sekarang coba analisis CV kamu — lihat Resume Score, ATS Score, dan
-            rekomendasi spesifik yang bisa langsung kamu terapkan.
+            Try analyzing your CV now — see your Resume Score, ATS Score, and
+            specific recommendations you can apply right away.
           </p>
         </div>
         <Link
           href="/analyze"
           className="relative inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.9rem] px-7 py-[12px] rounded-[10px] no-underline transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_28px_rgba(16,185,129,0.3)] flex-shrink-0">
-          <Brain size={15} /> Analisis CV Saya
+          <Brain size={15} /> Analyze My CV
         </Link>
       </div>
     </div>
@@ -104,6 +104,10 @@ export default function EditorialSection({
 }: EditorialSectionProps) {
   const featured = articles.filter((a) => a.featured);
   const regular = articles.filter((a) => !a.featured);
+  // NOTE: "Semua" is the sentinel value used by the CATEGORIES constant
+  // (@/constants/main/blogs) for the "All" filter option. Left untranslated
+  // here so filtering still matches — rename it in both places together
+  // if you want the value itself in English (e.g. "All").
   const isFiltered = search !== "" || activeCategory !== "Semua";
 
   return (
@@ -126,7 +130,7 @@ export default function EditorialSection({
               </button>
             ))}
             <span className="ml-auto text-[#4a6b58] text-[0.78rem]">
-              {articles.length} artikel editorial
+              {articles.length} editorial articles
             </span>
           </div>
 
@@ -135,7 +139,7 @@ export default function EditorialSection({
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-emerald-400" />
               <span className="font-syne font-bold text-[0.85rem] text-[#e8f0ec]">
-                Pilihan Editor RecruitAI
+                RecruitAI Editor&apos;s Picks
               </span>
             </div>
             <div className="flex-1 h-[1px] bg-emerald-500/10" />
@@ -145,7 +149,7 @@ export default function EditorialSection({
             <div className="text-center py-16 text-[#4a6b58]">
               <Search size={32} className="mx-auto mb-3 opacity-40" />
               <p className="text-[0.9rem]">
-                Tidak ada artikel yang cocok dengan pencarian kamu.
+                No articles match your search.
               </p>
             </div>
           ) : (

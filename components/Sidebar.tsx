@@ -95,9 +95,9 @@ export default function Sidebar({
     user?.full_name ??
     user?.user_metadata?.full_name ??
     user?.email ??
-    (role === "hr" ? "HR User" : "Kandidat");
+    (role === "hr" ? "HR User" : "Candidate");
 
-  const resolvedRole = roleLabel ?? (role === "hr" ? "HR Manager" : "Kandidat");
+  const resolvedRole = roleLabel ?? (role === "hr" ? "HR Manager" : "Candidate");
   const initials = getInitials(resolvedName);
 
   return (

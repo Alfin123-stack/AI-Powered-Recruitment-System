@@ -16,7 +16,7 @@ export function LandingFAQ() {
         <LandingFadeIn className="text-center mb-[56px]">
           <LandingTag>FAQ</LandingTag>
           <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
-            Pertanyaan yang Sering Diajukan
+            Frequently Asked Questions
           </h2>
         </LandingFadeIn>
 

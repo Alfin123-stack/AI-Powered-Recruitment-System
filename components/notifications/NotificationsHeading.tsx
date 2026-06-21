@@ -38,7 +38,7 @@ export default function NotificationsHeading({
 
           <div>
             <h1 className="font-extrabold text-[1.4rem] leading-none tracking-tight text-[#e8f5f0]">
-              Notifikasi
+              Notifications
             </h1>
             <p className="text-[0.72rem] mt-1 text-[#2e4438]">{subtitle}</p>
           </div>
@@ -47,8 +47,8 @@ export default function NotificationsHeading({
         {/* Right: refresh + mark-all-read */}
         <div className="flex items-center gap-2">
           <button
-            title="Refresh notifikasi"
-            aria-label="Refresh notifikasi"
+            title="Refresh notifications"
+            aria-label="Refresh notifications"
             onClick={onRefresh}
             disabled={isRefreshing}
             className="w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer disabled:opacity-30 border border-white/[0.07] bg-white/[0.03] text-[#2e4438] hover:text-[#6aad8a]">
@@ -62,12 +62,12 @@ export default function NotificationsHeading({
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              title="Tandai semua notifikasi sebagai sudah dibaca"
-              aria-label="Tandai semua notifikasi sebagai sudah dibaca"
+              title="Mark all notifications as read"
+              aria-label="Mark all notifications as read"
               onClick={onMarkAllRead}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[0.72rem] font-medium transition-all cursor-pointer whitespace-nowrap border border-emerald-500/20 bg-emerald-500/[0.06] text-emerald-400 hover:bg-emerald-500/10">
               <CheckCheck size={12} />
-              Baca semua
+              Mark all read
             </motion.button>
           )}
         </div>

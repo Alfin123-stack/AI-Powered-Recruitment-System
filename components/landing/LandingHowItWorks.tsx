@@ -16,14 +16,14 @@ export function LandingHowItWorks() {
       <div className="max-w-[1180px] mx-auto px-6">
         <div className="grid gap-16 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1 mb-[80px]">
           <LandingFadeIn>
-            <LandingTag>Cara Kerja</LandingTag>
+            <LandingTag>How It Works</LandingTag>
             <h2 className="font-syne font-extrabold mt-4 mb-5 leading-[1.15] text-[clamp(1.8rem,3vw,2.4rem)]">
-              Dari Upload ke Insight dalam 30 Detik
+              From Upload to Insight in 30 Seconds
             </h2>
             <p className="text-[#7a9585] leading-[1.7] text-[0.95rem]">
-              Proses otomatis dari awal hingga akhir: isi CV dibaca dan dikirim
-              ke sistem AI untuk dianalisis, lalu hasilnya langsung ditampilkan
-              dan tersimpan ke akunmu.
+              A fully automated process from start to finish: your CV content is read
+              and sent to our AI system for analysis, then the results are displayed
+              instantly and saved to your account.
             </p>
           </LandingFadeIn>
           <LandingFadeIn
@@ -33,7 +33,7 @@ export function LandingHowItWorks() {
             <div className="absolute inset-0 bg-cyan-900/20 z-[5] mix-blend-multiply" />
             <Image
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80"
-              alt="Analisis data AI"
+              alt="AI data analysis"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
@@ -78,7 +78,7 @@ export function LandingHowItWorks() {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <div className="text-[0.72rem] text-[#7a9585] mb-1">
-                    LAPORAN ANALISIS CV
+                    CV ANALYSIS REPORT
                   </div>
                   <div className="font-syne font-bold text-[1.1rem]">
                     Arif Pratama
@@ -88,7 +88,7 @@ export function LandingHowItWorks() {
                   </div>
                 </div>
                 <div className="bg-emerald-500/10 border border-emerald-500/25 rounded-[8px] px-3 py-[6px] text-[0.72rem] text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 size={12} /> Analisis Selesai
+                  <CheckCircle2 size={12} /> Analysis Complete
                 </div>
               </div>
 
@@ -122,7 +122,7 @@ export function LandingHowItWorks() {
 
               <div className="mb-5">
                 <div className="text-[0.72rem] text-[#7a9585] mb-2 flex items-center gap-1">
-                  <Search size={10} /> SKILL TERDETEKSI
+                  <Search size={10} /> DETECTED SKILLS
                 </div>
                 <div className="flex flex-wrap gap-[6px]">
                   {[
@@ -146,16 +146,16 @@ export function LandingHowItWorks() {
 
               <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-[10px] px-4 py-[14px] mb-4">
                 <div className="text-[0.72rem] text-amber-400 font-semibold mb-2 flex items-center gap-1">
-                  <Sparkles size={10} /> REKOMENDASI PERBAIKAN
+                  <Sparkles size={10} /> IMPROVEMENT RECOMMENDATIONS
                 </div>
                 <ul className="list-disc pl-4 text-[#7a9585] text-[0.8rem] leading-[1.7]">
                   <li>
-                    Tambahkan angka kuantitatif pada pencapaian (mis.
-                    &ldquo;meningkatkan performa 40%&rdquo;)
+                    Add quantitative figures to achievements (e.g.
+                    &ldquo;improved performance by 40%&rdquo;)
                   </li>
                   <li>
-                    Bagian ringkasan perlu diperkuat dengan nilai jual yang
-                    jelas
+                    The summary section needs to be strengthened with a clear
+                    value proposition
                   </li>
                 </ul>
               </div>
@@ -163,14 +163,14 @@ export function LandingHowItWorks() {
               <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-[10px] px-4 py-3 flex items-center justify-between gap-3">
                 <div>
                   <div className="text-[0.72rem] text-emerald-400 font-semibold mb-[2px] flex items-center gap-1">
-                    <Target size={10} /> LOWONGAN YANG COCOK TERSEDIA
+                    <Target size={10} /> MATCHING JOBS AVAILABLE
                   </div>
                   <div className="text-[0.72rem] text-[#7a9585]">
-                    Berdasarkan 8 skill yang terdeteksi
+                    Based on 8 detected skills
                   </div>
                 </div>
                 <div className="text-[0.75rem] text-emerald-400 font-bold whitespace-nowrap flex items-center gap-1">
-                  Lihat Lowongan <ArrowRight size={12} />
+                  View Jobs <ArrowRight size={12} />
                 </div>
               </div>
             </div>

@@ -15,20 +15,20 @@ export default function BlogDetailCTA() {
           <div className="flex items-center gap-2 mb-3">
             <Brain size={16} className="text-emerald-400" />
             <span className="text-emerald-400 text-[0.75rem] font-bold uppercase tracking-[0.09em]">
-              Coba Langsung
+              Try It Now
             </span>
           </div>
 
           {/* Heading */}
           <h3 className="font-syne font-extrabold text-[1.25rem] text-[#e8f0ec] mb-3 leading-[1.3]">
-            Sudah tahu tipsnya? Sekarang terapkan ke CV kamu.
+            Already know the tips? Now apply them to your CV.
           </h3>
 
           {/* Body */}
           <p className="text-[#7a9585] text-[0.875rem] leading-[1.7] mb-6 max-w-[480px]">
-            Upload PDF CV kamu dan dalam 30 detik kamu akan tahu Resume Score,
-            ATS Score, dan rekomendasi perbaikan spesifik yang bisa langsung
-            diterapkan.
+            Upload your CV as a PDF and in 30 seconds you&apos;ll know your
+            Resume Score, ATS Score, and specific improvement
+            recommendations you can apply right away.
           </p>
 
           {/* Buttons */}
@@ -36,19 +36,19 @@ export default function BlogDetailCTA() {
             <Link
               href="/analyze"
               className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-[0.9rem] px-6 py-[11px] rounded-[10px] no-underline transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_24px_rgba(16,185,129,0.28)]">
-              <FileText size={15} /> Analisis CV Sekarang
+              <FileText size={15} /> Analyze My CV Now
             </Link>
             <Link
               href="/jobs"
               className="inline-flex items-center gap-2 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/[0.06] px-5 py-[10px] rounded-[10px] no-underline text-[0.875rem] transition-all">
-              Lihat Lowongan <ArrowRight size={13} />
+              View Job Openings <ArrowRight size={13} />
             </Link>
           </div>
 
           {/* Fine print */}
           <p className="text-[#4a6b58] text-[0.72rem] mt-4 flex items-center gap-2">
-            <CheckCircle2 size={11} className="text-emerald-700" /> Gratis untuk
-            kandidat · Tidak perlu kartu kredit
+            <CheckCircle2 size={11} className="text-emerald-700" /> Free for
+            candidates · No credit card required
           </p>
         </div>
       </div>

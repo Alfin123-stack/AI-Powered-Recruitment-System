@@ -1,6 +1,6 @@
 // @/components/company/CompanyGrid.tsx
-// Grid animasi: merender CompanyCard atau empty state
-// Zero state — murni presentasional
+// Animated grid: renders CompanyCard or empty state
+// Zero state — purely presentational
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Building2 } from "lucide-react";
@@ -9,7 +9,7 @@ import type { Company } from "@/types/main/company";
 
 interface CompanyGridProps {
   companies: Company[];
-  allCompanies: Company[]; // diperlukan untuk index relatif terhadap list asli
+  allCompanies: Company[]; // required for index relative to original list
 }
 
 export function CompanyGrid({ companies, allCompanies }: CompanyGridProps) {
@@ -25,10 +25,10 @@ export function CompanyGrid({ companies, allCompanies }: CompanyGridProps) {
               className="text-center py-24 text-[#4a6456]">
               <Building2 size={40} className="mx-auto mb-4 opacity-30" />
               <div className="text-[#e8f0ec] text-[1rem] font-semibold mb-2">
-                Tidak ada perusahaan ditemukan
+                No companies found
               </div>
               <p className="text-[0.8rem]">
-                Coba kata kunci lain atau hapus filter.
+                Try a different keyword or clear your filters.
               </p>
             </motion.div>
           ) : (

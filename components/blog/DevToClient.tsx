@@ -47,26 +47,26 @@ export default function DevToClient({
                 <Globe size={12} className="text-emerald-400" />
               </div>
               <span className="font-syne font-bold text-[1rem] text-[#e8f0ec]">
-                Dari Komunitas Global
+                From the Global Community
               </span>
               <span className="inline-flex items-center gap-1 bg-emerald-500/[0.07] border border-emerald-500/15 text-emerald-400/70 px-[8px] py-[2px] rounded-full text-[0.6rem] font-bold tracking-[0.07em] uppercase">
                 dev.to
               </span>
             </div>
             <p className="text-[#4a6b58] text-[0.82rem] max-w-[480px] leading-[1.6]">
-              Artikel terbaru seputar{" "}
+              The latest articles on{" "}
               {topicTags.map((t, i) => (
                 <span key={t}>
                   <span className="text-emerald-500/60">{t}</span>
                   {i < topicTags.length - 1 ? ", " : ""}
                 </span>
               ))}{" "}
-              dari komunitas developer global.
+              from the global developer community.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-[#3a5545] text-[0.70rem]">
-              Diperbarui setiap 1 jam
+              Updated every hour
             </span>
             <button
               onClick={handleRefresh}
@@ -85,7 +85,7 @@ export default function DevToClient({
         {filtered.length > 0 && (
           <div className="flex items-center gap-4 mb-6 flex-wrap">
             <span className="text-[#3a5545] text-[0.75rem]">
-              {filtered.length} artikel ditemukan
+              {filtered.length} articles found
             </span>
             <div className="flex items-center gap-2 flex-wrap">
               {topicTags.map((t) => (
@@ -119,15 +119,15 @@ export default function DevToClient({
         ) : (
           <div className="text-center py-10 text-[#4a6b58] text-[0.875rem]">
             {search ? (
-              "Tidak ada artikel dev.to yang cocok dengan pencarian kamu."
+              "No dev.to articles match your search."
             ) : (
               <div className="py-16">
                 <AlertCircle size={32} className="mx-auto mb-3 opacity-40" />
-                <p className="mb-4">Gagal memuat artikel. Coba refresh.</p>
+                <p className="mb-4">Failed to load articles. Try refreshing.</p>
                 <button
                   onClick={handleRefresh}
                   className="inline-flex items-center gap-2 border border-emerald-500/20 text-emerald-400 px-5 py-[9px] rounded-[8px] text-[0.82rem] hover:bg-emerald-500/[0.06] transition-colors cursor-pointer">
-                  <RefreshCw size={13} /> Coba Lagi
+                  <RefreshCw size={13} /> Try Again
                 </button>
               </div>
             )}
@@ -139,8 +139,9 @@ export default function DevToClient({
           <div className="mt-8 flex items-center justify-center gap-2">
             <div className="h-[1px] w-16 bg-emerald-500/[0.07]" />
             <p className="text-[#1e3028] text-[0.70rem] text-center">
-              Konten di atas adalah milik penulis aslinya di dev.to. RecruitAI
-              hanya menampilkan ringkasan & tautan ke artikel original.
+              The content above belongs to its original authors on dev.to.
+              RecruitAI only displays summaries & links to the original
+              articles.
             </p>
             <div className="h-[1px] w-16 bg-emerald-500/[0.07]" />
           </div>

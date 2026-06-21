@@ -1,6 +1,6 @@
 "use client";
 
-// Wajib client karena menggunakan framer-motion (motion.div).
+// Must be client because it uses framer-motion (motion.div).
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -55,7 +55,7 @@ export default function CompanyCard({ company, index }: CompanyCardProps) {
 
       {/* Description */}
       <p className="text-[#6a8878] text-[0.78rem] leading-[1.6] line-clamp-2">
-        {company.description || "Perusahaan ini belum menambahkan deskripsi."}
+        {company.description || "This company has not added a description yet."}
       </p>
 
       <CompanyLocation location={company.location} />
@@ -72,7 +72,7 @@ export default function CompanyCard({ company, index }: CompanyCardProps) {
             color: accent,
           }}>
           <Building2 size={12} />
-          Lihat Profil &amp; Lowongan
+          View Profile &amp; Jobs
           <ChevronRight size={11} />
         </Link>
       </div>

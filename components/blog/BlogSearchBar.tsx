@@ -1,5 +1,5 @@
 // @/components/blog/BlogSearchBar.tsx
-// Komponen presentasional murni — hanya menerima props, tidak ada state sendiri
+// Pure presentational component — only receives props, no state of its own
 
 import { Search } from "lucide-react";
 
@@ -21,7 +21,7 @@ export function BlogSearchBar({ value, onChange, onClear }: BlogSearchBarProps) 
         />
         <input
           type="text"
-          placeholder="Cari artikel, tips, atau topik..."
+          placeholder="Search articles, tips, or topics..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full bg-[#0f1612] border border-emerald-500/20 rounded-[10px] pl-10 pr-10 py-[11px] text-[0.9rem] text-[#e8f0ec] placeholder-[#4a6b58] focus:outline-none focus:border-emerald-500/50 transition-colors"

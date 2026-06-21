@@ -30,7 +30,7 @@ export default function ATSTab({ checks }: Props) {
 
   if (!checks || checks.length === 0) {
     return (
-      <EmptyTabState message="Data ATS check tidak tersedia untuk analisis ini." />
+      <EmptyTabState message="ATS check data is not available for this analysis." />
     );
   }
 
@@ -60,7 +60,7 @@ export default function ATSTab({ checks }: Props) {
           <div
             className="text-[11px] mt-[3px]"
             style={{ color: "rgba(255,255,255,0.28)" }}>
-            {passCount} dari {checks.length} kriteria lolos
+            {passCount} of {checks.length} criteria passed
           </div>
         </div>
         <div className="flex-1">
@@ -69,8 +69,8 @@ export default function ATSTab({ checks }: Props) {
             className="text-[11.5px] mt-[8px] leading-[1.6]"
             style={{ color: "rgba(255,255,255,0.35)" }}>
             {passCount === checks.length
-              ? "CV kamu memenuhi semua kriteria ATS."
-              : `${checks.length - passCount} poin perlu diperbaiki untuk hasil optimal.`}
+              ? "Your CV meets all ATS criteria."
+              : `${checks.length - passCount} item${checks.length - passCount > 1 ? "s" : ""} need${checks.length - passCount === 1 ? "s" : ""} improvement for optimal results.`}
           </div>
         </div>
       </div>

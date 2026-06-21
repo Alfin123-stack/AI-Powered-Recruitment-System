@@ -1,5 +1,5 @@
-// SERVER Component — tidak ada directive "use client".
-// Render daftar tag statis. Tidak ada interaktivitas atau hooks.
+// SERVER Component — no "use client" directive.
+// Renders a static list of tags. No interactivity or hooks.
 
 type CompanyTagsProps = {
   tags: string[];

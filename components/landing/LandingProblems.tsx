@@ -16,40 +16,40 @@ export function LandingProblems() {
             <div className="absolute inset-0 bg-emerald-900/15 z-[5] mix-blend-multiply" />
             <img
               src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
-              alt="Analisis data rekrutmen"
+              alt="Recruitment data analysis"
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-6 right-6 z-20 bg-[#0a0f0d]/90 border border-amber-500/30 backdrop-blur-sm rounded-[12px] px-4 py-3">
               <p className="text-[0.65rem] text-[#7a9585] mb-1">
-                Efisiensi Rekrutmen
+                Recruitment Efficiency
               </p>
               <p className="text-[0.9rem] font-bold text-amber-400">
-                +65% lebih cepat
+                +65% faster
               </p>
             </div>
           </LandingFadeIn>
 
           <LandingFadeIn delay={0.1}>
-            <LandingTag>Mengapa RecruitAI</LandingTag>
+            <LandingTag>Why RecruitAI</LandingTag>
             <h2 className="font-syne font-extrabold text-[clamp(1.8rem,3.5vw,2.5rem)] leading-[1.15] mt-4 mb-5">
-              Rekrutmen Konvensional Sudah Tidak Cukup
+              Conventional Recruitment Is No Longer Enough
             </h2>
             <p className="text-[#7a9585] text-[0.95rem] leading-[1.78] mb-6">
-              Proses screening CV manual memakan waktu berjam-jam per hari,
-              rentan bias, dan tidak konsisten. Di sisi lain, kandidat kompeten
-              sering gagal di seleksi awal hanya karena CV mereka tidak
-              dioptimalkan untuk sistem ATS — bukan karena mereka tidak layak.
+              Manual CV screening takes hours each day, is prone to bias, and
+              lacks consistency. Meanwhile, qualified candidates often fail the
+              initial screening simply because their CV wasn't optimized for ATS
+              systems — not because they weren't the right fit.
             </p>
             <p className="text-[#7a9585] text-[0.95rem] leading-[1.78] mb-6">
-              RecruitAI hadir untuk memecahkan gap ini: memberikan kandidat
-              analisis CV yang objektif dan rekomendasi konkret, sekaligus
-              membantu HR memilah ratusan pelamar dengan efisien berbasis data.
+              RecruitAI is here to bridge that gap: giving candidates objective CV
+              analysis and concrete recommendations, while helping HR teams sort
+              through hundreds of applicants efficiently using data.
             </p>
             <div className="flex flex-col gap-3">
               {[
-                "73% HR menghabiskan lebih dari 6 jam/hari untuk screening manual",
-                "75% CV berkualitas gagal di seleksi ATS sebelum dibaca HR",
-                "62% keputusan hiring masih dipengaruhi bias tidak disadari",
+                "73% of HR professionals spend more than 6 hours/day on manual screening",
+                "75% of quality CVs fail ATS screening before ever reaching HR",
+                "62% of hiring decisions are still influenced by unconscious bias",
               ].map((s, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <CheckCircle2

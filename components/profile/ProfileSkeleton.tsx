@@ -9,7 +9,7 @@ function Shimmer({ className }: { className?: string }) {
 export function ProfileSkeleton() {
   return (
     <div className="min-h-screen bg-[#0a0f0d] pt-24 pb-16 px-4">
-      {/* Ambient background — sama dengan page asli */}
+      {/* Ambient background — same as the original page */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-20%] left-[10%] w-[600px] h-[600px] rounded-full opacity-[0.04] bg-[radial-gradient(circle,#10b981_0%,transparent_70%)]" />
         <div className="absolute bottom-[-10%] right-[5%] w-[400px] h-[400px] rounded-full opacity-[0.03] bg-[radial-gradient(circle,#06b6d4_0%,transparent_70%)]" />

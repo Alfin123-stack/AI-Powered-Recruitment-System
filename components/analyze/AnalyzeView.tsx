@@ -1,5 +1,4 @@
 
-
 import { AnimatePresence } from "framer-motion";
 import AnalyzeHero from "./AnalyzeHero";
 import AnalyzeResult from "./AnalyzeResult";

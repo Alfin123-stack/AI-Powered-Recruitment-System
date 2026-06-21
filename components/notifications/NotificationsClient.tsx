@@ -13,7 +13,7 @@ import type {
 } from "../../types/main/notifications";
 import { DEFAULT_STATS } from "@/constants/main/notifications";
 
-// ── Helper subtitle default ─────────────────────────────────────────────────
+// ── Default subtitle helper ─────────────────────────────────────────────────
 function defaultSubtitle({
   unreadCount,
   user,
@@ -22,13 +22,13 @@ function defaultSubtitle({
   user?: UserMeta | null;
 }): string {
   const name = user?.user_metadata?.full_name ?? user?.full_name ?? undefined;
-  const greeting = name ? `Hei, ${name.split(" ")[0]} — ` : "";
+  const greeting = name ? `Hi, ${name.split(" ")[0]} — ` : "";
   return unreadCount > 0
-    ? `${greeting}${unreadCount} notifikasi belum dibaca`
-    : `${greeting}Semua notifikasi sudah dibaca`;
+    ? `${greeting}${unreadCount} unread notifications`
+    : `${greeting}All notifications read`;
 }
 
-// ── Komponen utama ──────────────────────────────────────────────────────────
+// ── Main component ──────────────────────────────────────────────────────────
 export default function NotificationsClient({
   initialNotifs,
   stats = DEFAULT_STATS,

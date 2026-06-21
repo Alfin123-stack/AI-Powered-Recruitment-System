@@ -1,4 +1,4 @@
-// Legacy skeleton — gunakan DevToSkeleton untuk Suspense fallback
+// Legacy skeleton — use DevToSkeleton for the Suspense fallback
 export function SkeletonCard() {
   return (
     <div className="bg-[#080d0b] border border-emerald-500/10 rounded-[16px] overflow-hidden">

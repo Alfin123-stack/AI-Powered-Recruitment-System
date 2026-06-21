@@ -1,5 +1,4 @@
 
-
 export default function NotificationsSkeleton() {
   return (
     <div className="space-y-6">

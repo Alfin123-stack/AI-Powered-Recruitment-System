@@ -17,7 +17,7 @@ export function DevToCard({ article, index }: DevToCardProps) {
     .slice(0, 130);
 
   const formattedDate = article.pubDate
-    ? new Date(article.pubDate).toLocaleDateString("id-ID", {
+    ? new Date(article.pubDate).toLocaleDateString("en-US", {
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -121,7 +121,7 @@ export function DevToCard({ article, index }: DevToCardProps) {
                 )}
               </div>
               <span className="flex items-center gap-1 text-cyan-500/50 group-hover:text-cyan-400 transition-colors text-[0.70rem]">
-                Baca <ExternalLink size={10} />
+                Read <ExternalLink size={10} />
               </span>
             </div>
           </div>

@@ -28,7 +28,7 @@ export default function FeedbackTab({ feedback }: Props) {
 
   if (!feedback || feedback.length === 0) {
     return (
-      <EmptyTabState message="Data feedback tidak tersedia untuk analisis ini." />
+      <EmptyTabState message="Feedback data is not available for this analysis." />
     );
   }
 

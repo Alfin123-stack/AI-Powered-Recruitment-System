@@ -1,7 +1,7 @@
 "use client";
 
-// Wajib client karena menerima event handler (onChange, onClick)
-// yang tidak bisa dipass dari server ke client sebagai props.
+// Must be client because it receives event handlers (onChange, onClick)
+// which cannot be passed from server to client as props.
 
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ export default function CompanyToolbar({
               className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[#4a6456] pointer-events-none"
             />
             <Input
-              placeholder="Cari nama perusahaan, industri, atau tag..."
+              placeholder="Search by company name, industry, or tag..."
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-9 h-[36px] bg-[#141f19] border-white/[0.07] text-[#e8f0ec] text-[0.78rem] placeholder:text-[#3a5444] rounded-[8px] focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/30"
@@ -59,7 +59,7 @@ export default function CompanyToolbar({
           {/* Result count */}
           <span className="flex items-center gap-[5px] text-[#4a6456] text-[0.72rem] ml-auto">
             <SlidersHorizontal size={12} />
-            {resultCount} perusahaan
+            {resultCount} companies
           </span>
         </div>
       </div>

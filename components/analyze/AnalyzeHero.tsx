@@ -52,16 +52,16 @@ export default function AnalyzeHero({ isLoading, analysisData }: Props) {
             fontSize: "clamp(1.85rem,4vw,2.6rem)",
             color: "rgba(255,255,255,0.88)",
           }}>
-          Analisis CV dengan{" "}
+          Analyze your CV with{" "}
           <span className="bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
-            kecerdasan buatan
+            artificial intelligence
           </span>
         </h1>
         <p
           className="text-[0.87rem] leading-[1.7] max-w-[420px] mx-auto mb-5"
           style={{ color: "rgba(255,255,255,0.28)" }}>
-          Score, ATS check, feedback per bagian, dan saran penulisan AI — semua
-          dalam hitungan detik.
+          Score, ATS check, section-by-section feedback, and AI writing
+          suggestions — all in a matter of seconds.
         </p>
 
         {/* Status pill */}
@@ -79,7 +79,7 @@ export default function AnalyzeHero({ isLoading, analysisData }: Props) {
                 className="animate-spin"
                 style={{ color: "rgba(74,222,128,0.6)" }}
               />
-              <span>Menganalisis...</span>
+              <span>Analyzing...</span>
             </>
           ) : analysisData ? (
             <>
@@ -89,8 +89,8 @@ export default function AnalyzeHero({ isLoading, analysisData }: Props) {
               />
               <span style={{ color: "rgba(74,222,128,0.6)" }}>
                 {analysisData.isFromDB
-                  ? "Menampilkan analisis terakhir"
-                  : "Analisis selesai"}
+                  ? "Showing your latest analysis"
+                  : "Analysis complete"}
               </span>
               {analysisData.fileName && (
                 <>
@@ -102,7 +102,7 @@ export default function AnalyzeHero({ isLoading, analysisData }: Props) {
           ) : (
             <>
               <Eye size={11} />
-              <span>Upload CV untuk memulai</span>
+              <span>Upload your CV to get started</span>
             </>
           )}
         </div>

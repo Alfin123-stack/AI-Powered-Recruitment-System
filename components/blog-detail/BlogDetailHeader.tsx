@@ -17,7 +17,7 @@ export default function BlogDetailHeader({ article }: BlogDetailHeaderProps) {
           <Link
             href="/"
             className="hover:text-emerald-400 transition-colors no-underline">
-            Beranda
+            Home
           </Link>
           <ChevronRight size={12} />
           <Link
@@ -38,7 +38,7 @@ export default function BlogDetailHeader({ article }: BlogDetailHeaderProps) {
         <div className="flex items-center gap-3 flex-wrap mb-5">
           {article.featured && (
             <span className="inline-flex items-center gap-1 bg-amber-500/10 border border-amber-500/25 text-amber-400 px-[10px] py-[4px] rounded-full text-[0.65rem] font-bold tracking-[0.08em] uppercase">
-              <Sparkles size={9} /> Pilihan Editor
+              <Sparkles size={9} /> Editor&apos;s Pick
             </span>
           )}
           <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 px-[10px] py-[4px] rounded-full text-[0.65rem] font-semibold uppercase tracking-[0.07em]">
@@ -66,7 +66,7 @@ export default function BlogDetailHeader({ article }: BlogDetailHeaderProps) {
           </span>
           <span>·</span>
           <span className="flex items-center gap-1">
-            <Clock size={12} /> {article.readTime} baca
+            <Clock size={12} /> {article.readTime} read
           </span>
           <span>·</span>
           <span className="flex items-center gap-1 text-emerald-600">

@@ -27,7 +27,7 @@ export default function WritingTab({ suggestions }: Props) {
 
   if (!suggestions || suggestions.length === 0) {
     return (
-      <EmptyTabState message="Data saran penulisan tidak tersedia untuk analisis ini." />
+      <EmptyTabState message="Writing suggestion data is not available for this analysis." />
     );
   }
 
@@ -56,9 +56,9 @@ export default function WritingTab({ suggestions }: Props) {
         <p
           className="text-[12px] leading-[1.65]"
           style={{ color: "rgba(255,255,255,0.38)" }}>
-          AI menulis ulang kalimat-kalimat lemah di CV kamu menjadi versi yang
-          lebih kuat, spesifik, dan berorientasi hasil. Salin dan sesuaikan
-          dengan konteks kamu.
+          AI rewrites the weak sentences in your CV into stronger, more
+          specific, and results-oriented versions. Copy and adjust them to
+          fit your context.
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export default function WritingTab({ suggestions }: Props) {
                 <div
                   className="text-[9.5px] font-bold uppercase tracking-widest mb-[6px]"
                   style={{ color: "rgba(248,113,113,0.5)" }}>
-                  Sebelum
+                  Before
                 </div>
                 <div
                   className="text-[12.5px] leading-[1.6] px-3 py-[8px] rounded-[7px]"
@@ -137,7 +137,7 @@ export default function WritingTab({ suggestions }: Props) {
                 <div
                   className="text-[9.5px] font-bold uppercase tracking-widest mb-[6px]"
                   style={{ color: "rgba(74,222,128,0.5)" }}>
-                  Versi diperkuat
+                  Strengthened version
                 </div>
                 <div
                   className="text-[12.5px] leading-[1.6] px-3 py-[8px] rounded-[7px]"

@@ -8,13 +8,13 @@ export function LandingTestimonials() {
     <section className="py-[100px]">
       <div className="max-w-[1180px] mx-auto px-6">
         <LandingFadeIn className="text-center mb-[60px]">
-          <LandingTag>Testimoni</LandingTag>
+          <LandingTag>Testimonials</LandingTag>
           <h2 className="font-syne font-extrabold mt-4 mb-4 text-[clamp(1.8rem,3.5vw,2.6rem)]">
-            Dipercaya Kandidat & Tim HR
+            Trusted by Candidates & HR Teams
           </h2>
           <p className="text-[#7a9585] max-w-[480px] mx-auto leading-[1.7] text-[0.95rem]">
-            Dari pencari kerja yang akhirnya lolos seleksi awal hingga rekruter
-            yang mempersingkat proses shortlist dari hari ke jam.
+            From job seekers who finally cleared the initial screening to recruiters
+            who cut their shortlisting process from days to hours.
           </p>
         </LandingFadeIn>
 

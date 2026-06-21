@@ -32,13 +32,13 @@ export default function OverviewTab({ data }: Props) {
         <div
           className="text-[10px] font-bold uppercase tracking-widest mb-4"
           style={{ color: "rgba(255,255,255,0.28)" }}>
-          Skills terdeteksi
+          Detected skills
         </div>
         {data.skills.length === 0 ? (
           <p
             className="text-[12px]"
             style={{ color: "rgba(255,255,255,0.25)" }}>
-            Tidak ada skill yang terdeteksi.
+            No skills detected.
           </p>
         ) : (
           <>
@@ -75,8 +75,8 @@ export default function OverviewTab({ data }: Props) {
                 className="mt-3 flex items-center gap-1 text-[11px]"
                 style={{ color: "rgba(255,255,255,0.3)" }}>
                 {showAllSkills
-                  ? "Lebih sedikit"
-                  : `+${data.skills.length - 7} lainnya`}
+                  ? "Show less"
+                  : `+${data.skills.length - 7} more`}
                 <ChevronDown
                   size={11}
                   style={{
@@ -100,13 +100,13 @@ export default function OverviewTab({ data }: Props) {
         <div
           className="text-[10px] font-bold uppercase tracking-widest mb-4"
           style={{ color: "rgba(255,255,255,0.28)" }}>
-          Analisis per bagian CV
+          Analysis by CV section
         </div>
         {data.categories.length === 0 ? (
           <p
             className="text-[12px]"
             style={{ color: "rgba(255,255,255,0.25)" }}>
-            Tidak ada data kategori.
+            No category data.
           </p>
         ) : (
           <div className="space-y-[12px]">
@@ -157,13 +157,13 @@ export default function OverviewTab({ data }: Props) {
           className="text-[10px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2"
           style={{ color: "rgba(255,255,255,0.28)" }}>
           <Star size={11} style={{ color: "rgba(74,222,128,0.5)" }} />
-          Kekuatan CV
+          CV Strengths
         </div>
         {data.strengths.length === 0 ? (
           <p
             className="text-[12px]"
             style={{ color: "rgba(255,255,255,0.25)" }}>
-            Tidak ada data kekuatan.
+            No strengths data.
           </p>
         ) : (
           <div className="space-y-[6px]">
@@ -205,13 +205,13 @@ export default function OverviewTab({ data }: Props) {
           className="text-[10px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2"
           style={{ color: "rgba(255,255,255,0.28)" }}>
           <Lightbulb size={11} style={{ color: "rgba(245,158,11,0.5)" }} />
-          Area perbaikan
+          Areas for improvement
         </div>
         {data.improvements.length === 0 ? (
           <p
             className="text-[12px]"
             style={{ color: "rgba(255,255,255,0.25)" }}>
-            Tidak ada saran perbaikan.
+            No improvement suggestions.
           </p>
         ) : (
           <div className="space-y-[6px]">

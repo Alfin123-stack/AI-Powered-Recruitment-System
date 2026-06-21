@@ -49,13 +49,13 @@ export default function NotificationsList({
         </div>
         <p className="font-semibold text-[0.88rem] mb-1 text-[#8aada0]">
           {activeFilter === "unread"
-            ? "Semua sudah dibaca"
-            : "Tidak ada notifikasi"}
+            ? "All caught up"
+            : "No notifications"}
         </p>
         <p className="text-[0.73rem] text-[#2e4438]">
           {activeFilter === "unread"
-            ? "Tidak ada notifikasi yang belum dibaca."
-            : "Notifikasi akan muncul saat ada pembaruan."}
+            ? "You have no unread notifications."
+            : "Notifications will appear here when there's an update."}
         </p>
       </motion.div>
     );

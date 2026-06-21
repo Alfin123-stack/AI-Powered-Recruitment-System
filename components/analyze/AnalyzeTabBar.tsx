@@ -14,7 +14,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "overview", label: "Overview", icon: <BarChart3 size={12} /> },
   { id: "ats", label: "ATS Check", icon: <ShieldCheck size={12} /> },
   { id: "feedback", label: "Feedback", icon: <Layers size={12} /> },
-  { id: "writing", label: "Saran Penulisan", icon: <Pencil size={12} /> },
+  { id: "writing", label: "Writing Suggestions", icon: <Pencil size={12} /> },
 ];
 
 export default function TabBar({ active, onChange }: Props) {

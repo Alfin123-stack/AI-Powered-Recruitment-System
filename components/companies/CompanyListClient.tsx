@@ -1,6 +1,6 @@
 // @/components/company/CompanyListClient.tsx
-// CSR orchestrator — wiring useCompanyFilter ke CompanyToolbar + CompanyGrid
-// Tidak ada logika filtering atau UI langsung di sini
+// CSR orchestrator — wires useCompanyFilter to CompanyToolbar + CompanyGrid
+// No filtering logic or direct UI here
 
 "use client";
 

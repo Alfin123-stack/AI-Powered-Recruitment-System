@@ -1,6 +1,6 @@
-// SERVER Component — tidak ada directive "use client".
-// Digunakan sebagai fallback <Suspense> saat CompanyListClient
-// (yang memuat data) masih loading. Pure HTML statis.
+// SERVER Component — no "use client" directive.
+// Used as <Suspense> fallback while CompanyListClient
+// (which loads data) is still loading. Pure static HTML.
 
 export default function CompanyGridSkeleton() {
   return (

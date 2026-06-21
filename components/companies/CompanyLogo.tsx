@@ -32,7 +32,7 @@ export default function CompanyLogo({
             className="w-full h-full object-cover rounded-[10px]"
           />
         ) : (
-          // ✅ Fix: createElement menghindari React menganggapnya sebagai komponen baru
+          // ✅ Fix: createElement prevents React from treating it as a new component
           createElement(getCategoryIcon(id), {
             size: 18,
             style: { color: accent },

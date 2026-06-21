@@ -19,22 +19,21 @@ export default function BlogHero() {
         <div className="max-w-[640px] animate-[fadeInUp_0.65s_ease-out_both]">
           <div className="mb-5">
             <span className="inline-flex items-center gap-[5px] px-[12px] py-[4px] rounded-full text-[0.68rem] font-semibold tracking-[0.09em] uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-              <BookOpen size={9} /> Blog & Insight Karier
+              <BookOpen size={9} /> Blog & Career Insights
             </span>
           </div>
 
           <h1 className="font-syne font-extrabold text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.1] tracking-tight mb-5">
-            Tips, Tren, dan{" "}
+            The Latest Tips, Trends, and{" "}
             <span className="bg-gradient-to-br from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-              Insight Karier
-            </span>{" "}
-            Terkini
+              Career Insights
+            </span>
           </h1>
 
           <p className="text-[#7a9585] text-[1rem] leading-[1.72] max-w-[520px]">
-            Artikel pilihan editor RecruitAI tentang tips CV, tren industri, dan
-            strategi karier — plus konten terbaru dari komunitas developer
-            global via dev.to.
+            Editor-curated articles from RecruitAI on CV tips, industry
+            trends, and career strategy — plus the latest content from the
+            global developer community via dev.to.
           </p>
         </div>
 

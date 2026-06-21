@@ -22,26 +22,26 @@ import { LandingCard } from "./LandingCard";
 const CANDIDATE_CARDS = [
   {
     icon: <TrendingUp size={28} />,
-    title: "Skor CV Instan",
-    desc: "Ketahui seberapa kuat CV kamu berdasarkan Resume Score, ATS Score, dan Overall Rating dalam hitungan detik.",
+    title: "Instant CV Score",
+    desc: "Find out how strong your CV is based on Resume Score, ATS Score, and Overall Rating in seconds.",
     href: "/analyze",
   },
   {
     icon: <Target size={28} />,
-    title: "Pencocokan Lowongan Otomatis",
-    desc: "Skill yang terdeteksi dari CV langsung dipakai untuk menyarankan lowongan paling relevan — tidak perlu input ulang.",
+    title: "Automatic Job Matching",
+    desc: "Skills detected from your CV are used immediately to suggest the most relevant openings — no need to re-enter your details.",
     href: "/dashboard/candidate/matches",
   },
   {
     icon: <Sparkles size={28} />,
-    title: "Rekomendasi Konkret",
-    desc: "Dapatkan saran perbaikan spesifik per bagian CV yang bisa langsung diimplementasikan untuk meningkatkan skor.",
+    title: "Concrete Recommendations",
+    desc: "Get specific improvement suggestions for each section of your CV that you can act on right away to boost your score.",
     href: "/analyze",
   },
   {
     icon: <CheckCircle2 size={28} />,
-    title: "Cek Kompatibilitas Seleksi",
-    desc: "ATS Score menunjukkan seberapa baik CV kamu akan terbaca oleh sistem seleksi otomatis perusahaan sebelum sampai ke HR.",
+    title: "Screening Compatibility Check",
+    desc: "ATS Score shows how well your CV will be read by a company's automated screening system before it ever reaches HR.",
     href: "/analyze",
   },
 ];
@@ -49,26 +49,26 @@ const CANDIDATE_CARDS = [
 const HR_CARDS = [
   {
     icon: <Award size={28} />,
-    title: "Ranking Kandidat Otomatis",
-    desc: "Semua pelamar diurutkan otomatis berdasarkan skor AI — tanpa perlu membaca satu per satu secara manual.",
+    title: "Automatic Candidate Ranking",
+    desc: "All applicants are automatically sorted by AI score — no need to read through them one by one manually.",
     href: "/dashboard/hr",
   },
   {
     icon: <Search size={28} />,
-    title: "Detail Kandidat & CV",
-    desc: "Lihat skill terdeteksi, rincian skor, dan akses CV asli kandidat langsung dari dashboard tanpa berpindah halaman.",
+    title: "Candidate Details & CV",
+    desc: "View detected skills, score breakdowns, and access the original CV directly from your dashboard without switching pages.",
     href: "/dashboard/hr",
   },
   {
     icon: <Zap size={28} />,
-    title: "Update Status Cepat",
-    desc: "Shortlist, pindahkan ke review, atau tolak kandidat dengan satu klik. Status terupdate langsung ke sistem.",
+    title: "Quick Status Updates",
+    desc: "Shortlist, move to review, or reject candidates with a single click. Status updates instantly across the system.",
     href: "/dashboard/hr",
   },
   {
     icon: <LayoutDashboard size={28} />,
-    title: "Ringkasan per Posisi",
-    desc: "Lihat jumlah pelamar dan persentase shortlisted per posisi lowongan dalam tampilan yang mudah dibaca.",
+    title: "Per-Position Summary",
+    desc: "See the number of applicants and percentage shortlisted per job opening in an easy-to-read view.",
     href: "/dashboard/hr",
   },
 ];
@@ -82,13 +82,14 @@ export function LandingForWho() {
       <div className="max-w-[1180px] mx-auto px-6">
         <div className="grid gap-16 items-center [grid-template-columns:1fr_1fr] max-lg:grid-cols-1 mb-[60px]">
           <LandingFadeIn>
-            <LandingTag>Untuk Siapa</LandingTag>
+            <LandingTag>Who It's For</LandingTag>
             <h2 className="font-syne font-extrabold mt-4 text-[clamp(1.8rem,3.5vw,2.5rem)] leading-[1.15] mb-5">
-              Dirancang untuk Kandidat dan Tim HR
+              Built for Candidates and HR Teams
             </h2>
             <p className="text-[#7a9585] text-[0.95rem] leading-[1.78]">
-              Platform ini melayani dua sisi proses rekrutmen — pencari kerja yang ingin tampil
-              lebih kuat, dan tim HR yang ingin proses seleksi lebih efisien berbasis data.
+              This platform serves both sides of the hiring process — job seekers who want
+              to stand out stronger, and HR teams who want a more efficient, data-driven
+              selection process.
             </p>
           </LandingFadeIn>
           <LandingFadeIn
@@ -98,7 +99,7 @@ export function LandingForWho() {
             <div className="absolute inset-0 bg-emerald-900/20 z-[5] mix-blend-multiply" />
             <img
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
-              alt="Tim developer dan HR bekerja bersama"
+              alt="Developer and HR team working together"
               className="w-full h-full object-cover"
             />
           </LandingFadeIn>
@@ -106,8 +107,8 @@ export function LandingForWho() {
 
         <div className="flex justify-center gap-2 mb-10">
           {[
-            { k: "candidate", l: "Kandidat / Pencari Kerja", icon: <FileText size={15} /> },
-            { k: "hr", l: "HR / Perusahaan", icon: <Building2 size={15} /> },
+            { k: "candidate", l: "Candidate / Job Seeker", icon: <FileText size={15} /> },
+            { k: "hr", l: "HR / Company", icon: <Building2 size={15} /> },
           ].map(({ k, l, icon }) => (
             <button
               key={k}

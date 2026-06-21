@@ -22,7 +22,7 @@ import { useNavbar } from "@/hooks/main/useNavbar";
 const navLinks = [
   { label: "Jobs", href: "/jobs", icon: <BriefcaseBusiness size={13} /> },
     { label: "Companies", href: "/companies", icon: <Building2 size={13} /> },
-  { label: "AI Analyzer", href: "/analyze", icon: <ScanText size={13} /> },
+  { label: "CV Analyzer", href: "/analyze", icon: <ScanText size={13} /> },
   { label: "Blog", href: "/blog", icon: <BookOpen size={13} /> },
 ];
 
@@ -246,7 +246,7 @@ export default function Navbar() {
                           },
                           {
                             icon: <Settings size={13} />,
-                            label: "Pengaturan",
+                            label: "Settings",
                             href: "/profile",
                           },
                         ].map((item) => (
@@ -294,7 +294,7 @@ export default function Navbar() {
                     text-[0.82rem] font-medium text-[#6b8878] no-underline
                     transition-all duration-200
                     hover:text-[#d4e8dd] hover:bg-white/[0.04]">
-                  Masuk
+                  Login
                 </Link>
 
                 {/* Animated CTA */}
@@ -311,7 +311,7 @@ export default function Navbar() {
                     hover:text-white hover:bg-[#0f1612]
                     transition-all duration-200">
                     <Sparkles size={12} className="opacity-80" />
-                    Coba Gratis
+                    Try Free
                   </span>
                 </Link>
               </>
@@ -452,7 +452,7 @@ export default function Navbar() {
                 border border-transparent
                 hover:text-[#d4e8dd] hover:bg-white/[0.04]
                 transition-all duration-200">
-              Masuk
+              Login
               <ChevronRight size={13} className="opacity-30" />
             </Link>
 
@@ -466,7 +466,7 @@ export default function Navbar() {
                 hover:shadow-[0_6px_24px_rgba(16,185,129,0.3)]
                 active:scale-[0.98]">
               <Sparkles size={14} />
-              Coba Gratis
+              Try Free
             </Link>
           </div>
         )}
