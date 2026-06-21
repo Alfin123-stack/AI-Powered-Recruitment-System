@@ -1,22 +1,38 @@
 "use client";
 
-// Client Component — requires interactivity: apply, save, check session
-// Job data is passed from Server Component as props
-
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
-import { CheckCircle2, Bookmark, Upload, Loader2 } from "lucide-react";
+import {
+  CheckCircle2,
+  Bookmark,
+  Upload,
+  Loader2,
+  Info,
+  Linkedin,
+  MessageCircle,
+  Twitter,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { JobApplyModal } from "./JobApplyModal";
 import { Job } from "@/types/jobs";
 import { formatDeadline } from "@/lib/utils";
 import { STATUS_CONFIG_UI } from "@/constants/shared";
+import type { UserRole } from "@/hooks/main/useUserRole";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+// ── Share platforms config ───────────────────────────────────────────────────
+const SHARE_PLATFORMS = [
+  { name: "LinkedIn", icon: Linkedin },
+  { name: "WhatsApp", icon: MessageCircle },
+  { name: "Twitter", icon: Twitter },
+] as const;
+
+type SharePlatform = (typeof SHARE_PLATFORMS)[number]["name"];
 
 export default function JobDetailSidebar({
   job,
@@ -26,6 +42,9 @@ export default function JobDetailSidebar({
   color: string;
 }) {
   const router = useRouter();
+
+  // ── Role state ───────────────────────────────────────────────────────────────
+  const [role, setRole] = useState<UserRole>(null);
 
   // ── Apply state ──────────────────────────────────────────────────────────────
   const [session, setSession] = useState<Session | null>(null);
@@ -48,6 +67,18 @@ export default function JobDetailSidebar({
       } = await supabase.auth.getSession();
       setSession(s);
       if (!s?.access_token) return;
+
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", s.user.id)
+        .single<{ role: string }>();
+
+      const currentRole: UserRole = userData?.role === "hr" ? "hr" : "candidate";
+      setRole(currentRole);
+
+      // HR accounts can't apply or save jobs — skip those status checks entirely
+      if (currentRole === "hr") return;
 
       // Parallel: check apply status + save status
       setCheckingApplied(true);
@@ -127,7 +158,24 @@ export default function JobDetailSidebar({
     }
   };
 
+  const handleShare = (platform: SharePlatform) => {
+    const shareUrl = window.location.href;
+    const companyName = job.companies?.name;
+    const shareText = companyName
+      ? `Check out this job opening: ${job.title} at ${companyName}`
+      : `Check out this job opening: ${job.title}`;
+
+    const links: Record<SharePlatform, string> = {
+      LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      WhatsApp: `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`,
+      Twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+    };
+
+    window.open(links[platform], "_blank", "noopener,noreferrer,width=600,height=500");
+  };
+
   const status = applicationStatus ? STATUS_CONFIG_UI[applicationStatus] : null;
+  const isHR = role === "hr";
 
   return (
     <>
@@ -146,7 +194,15 @@ export default function JobDetailSidebar({
         {/* Main card */}
         <div className="bg-[#0f1612] border border-emerald-500/15 rounded-[16px] p-6 mb-4">
           {/* Apply button area */}
-          {checkingApplied ? (
+          {isHR ? (
+            <div className="w-full rounded-[11px] border border-amber-500/25 bg-amber-500/[0.06] flex items-start gap-3 px-4 py-[14px] mb-[10px]">
+              <Info size={16} className="text-amber-400 flex-shrink-0 mt-[1px]" />
+              <span className="text-[0.8rem] text-[#d8c8a0] leading-relaxed">
+                You&apos;re signed in as an HR account. Only candidate
+                accounts can apply for jobs.
+              </span>
+            </div>
+          ) : checkingApplied ? (
             <div className="w-full py-[14px] rounded-[11px] bg-[#141f19] border border-emerald-500/15 flex items-center justify-center gap-2 mb-[10px]">
               <Loader2 size={14} className="text-emerald-400 animate-spin" />
               <span className="text-[#7a9585] text-[0.85rem]">
@@ -179,41 +235,43 @@ export default function JobDetailSidebar({
             </Button>
           )}
 
-          {/* Save button */}
-          <button
-            onClick={handleToggleSave}
-            disabled={savingLoading || checkingSaved}
-            className={`
-              w-full py-[11px] rounded-[11px] text-[0.88rem] font-semibold border
-              flex items-center justify-center gap-2
-              transition-all duration-200 cursor-pointer
-              disabled:opacity-50 disabled:cursor-not-allowed
-              ${
-                saved
-                  ? `bg-emerald-500/10 text-emerald-400 border-emerald-500/30
-                     hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30
-                     active:scale-[0.98]`
-                  : `bg-[#141f19] text-[#c5d8cc] border-emerald-500/15
-                     hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/40
-                     hover:shadow-[0_0_16px_rgba(16,185,129,0.08)]
-                     active:scale-[0.98]`
-              }
-            `}>
-            {savingLoading ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <Bookmark
-                size={14}
-                fill={saved ? "currentColor" : "none"}
-                className="transition-transform duration-200"
-              />
-            )}
-            {savingLoading
-              ? "Processing..."
-              : saved
-                ? "Saved · Click to remove"
-                : "Save Job"}
-          </button>
+          {/* Save button — candidates only */}
+          {!isHR && (
+            <button
+              onClick={handleToggleSave}
+              disabled={savingLoading || checkingSaved}
+              className={`
+                w-full py-[11px] rounded-[11px] text-[0.88rem] font-semibold border
+                flex items-center justify-center gap-2
+                transition-all duration-200 cursor-pointer
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${
+                  saved
+                    ? `bg-emerald-500/10 text-emerald-400 border-emerald-500/30
+                       hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30
+                       active:scale-[0.98]`
+                    : `bg-[#141f19] text-[#c5d8cc] border-emerald-500/15
+                       hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/40
+                       hover:shadow-[0_0_16px_rgba(16,185,129,0.08)]
+                       active:scale-[0.98]`
+                }
+              `}>
+              {savingLoading ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Bookmark
+                  size={14}
+                  fill={saved ? "currentColor" : "none"}
+                  className="transition-transform duration-200"
+                />
+              )}
+              {savingLoading
+                ? "Processing..."
+                : saved
+                  ? "Saved · Click to remove"
+                  : "Save Job"}
+            </button>
+          )}
 
           <Separator className="my-5 bg-emerald-500/15" />
 
@@ -240,20 +298,22 @@ export default function JobDetailSidebar({
             ))}
           </div>
 
-          {/* AI Match CTA */}
-          <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-[12px] p-4">
-            <div className="text-[0.75rem] font-bold text-emerald-400 tracking-[0.07em] uppercase mb-2">
-              ✦ AI Match Score
+          {/* AI Match CTA — candidates only */}
+          {!isHR && (
+            <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-[12px] p-4">
+              <div className="text-[0.75rem] font-bold text-emerald-400 tracking-[0.07em] uppercase mb-2">
+                ✦ AI Match Score
+              </div>
+              <p className="text-[0.82rem] text-[#7a9585] leading-relaxed mb-[10px]">
+                Upload your CV to find out how well you match this position.
+              </p>
+              <Link
+                href="/analyze"
+                className="flex items-center justify-center gap-2 w-full py-[9px] rounded-[9px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[0.8rem] font-bold no-underline hover:bg-emerald-500/20 transition-all">
+                Analyze My CV →
+              </Link>
             </div>
-            <p className="text-[0.82rem] text-[#7a9585] leading-relaxed mb-[10px]">
-              Upload your CV to find out how well you match this position.
-            </p>
-            <Link
-              href="/analyze"
-              className="flex items-center justify-center gap-2 w-full py-[9px] rounded-[9px] bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[0.8rem] font-bold no-underline hover:bg-emerald-500/20 transition-all">
-              Analyze My CV →
-            </Link>
-          </div>
+          )}
         </div>
 
         {/* Share card */}
@@ -262,11 +322,14 @@ export default function JobDetailSidebar({
             Share this job
           </div>
           <div className="flex gap-2">
-            {["LinkedIn", "WhatsApp", "Twitter"].map((p) => (
+            {SHARE_PLATFORMS.map(({ name, icon: Icon }) => (
               <button
-                key={p}
-                className="flex-1 bg-[#141f19] border border-emerald-500/15 rounded-[8px] py-2 px-[6px] text-[#7a9585] text-[0.72rem] font-semibold hover:border-emerald-500/35 hover:text-[#e8f0ec] transition-all cursor-pointer">
-                {p}
+                key={name}
+                onClick={() => handleShare(name)}
+                title={`Share via ${name}`}
+                className="flex-1 bg-[#141f19] border border-emerald-500/15 rounded-[8px] py-2 px-[6px] text-[#7a9585] text-[0.72rem] font-semibold hover:border-emerald-500/35 hover:text-[#e8f0ec] transition-all cursor-pointer flex items-center justify-center gap-[5px]">
+                <Icon size={13} className="flex-shrink-0" />
+                {name}
               </button>
             ))}
           </div>

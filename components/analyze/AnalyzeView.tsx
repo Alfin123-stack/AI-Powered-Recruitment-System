@@ -1,22 +1,24 @@
-// @/components/analyze/AnalyzeView.tsx
-// Layout presentasional — menerima semua data & handler sebagai props
+
 
 import { AnimatePresence } from "framer-motion";
 import AnalyzeHero from "./AnalyzeHero";
 import AnalyzeResult from "./AnalyzeResult";
 import EmptyState from "./AnalyzeEmptyState";
 import { AnalysisData } from "@/types/main/analyze";
+import type { UserRole } from "@/hooks/main/useUserRole";
 
 interface AnalyzeViewProps {
   analysisData: AnalysisData | null;
   isLoading: boolean;
   onFileSelect: (file: File) => Promise<void>;
+  role?: UserRole;
 }
 
 export function AnalyzeView({
   analysisData,
   isLoading,
   onFileSelect,
+  role,
 }: AnalyzeViewProps) {
   return (
     <div className="min-h-screen bg-[#090d0b] text-[#e8f0ec]">
@@ -29,12 +31,14 @@ export function AnalyzeView({
               data={analysisData}
               onReanalyze={onFileSelect}
               isLoading={isLoading}
+              role={role}
             />
           ) : (
             <EmptyState
               key="empty"
               onFileSelect={onFileSelect}
               isLoading={isLoading}
+              role={role}
             />
           )}
         </AnimatePresence>

@@ -72,14 +72,7 @@ export default function JobsHero({
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          className="inline-flex items-center gap-2 bg-emerald-500/[0.08] border border-emerald-500/25 text-emerald-400 px-4 py-[6px] rounded-full text-[0.7rem] font-semibold tracking-[0.1em] uppercase mb-6">
-          <Sparkles size={11} />
-          Latest Openings · AI-Powered Matching
-        </motion.div>
+
 
         <h1
           className="font-syne font-extrabold leading-[1.08] tracking-tight mb-5 text-[#e8f0ec]"

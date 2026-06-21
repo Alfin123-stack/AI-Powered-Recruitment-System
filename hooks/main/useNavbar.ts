@@ -11,6 +11,7 @@ export function useNavbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   const roleUser =
     (user?.identities?.[0]?.identity_data?.role as string | undefined) ?? null;
@@ -31,15 +32,33 @@ export function useNavbar() {
   }, [pathname]);
 
   useEffect(() => {
+    const fetchProfileName = async (sessionUser: User) => {
+      const { data: userData } = await supabase
+        .from("users")
+        .select("full_name")
+        .eq("id", sessionUser.id)
+        .single<{ full_name: string }>();
+
+      setProfileName(userData?.full_name ?? null);
+    };
+
     const getUser = async () => {
       const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user ?? null);
+      const sessionUser = data.session?.user ?? null;
+      setUser(sessionUser);
+      if (sessionUser) void fetchProfileName(sessionUser);
     };
     getUser();
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        void fetchProfileName(session.user);
+      } else {
+        setProfileName(null);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -63,8 +82,12 @@ export function useNavbar() {
     router.replace("/");
   };
 
+  // Same priority as useDashboardInit: users table full_name -> auth metadata -> email -> "User"
   const name =
-    user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+    profileName ||
+    user?.user_metadata?.full_name ||
+    user?.email?.split("@")[0] ||
+    "User";
   const avatar = user?.user_metadata?.avatar_url as string | undefined;
 
   const getInitials = (name: string) =>

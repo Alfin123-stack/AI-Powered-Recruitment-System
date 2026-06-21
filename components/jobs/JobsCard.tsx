@@ -5,10 +5,18 @@ import { Briefcase, Building2, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import type { Job } from "@/types/jobs";
 import { DEFAULT_TYPE_STYLE, TYPE_STYLES } from "@/constants/jobs";
+import type { UserRole } from "@/hooks/main/useUserRole";
 
-export default function JobsCard({ job }: { job: Job }) {
+export default function JobsCard({
+  job,
+  role,
+}: {
+  job: Job;
+  role?: UserRole;
+}) {
   if (!job) return null;
 
+  const isHR = role === "hr";
   const color = getColor(Number(job.id));
   const typeStyle = TYPE_STYLES[job.type ?? ""] ?? DEFAULT_TYPE_STYLE;
 
@@ -85,16 +93,27 @@ export default function JobsCard({ job }: { job: Job }) {
       <hr className="border-emerald-500/10 -mx-1" />
 
       <div className="flex gap-2 mt-auto">
-        <Link
-          href={`/jobs/${job.id}`}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[9px] bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-400 text-xs font-bold no-underline hover:bg-emerald-500/15 transition-all">
-          Details
-        </Link>
-        <Link
-          href={`/jobs/${job.id}`}
-          className="flex-1 flex items-center justify-center py-2 rounded-[9px] bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold no-underline hover:-translate-y-[1px] transition-all">
-          Apply Now →
-        </Link>
+        {isHR ? (
+          // HR accounts can only review listings, not apply to them
+          <Link
+            href={`/jobs/${job.id}`}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[9px] bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-400 text-xs font-bold no-underline hover:bg-emerald-500/15 transition-all">
+            View Details
+          </Link>
+        ) : (
+          <>
+            <Link
+              href={`/jobs/${job.id}`}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[9px] bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-400 text-xs font-bold no-underline hover:bg-emerald-500/15 transition-all">
+              Details
+            </Link>
+            <Link
+              href={`/jobs/${job.id}`}
+              className="flex-1 flex items-center justify-center py-2 rounded-[9px] bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold no-underline hover:-translate-y-[1px] transition-all">
+              Apply Now →
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

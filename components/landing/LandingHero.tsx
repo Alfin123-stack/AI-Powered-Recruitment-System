@@ -28,12 +28,6 @@ export function LandingHero() {
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-            <div className="mb-5">
-              <LandingTag>
-                <Sparkles size={9} className="animate-pulse" /> Platform
-                Rekrutmen Berbasis AI
-              </LandingTag>
-            </div>
 
             <h1 className="font-syne font-extrabold text-[clamp(2.4rem,5vw,3.6rem)] leading-[1.09] tracking-tight mb-6">
               Upload CV. Dapat Skor.{" "}

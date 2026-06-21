@@ -1,16 +1,16 @@
-// @/components/jobs/JobsGrid.tsx
-// Animated grid: renders JobsCard per page or empty state
 
 import { motion, AnimatePresence } from "framer-motion";
 import { PackageSearch } from "lucide-react";
 import JobsCard from "./JobsCard";
 import type { Job } from "@/types/jobs";
+import type { UserRole } from "@/hooks/main/useUserRole";
 
 interface JobsGridProps {
   jobs: Job[];
+  role?: UserRole;
 }
 
-export function JobsGrid({ jobs }: JobsGridProps) {
+export function JobsGrid({ jobs, role }: JobsGridProps) {
   return (
     <div
       className="grid gap-4"
@@ -39,7 +39,7 @@ export function JobsGrid({ jobs }: JobsGridProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.35, delay: i * 0.06 }}>
-              <JobsCard job={job} />
+              <JobsCard job={job} role={role} />
             </motion.div>
           ))
         )}

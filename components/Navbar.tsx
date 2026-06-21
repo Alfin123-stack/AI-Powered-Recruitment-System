@@ -1,4 +1,4 @@
-// components/Navbar.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -21,8 +21,8 @@ import { useNavbar } from "@/hooks/main/useNavbar";
 
 const navLinks = [
   { label: "Jobs", href: "/jobs", icon: <BriefcaseBusiness size={13} /> },
+    { label: "Companies", href: "/companies", icon: <Building2 size={13} /> },
   { label: "AI Analyzer", href: "/analyze", icon: <ScanText size={13} /> },
-  { label: "Companies", href: "/companies", icon: <Building2 size={13} /> },
   { label: "Blog", href: "/blog", icon: <BookOpen size={13} /> },
 ];
 

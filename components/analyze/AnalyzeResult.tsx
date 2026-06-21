@@ -12,19 +12,27 @@ import ATSTab from "./AnalyzeATSTab";
 import FeedbackTab from "./AnalyzeFeedbackTab";
 import WritingTab from "./AnalyzeWritingTab";
 import type { AnalysisData, Tab } from "@/types/main/analyze";
+import type { UserRole } from "@/hooks/main/useUserRole";
 import { getColor } from "@/lib/utils";
 
 type Props = {
   data: AnalysisData;
   onReanalyze: (f: File) => void;
   isLoading: boolean;
+  role?: UserRole;
 };
 
-export default function AnalyzeResult({ data, onReanalyze, isLoading }: Props) {
+export default function AnalyzeResult({
+  data,
+  onReanalyze,
+  isLoading,
+  role,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const readability = data.readabilityScore ?? 0;
   const impact = data.impactScore ?? 0;
+  const isHR = role === "hr";
 
   return (
     <motion.div
@@ -71,33 +79,37 @@ export default function AnalyzeResult({ data, onReanalyze, isLoading }: Props) {
                 }}>
                 <Download size={12} /> Export PDF
               </button>
-              <input
-                title="Reanalyze with a different CV file"
-                ref={inputRef}
-                type="file"
-                accept=".pdf"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) onReanalyze(f);
-                }}
-              />
-              <button
-                onClick={() => inputRef.current?.click()}
-                disabled={isLoading}
-                className="flex items-center gap-[6px] text-[12px] font-medium px-4 py-[7px] rounded-[8px] transition-all disabled:opacity-40"
-                style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  color: "rgba(255,255,255,0.55)",
-                }}>
-                {isLoading ? (
-                  <Loader2 size={12} className="animate-spin" />
-                ) : (
-                  <RefreshCw size={12} />
-                )}
-                Analisis CV lain
-              </button>
+              {!isHR && (
+                <>
+                  <input
+                    title="Reanalyze with a different CV file"
+                    ref={inputRef}
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) onReanalyze(f);
+                    }}
+                  />
+                  <button
+                    onClick={() => inputRef.current?.click()}
+                    disabled={isLoading}
+                    className="flex items-center gap-[6px] text-[12px] font-medium px-4 py-[7px] rounded-[8px] transition-all disabled:opacity-40"
+                    style={{
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "rgba(255,255,255,0.55)",
+                    }}>
+                    {isLoading ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      <RefreshCw size={12} />
+                    )}
+                    Analisis CV lain
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
