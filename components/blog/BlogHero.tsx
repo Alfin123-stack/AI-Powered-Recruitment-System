@@ -17,11 +17,7 @@ export default function BlogHero() {
       <div className="max-w-[1180px] mx-auto px-6 relative">
         {/* CSS animation replaces framer-motion — no client JS needed */}
         <div className="max-w-[640px] animate-[fadeInUp_0.65s_ease-out_both]">
-          <div className="mb-5">
-            <span className="inline-flex items-center gap-[5px] px-[12px] py-[4px] rounded-full text-[0.68rem] font-semibold tracking-[0.09em] uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-              <BookOpen size={9} /> Blog & Career Insights
-            </span>
-          </div>
+
 
           <h1 className="font-syne font-extrabold text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.1] tracking-tight mb-5">
             The Latest Tips, Trends, and{" "}

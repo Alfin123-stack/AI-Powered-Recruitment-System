@@ -32,20 +32,7 @@ export default function AnalyzeHero({ isLoading, analysisData }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-        <div
-          className="inline-flex items-center gap-[6px] px-[13px] py-[5px] rounded-full text-[0.67rem] font-medium tracking-[0.08em] uppercase mb-[16px]"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.09)",
-            color: "rgba(255,255,255,0.35)",
-          }}>
-          <span
-            className="animate-pulse text-[7px]"
-            style={{ color: "rgba(74,222,128,0.7)" }}>
-            ●
-          </span>{" "}
-          AI Resume Analyzer
-        </div>
+       
         <h1
           className="font-bold leading-[1.1] tracking-tight mb-[12px]"
           style={{
