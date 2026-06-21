@@ -1,5 +1,3 @@
-// constants/blogs.ts
-
 import { createElement } from "react";
 import { EditorialArticle } from "@/types/main/blogs";
 import {
@@ -19,7 +17,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-// getPaletteColor dikonsolidasi ke shared.ts — import dari sana
 export { getPaletteColor } from "../shared";
 
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -39,104 +36,101 @@ export function getCategoryIcon(id: string): LucideIcon {
 
 export const ARTICLES_PER_PAGE = 6;
 
-// ── Static data ───────────────────────────────────────────────────────────────
-
 export const EDITORIAL_ARTICLES: EditorialArticle[] = [
   {
     slug: "cara-optimasi-cv-lolos-ats",
-    title: "Cara Optimasi CV agar Lolos Sistem ATS Perusahaan",
+    title: "How to Optimize Your CV to Pass Company ATS Systems",
     excerpt:
-      "Sebagian besar perusahaan besar kini menggunakan Applicant Tracking System (ATS) untuk menyaring CV secara otomatis. Pelajari cara memformat dan menyusun CV agar tidak gugur di tahap pertama.",
-    category: "Tips CV",
-    readTime: "7 menit",
-    date: "10 Mei 2025",
+      "Most large companies now use Applicant Tracking Systems (ATS) to automatically filter CVs. Learn how to format and structure your CV so it doesn't get eliminated in the first stage.",
+    category: "CV Tips",
+    readTime: "7 min",
+    date: "May 10, 2025",
     featured: true,
     tag: "ATS",
     icon: createElement(Target, { size: 20 }),
   },
   {
     slug: "skill-yang-paling-dicari-2025",
-    title: "10 Skill yang Paling Dicari Perusahaan Teknologi di 2025",
+    title: "10 Most In-Demand Skills at Tech Companies in 2025",
     excerpt:
-      "Lanskap teknologi berubah cepat. Dari AI/ML hingga cloud computing — ini daftar skill yang wajib kamu miliki jika ingin bersaing di pasar kerja tech tahun ini.",
-    category: "Tren Industri",
-    readTime: "6 menit",
-    date: "8 Mei 2025",
+      "The tech landscape is changing fast. From AI/ML to cloud computing — here's the list of skills you need to compete in this year's tech job market.",
+    category: "Industry Trends",
+    readTime: "6 min",
+    date: "May 8, 2025",
     featured: true,
-    tag: "Karier",
+    tag: "Career",
     icon: createElement(TrendingUp, { size: 20 }),
   },
   {
     slug: "tips-cv-fresh-graduate",
-    title: "Panduan Lengkap Membuat CV untuk Fresh Graduate",
+    title: "The Complete CV Guide for Fresh Graduates",
     excerpt:
-      "Belum punya pengalaman kerja tapi ingin CV kamu tetap kuat? Ini strategi yang dipakai fresh graduate untuk menarik perhatian rekruter dan lolos seleksi awal.",
-    category: "Tips CV",
-    readTime: "8 menit",
-    date: "5 Mei 2025",
+      "No work experience but want a strong CV? Here are the strategies fresh graduates use to catch recruiters' attention and pass the initial screening.",
+    category: "CV Tips",
+    readTime: "8 min",
+    date: "May 5, 2025",
     tag: "Fresh Graduate",
     icon: createElement(FileText, { size: 20 }),
   },
   {
     slug: "kesalahan-umum-cv-kandidat",
-    title: "7 Kesalahan Fatal CV yang Sering Dilakukan Kandidat",
+    title: "7 Fatal CV Mistakes Candidates Often Make",
     excerpt:
-      "Rekruter hanya menghabiskan 7 detik untuk membaca satu CV. Pastikan CV kamu tidak melakukan kesalahan-kesalahan ini yang langsung mengirimmu ke tumpukan reject.",
-    category: "Tips CV",
-    readTime: "5 menit",
-    date: "2 Mei 2025",
+      "Recruiters spend only 7 seconds reading a single CV. Make sure yours doesn't make these mistakes that will send you straight to the rejection pile.",
+    category: "CV Tips",
+    readTime: "5 min",
+    date: "May 2, 2025",
     tag: "CV",
     icon: createElement(Brain, { size: 20 }),
   },
   {
     slug: "cara-menulis-ringkasan-profesional",
-    title: "Cara Menulis Professional Summary yang Bikin Rekruter Tertarik",
+    title: "How to Write a Professional Summary That Grabs Recruiters' Attention",
     excerpt:
-      "Professional summary adalah kesan pertama di CV kamu — 3–5 kalimat yang menentukan apakah rekruter akan terus membaca atau melewatinya. Pelajari formulanya di sini.",
-    category: "Tips CV",
-    readTime: "6 menit",
-    date: "28 Apr 2025",
+      "The professional summary is the first impression on your CV — 3–5 sentences that determine whether a recruiter keeps reading or skips past it. Learn the formula here.",
+    category: "CV Tips",
+    readTime: "6 min",
+    date: "Apr 28, 2025",
     tag: "CV",
     icon: createElement(FileText, { size: 20 }),
   },
   {
     slug: "persiapan-interview-kerja",
-    title: "Strategi Persiapan Interview Kerja yang Terbukti Efektif",
+    title: "Proven Job Interview Preparation Strategies That Work",
     excerpt:
-      "Lolos seleksi CV adalah setengah perjalanan. Pelajari cara mempersiapkan diri untuk interview, mulai dari riset perusahaan hingga menjawab pertanyaan jebakan dengan percaya diri.",
-    category: "Karier",
-    readTime: "9 menit",
-    date: "25 Apr 2025",
+      "Passing the CV screening is only half the journey. Learn how to prepare for interviews, from researching the company to confidently answering trick questions.",
+    category: "Career",
+    readTime: "9 min",
+    date: "Apr 25, 2025",
     tag: "Interview",
     icon: createElement(Zap, { size: 20 }),
   },
   {
     slug: "memahami-job-description",
-    title: "Cara Membaca Job Description dan Menyesuaikan CV",
+    title: "How to Read a Job Description and Tailor Your CV",
     excerpt:
-      "Mengirim CV yang sama ke semua lowongan adalah kesalahan besar. Pelajari cara membaca job description dengan cermat dan menyesuaikan CV untuk setiap posisi yang kamu lamar.",
-    category: "Tips CV",
-    readTime: "7 menit",
-    date: "20 Apr 2025",
+      "Sending the same CV to every job is a big mistake. Learn how to carefully read job descriptions and customize your CV for each position you apply to.",
+    category: "CV Tips",
+    readTime: "7 min",
+    date: "Apr 20, 2025",
     tag: "CV",
     icon: createElement(BookOpen, { size: 20 }),
   },
   {
     slug: "bangun-personal-branding-linkedin",
-    title: "Membangun Personal Branding di LinkedIn untuk Karier yang Lebih Baik",
+    title: "Building Your Personal Brand on LinkedIn for a Better Career",
     excerpt:
-      "LinkedIn bukan sekadar CV online — ini platform di mana rekruter aktif mencari kandidat. Pelajari cara mengoptimalkan profil dan membangun jaringan yang bermakna.",
-    category: "Karier",
-    readTime: "8 menit",
-    date: "15 Apr 2025",
+      "LinkedIn is more than an online CV — it's a platform where recruiters actively search for candidates. Learn how to optimize your profile and build a meaningful network.",
+    category: "Career",
+    readTime: "8 min",
+    date: "Apr 15, 2025",
     tag: "LinkedIn",
     icon: createElement(TrendingUp, { size: 20 }),
   },
 ];
 
-export const CATEGORIES = ["Semua", "Tips CV", "Tren Industri", "Karier"];
+export const CATEGORIES = ["All", "CV Tips", "Industry Trends", "Career"];
 
 export const DEVTO_TOPIC_TAGS = ["career", "productivity", "ai", "programming"];
 
-// Filter lokasi — canonical di constants/shared.ts
 export { LOCATION_FILTERS } from "../shared";

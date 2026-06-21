@@ -12,48 +12,48 @@ export const DEFAULT_BADGES: SecurityBadge[] = [
   {
     icon: Lock,
     label: "SSL Encrypted",
-    iconColor: "#0F6E56", // teal — enkripsi/keamanan koneksi
+    iconColor: "#0F6E56",
   },
   {
     icon: ShieldCheck,
     label: "PDPA Compliant",
-    iconColor: "#185FA5", // biru — kepatuhan regulasi/legalitas
+    iconColor: "#185FA5",
   },
   {
     icon: DatabaseZap,
-    label: "Data Aman",
-    iconColor: "#534AB7", // ungu — data/sistem
+    label: "Secure Data",
+    iconColor: "#534AB7",
   },
 ];
 
 export const FEATURES = [
   {
     icon: BrainCircuit,
-    label: "Analisis CV berbasis AI dalam 30 detik",
-    sub: "Ekstraksi skill, skor, dan rekomendasi otomatis",
+    label: "AI-powered CV analysis in 30 seconds",
+    sub: "Automatic skill extraction, scoring, and recommendations",
   },
   {
     icon: Target,
-    label: "Job matching otomatis sesuai profilmu",
-    sub: "Cocokkan dengan ratusan lowongan relevan",
+    label: "Automatic job matching based on your profile",
+    sub: "Match with hundreds of relevant job openings",
   },
   {
     icon: Zap,
-    label: "Rekrutmen 10× lebih cepat untuk HR",
-    sub: "Ranking kandidat, shortlist, dan update status",
+    label: "10× faster recruitment for HR teams",
+    sub: "Rank candidates, shortlist, and update statuses",
   },
 ];
 
 export const STATS = [
-  { value: "5.000+", label: "CV Dianalisis" },
-  { value: "200+", label: "Perusahaan" },
-  { value: "98%", label: "Akurasi AI" },
+  { value: "5,000+", label: "CVs Analyzed" },
+  { value: "200+", label: "Companies" },
+  { value: "98%", label: "AI Accuracy" },
 ];
 
 export const STEP_META = [
-  { title: "Informasi Dasar", sub: "Nama lengkap & alamat email" },
-  { title: "Keamanan Akun", sub: "Buat password yang kuat" },
-  { title: "Pilih Peran", sub: "Sebagai kandidat atau HR?" },
+  { title: "Basic Information", sub: "Full name & email address" },
+  { title: "Account Security", sub: "Create a strong password" },
+  { title: "Choose Your Role", sub: "Are you a candidate or HR?" },
 ] as const;
 
 export const TOTAL_STEPS = 3;

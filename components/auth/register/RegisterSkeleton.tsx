@@ -1,5 +1,5 @@
 // components/auth/register/RegisterSkeleton.tsx
-// Semua skeleton UI untuk halaman register dalam SATU FILE
+// All skeleton UI for the register page in a SINGLE FILE
 
 "use client";
 

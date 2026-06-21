@@ -1,18 +1,19 @@
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import type { ItemStyleConfig, LineFeedback } from "@/types/main/analyze";
+
 export const FEATURES = [
   {
-    label: "Skor CV",
-    desc: "Resume score, ATS score, impact, dan readability",
+    label: "CV Score",
+    desc: "Resume score, ATS score, impact, and readability",
   },
   {
     label: "ATS Check",
-    desc: "8 titik cek kompatibilitas sistem rekrutmen otomatis",
+    desc: "8 compatibility checkpoints for automated recruitment systems",
   },
-  { label: "Feedback", desc: "Komentar AI spesifik per bagian dan baris CV" },
+  { label: "Feedback", desc: "AI-specific comments per section and line of the CV" },
   {
-    label: "Saran Penulisan",
-    desc: "AI menulis ulang kalimat lemah menjadi versi lebih kuat",
+    label: "Writing Suggestions",
+    desc: "AI rewrites weak sentences into stronger versions",
   },
 ];
 
@@ -25,7 +26,7 @@ export const ITEM_STYLES: Record<LineFeedback["type"], ItemStyleConfig> = {
     badge: {
       bg: "rgba(74,222,128,0.08)",
       color: "rgba(74,222,128,0.75)",
-      label: "Sudah bagus",
+      label: "Looks good",
     },
   },
   warn: {
@@ -36,7 +37,7 @@ export const ITEM_STYLES: Record<LineFeedback["type"], ItemStyleConfig> = {
     badge: {
       bg: "rgba(245,158,11,0.08)",
       color: "rgba(245,158,11,0.75)",
-      label: "Bisa diperkuat",
+      label: "Can be improved",
     },
   },
   bad: {
@@ -47,7 +48,7 @@ export const ITEM_STYLES: Record<LineFeedback["type"], ItemStyleConfig> = {
     badge: {
       bg: "rgba(248,113,113,0.08)",
       color: "rgba(248,113,113,0.75)",
-      label: "Kritis",
+      label: "Critical",
     },
   },
 };

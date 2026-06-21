@@ -44,7 +44,7 @@ export function SummaryCard({ fullName, email, role }: SummaryCardProps) {
             className="text-[0.72rem] font-semibold tracking-[0.07em] uppercase mb-[6px]"
             style={{ color: selectedRole.color }}
           >
-            Yang akan kamu dapatkan
+            What you&apos;ll get
           </p>
           {selectedRole.features.map((f) => (
             <div key={f} className="flex items-center gap-[8px] py-[3px]">
@@ -62,13 +62,13 @@ export function SummaryCard({ fullName, email, role }: SummaryCardProps) {
       {/* Account summary */}
       <div className="rounded-[11px] bg-[#0c1510] border border-emerald-500/12 px-4 py-1">
         <p className="text-[0.68rem] font-semibold text-[#3a5444] tracking-[0.08em] uppercase pt-3 pb-2">
-          Ringkasan Akun
+          Account Summary
         </p>
-        <SummaryRow label="Nama" value={fullName} />
+        <SummaryRow label="Name" value={fullName} />
         <SummaryRow label="Email" value={email} />
         <SummaryRow label="Password" value="••••••••" />
         {role && selectedRole && (
-          <SummaryRow label="Peran" value={selectedRole.label} />
+          <SummaryRow label="Role" value={selectedRole.label} />
         )}
       </div>
     </div>

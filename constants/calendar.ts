@@ -1,8 +1,3 @@
-// constants/calendar.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// Gabungan dari: calendar.ts (root), hr/calendar.ts, candidate/calendar.ts
-// DAYS_ID, MONTHS_ID, IV_STATUS_MAP → dikonsolidasi ke shared.ts
-// ─────────────────────────────────────────────────────────────────────────────
 
 import { ViewMode } from "@/types/calendar";
 

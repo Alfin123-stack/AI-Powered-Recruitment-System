@@ -1,6 +1,6 @@
 // components/auth/GoogleButton.tsx
 export function GoogleButton({
-  label = "Daftar dengan Google",
+  label = "Sign up with Google",
   onClick,
 }: {
   label?: string;

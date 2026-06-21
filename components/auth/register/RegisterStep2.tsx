@@ -55,7 +55,7 @@ export function RegisterStep2({
               setPassword(e.target.value);
               clearError("password");
             }}
-            placeholder="Min. 8 karakter"
+            placeholder="Min. 8 characters"
             autoFocus
             className="w-full h-[46px] pl-[42px] pr-[44px] bg-transparent text-[0.88rem] text-[#e8f0ec]
               placeholder:text-[#2e4a3a] outline-none rounded-[11px]"
@@ -75,7 +75,7 @@ export function RegisterStep2({
       {/* ── Password rules checklist ── */}
       <div className="rounded-[11px] bg-[#0c1510] border border-emerald-500/12 px-4 py-4">
         <p className="text-[0.68rem] font-semibold text-[#3a5444] tracking-[0.08em] uppercase mb-3">
-          Persyaratan Password
+          Password Requirements
         </p>
         <div className="grid grid-cols-2 gap-[8px]">
           {passwordRules.map((r) => (

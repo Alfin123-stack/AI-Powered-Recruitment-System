@@ -33,7 +33,7 @@ export function LoginPasswordField({
         <Link
           href="/forgot-password"
           className="text-[0.75rem] text-emerald-400 font-semibold hover:text-emerald-300 transition-colors">
-          Lupa password?
+          Forgot password?
         </Link>
       </div>
 
@@ -42,7 +42,7 @@ export function LoginPasswordField({
         type={inputType}
         value={password}
         onChange={setPassword}
-        placeholder="Masukkan password"
+        placeholder="Enter your password"
         required
         icon={<Lock size={15} />}
         suffix={

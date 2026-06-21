@@ -1,9 +1,3 @@
-// constants/candidate/dashboard.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// CARD_COLORS, STATUS_MAP, IV_STATUS_MAP, DAYS_ID, MONTHS_ID
-// → dikonsolidasi ke shared.ts, di-re-export di sini agar import lama tetap valid.
-// ─────────────────────────────────────────────────────────────────────────────
-
 export {
   PALETTE_COLORS as CARD_COLORS,
   STATUS_MAP,
@@ -12,44 +6,41 @@ export {
   MONTHS_ID,
 } from "../shared";
 
-// ── FILTER_OPTIONS (khusus dashboard — beda dari saved.ts) ───────────────────
 export const FILTER_OPTIONS = [
-  { val: "all", label: "Semua" },
-  { val: "applied", label: "Dikirim" },
-  { val: "review", label: "Direview" },
+  { val: "all", label: "All" },
+  { val: "applied", label: "Submitted" },
+  { val: "review", label: "In Review" },
   { val: "shortlisted", label: "Shortlisted" },
-  { val: "rejected", label: "Ditolak" },
+  { val: "rejected", label: "Rejected" },
 ] as const;
 
-// ── Tabs (untuk halaman applications) ────────────────────────────────────────
 export const TABS = [
-  { id: "all", label: "Semua" },
+  { id: "all", label: "All" },
   { id: "shortlisted", label: "Shortlisted" },
-  { id: "review", label: "Direview" },
-  { id: "applied", label: "Dikirim" },
-  { id: "rejected", label: "Ditolak" },
+  { id: "review", label: "In Review" },
+  { id: "applied", label: "Submitted" },
+  { id: "rejected", label: "Rejected" },
 ];
 
-// ── Interview Tips ────────────────────────────────────────────────────────────
 export const INTERVIEW_TIPS = [
   {
     icon: "BookOpen" as const,
-    title: "Riset Perusahaan",
-    desc: "Pelajari produk, visi-misi, dan kultur perusahaan.",
+    title: "Research the Company",
+    desc: "Learn about the company's products, mission, and culture.",
   },
   {
     icon: "Mic" as const,
-    title: "Latihan Jawaban",
-    desc: "Siapkan jawaban STAR untuk behavioral questions.",
+    title: "Practice Your Answers",
+    desc: "Prepare STAR-format answers for behavioral questions.",
   },
   {
     icon: "Target" as const,
-    title: "Review Job Desc",
-    desc: "Cocokkan pengalamanmu dengan requirement posisi.",
+    title: "Review the Job Description",
+    desc: "Match your experience to the position's requirements.",
   },
   {
     icon: "Lightbulb" as const,
-    title: "Siapkan Pertanyaan",
-    desc: "Siapkan 2–3 pertanyaan cerdas untuk interviewer.",
+    title: "Prepare Questions",
+    desc: "Have 2–3 thoughtful questions ready for your interviewer.",
   },
 ];

@@ -1,25 +1,19 @@
-// ─── components/notifications/config.ts ──────────────────────────────────────
-
 import { BarChart3, Bell, Calendar, FileText } from "lucide-react";
 import type { FilterId, StatDef } from "@/types/main/notifications";
 
-// ─── Filter tabs ──────────────────────────────────────────────────────────────
-
 export const FILTER_LABELS: Record<string, string> = {
-  all: "Semua",
-  unread: "Belum Dibaca",
-  read: "Sudah Dibaca",
+  all: "All",
+  unread: "Unread",
+  read: "Read",
 };
 
 export const FILTERS: { id: FilterId; label: string }[] = [
-  { id: "all", label: "Semua" },
-  { id: "unread", label: "Belum Dibaca" },
+  { id: "all", label: "All" },
+  { id: "unread", label: "Unread" },
   { id: "status_update", label: "Status" },
   { id: "interview", label: "Interview" },
-  { id: "general", label: "Umum" },
+  { id: "general", label: "General" },
 ];
-
-// ─── Default stats ────────────────────────────────────────────────────────────
 
 export const DEFAULT_STATS: StatDef[] = [
   {
@@ -27,10 +21,10 @@ export const DEFAULT_STATS: StatDef[] = [
     getValue: (n) => n.length,
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
-    icon: BarChart3, // LucideIcon — render di StatCard: <Icon size={18} />
+    icon: BarChart3,
   },
   {
-    label: "Belum Dibaca",
+    label: "Unread",
     getValue: (n) => n.filter((x) => !x.read).length,
     color: "text-amber-400",
     bg: "bg-amber-500/10",
@@ -44,8 +38,6 @@ export const DEFAULT_STATS: StatDef[] = [
     icon: Calendar,
   },
 ];
-
-// ─── Type visual config ───────────────────────────────────────────────────────
 
 export const TYPE_CONFIG = {
   status_update: {
@@ -88,6 +80,6 @@ export const TYPE_CONFIG = {
     dotColor: "bg-violet-400",
     pillBg: "bg-violet-500/10",
     pillText: "text-violet-400",
-    label: "Umum",
+    label: "General",
   },
 } as const;

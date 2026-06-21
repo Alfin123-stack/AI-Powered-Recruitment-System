@@ -1,7 +1,7 @@
 // @/components/auth/login/LoginFooter.tsx
-// Rendering Strategy: Server Component (statis)
-// Alasan: Konten sepenuhnya statis (link register + security badges).
-// Tidak ada state, tidak ada event — zero JS bundle contribution.
+// Rendering Strategy: Server Component (static)
+// Reason: Content is fully static (register link + security badges).
+// No state, no events — zero JS bundle contribution.
 
 import Link            from "next/link";
 import { MobileLogo }  from "@/components/auth/MobileLogo";
@@ -10,23 +10,23 @@ import { SecurityBadges } from "@/components/auth/SecurityBadges";
 export function LoginFooter() {
   return (
     <>
-      {/* Logo mobile — tampil hanya di layar kecil via CSS */}
+      {/* Mobile logo — shown only on small screens via CSS */}
       <div className="mb-6">
         <MobileLogo />
       </div>
 
-      {/* CTA daftar */}
+      {/* Sign-up CTA */}
       <p className="text-center mt-6 text-[0.83rem] text-[#5a7a6a]">
-        Belum punya akun?{" "}
+        Don&apos;t have an account?{" "}
         <Link
           href="/register"
           className="text-emerald-400 font-semibold hover:text-emerald-300 transition-colors"
         >
-          Daftar gratis →
+          Sign up free →
         </Link>
       </p>
 
-      {/* Security badges — trust signals statis */}
+      {/* Security badges — static trust signals */}
       <div className="mt-6">
         <SecurityBadges />
       </div>

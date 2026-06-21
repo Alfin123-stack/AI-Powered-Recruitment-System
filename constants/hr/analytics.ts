@@ -1,6 +1,4 @@
-// constants/hr/analytics.ts
-// Shared theme tokens & color palette untuk semua komponen analytics.
-// Tidak ada duplikasi dengan file lain — file ini standalone.
+
 
 export const T = {
   bg: "#07100a",

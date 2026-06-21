@@ -23,13 +23,13 @@ export const CANDIDATE_SECTIONS: NavSection[] = [
       {
         href: "/dashboard/candidate/applications",
         icon: Briefcase,
-        label: "Lamaranku",
+        label: "My Applications",
         matchPrefix: true,
       },
       {
         href: "/dashboard/candidate/saved",
         icon: Bookmark,
-        label: "Tersimpan",
+        label: "Saved",
         matchPrefix: true,
       },
       {
@@ -47,10 +47,10 @@ export const CANDIDATE_SECTIONS: NavSection[] = [
     ],
   },
   {
-    heading: "Lainnya",
+    heading: "Other",
     items: [
-      { href: "/jobs", icon: Briefcase, label: "Cari Lowongan" },
-      { href: "/analyze", icon: FileText, label: "Analisis CV" },
+      { href: "/jobs", icon: Briefcase, label: "Find Jobs" },
+      { href: "/analyze", icon: FileText, label: "Analyze CV" },
     ],
   },
 ];
@@ -96,15 +96,15 @@ export const HR_SECTIONS: NavSection[] = [
 
 export const CANDIDATE_TITLES: Record<string, string> = {
   "/dashboard/candidate": "Dashboard",
-  "/dashboard/candidate/applications": "Lamaranku",
-  "/dashboard/candidate/saved": "Tersimpan",
+  "/dashboard/candidate/applications": "My Applications",
+  "/dashboard/candidate/saved": "Saved",
   "/dashboard/candidate/matches": "Job Matches",
-  "/dashboard/candidate/profile": "Profil",
+  "/dashboard/candidate/profile": "Profile",
 };
 
 export const HR_TITLES: Record<string, string> = {
   "/dashboard/hr": "HR Dashboard",
-  "/dashboard/hr/jobs": "Kelola Lowongan",
+  "/dashboard/hr/jobs": "Manage Jobs",
   "/dashboard/hr/candidates": "Candidates",
   "/dashboard/hr/analytics": "Analytics",
   "/dashboard/hr/interviews": "Interviews",

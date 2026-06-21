@@ -30,7 +30,7 @@ export function PasswordStrengthBar({ password }: PasswordStrengthBarProps) {
       >
         {password
           ? meta.label
-          : "Gunakan kombinasi huruf kapital, angka & simbol"}
+          : "Use a mix of uppercase letters, numbers & symbols"}
       </span>
     </div>
   );

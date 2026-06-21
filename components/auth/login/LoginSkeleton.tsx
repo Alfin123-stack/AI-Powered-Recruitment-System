@@ -1,9 +1,9 @@
 // @/components/auth/login/LoginSkeleton.tsx
-// Semua skeleton untuk halaman login ada di satu file ini.
-// Dipakai sebagai fallback Suspense di page.tsx.
-// Tidak ada "use client" — skeleton adalah pure Server Component (no interactivity).
+// All skeletons for the login page live in this single file.
+// Used as the Suspense fallback in page.tsx.
+// No "use client" — the skeleton is a pure Server Component (no interactivity).
 
-// ─── Atom: blok shimmer dasar ─────────────────────────────────────────────
+// ─── Atom: base shimmer block ─────────────────────────────────────────────
 
 function Shimmer({ className }: { className?: string }) {
   return (
@@ -17,7 +17,7 @@ function Shimmer({ className }: { className?: string }) {
 }
 
 // ─── LoginHeaderSkeleton ─────────────────────────────────────────────────
-// Meniru: badge "Masuk ke akun" + h2 + paragraf deskripsi
+// Mimics: the "Sign in to your account" badge + h2 + description paragraph
 
 export function LoginHeaderSkeleton() {
   return (
@@ -25,11 +25,11 @@ export function LoginHeaderSkeleton() {
       {/* Badge */}
       <Shimmer className="mb-3 h-[22px] w-[130px] rounded-full" />
 
-      {/* Judul h2 — dua baris */}
+      {/* h2 title — two lines */}
       <Shimmer className="mb-2 h-[34px] w-[75%]" />
       <Shimmer className="mb-2 h-[34px] w-[55%]" />
 
-      {/* Paragraf deskripsi */}
+      {/* Description paragraph */}
       <Shimmer className="mt-3 h-[14px] w-[90%]" />
       <Shimmer className="mt-2 h-[14px] w-[70%]" />
     </div>
@@ -37,15 +37,15 @@ export function LoginHeaderSkeleton() {
 }
 
 // ─── LoginFormSkeleton ────────────────────────────────────────────────────
-// Meniru: tombol Google + divider + field email + field password + tombol submit
+// Mimics: Google button + divider + email field + password field + submit button
 
 export function LoginFormSkeleton() {
   return (
     <div aria-hidden="true">
-      {/* Tombol Google */}
+      {/* Google button */}
       <Shimmer className="h-[46px] w-full rounded-[11px]" />
 
-      {/* Divider "atau masuk dengan email" */}
+      {/* "or sign in with email" divider */}
       <div className="my-5 flex items-center gap-3">
         <Shimmer className="h-px flex-1" />
         <Shimmer className="h-[12px] w-[160px]" />
@@ -53,22 +53,22 @@ export function LoginFormSkeleton() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {/* Field Email */}
+        {/* Email field */}
         <div className="flex flex-col gap-[6px]">
           <Shimmer className="h-[11px] w-[40px]" /> {/* label */}
           <Shimmer className="h-[46px] w-full rounded-[10px]" /> {/* input */}
         </div>
 
-        {/* Field Password + link Lupa Password */}
+        {/* Password field + Forgot password link */}
         <div className="flex flex-col gap-[6px]">
           <div className="flex items-center justify-between">
             <Shimmer className="h-[11px] w-[55px]" /> {/* label */}
-            <Shimmer className="h-[11px] w-[90px]" /> {/* lupa password */}
+            <Shimmer className="h-[11px] w-[90px]" /> {/* forgot password */}
           </div>
           <Shimmer className="h-[46px] w-full rounded-[10px]" /> {/* input */}
         </div>
 
-        {/* Tombol submit */}
+        {/* Submit button */}
         <Shimmer className="mt-1 h-[46px] w-full rounded-[11px]" />
       </div>
     </div>
@@ -76,7 +76,7 @@ export function LoginFormSkeleton() {
 }
 
 // ─── LoginFooterSkeleton ──────────────────────────────────────────────────
-// Meniru: MobileLogo + teks "Belum punya akun?" + SecurityBadges
+// Mimics: MobileLogo + "Don't have an account?" text + SecurityBadges
 
 export function LoginFooterSkeleton() {
   return (
@@ -84,13 +84,13 @@ export function LoginFooterSkeleton() {
       {/* MobileLogo placeholder */}
       <Shimmer className="mb-6 h-[28px] w-[120px] mx-auto rounded-lg" />
 
-      {/* Teks CTA daftar */}
+      {/* Sign-up CTA text */}
       <div className="mt-6 flex justify-center gap-2">
         <Shimmer className="h-[13px] w-[130px]" />
         <Shimmer className="h-[13px] w-[80px]" />
       </div>
 
-      {/* SecurityBadges — 3 badge kecil horizontal */}
+      {/* SecurityBadges — 3 small horizontal badges */}
       <div className="mt-6 flex justify-center gap-4">
         <Shimmer className="h-[20px] w-[64px] rounded-full" />
         <Shimmer className="h-[20px] w-[64px] rounded-full" />

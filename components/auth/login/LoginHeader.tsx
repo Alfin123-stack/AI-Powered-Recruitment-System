@@ -1,7 +1,7 @@
 // @/components/auth/login/LoginHeader.tsx
-// Rendering Strategy: Server Component (statis)
-// Alasan: Tidak ada interaktivitas, tidak ada data user-specific.
-// Konten sepenuhnya statis → render di server, zero JS ke client.
+// Rendering Strategy: Server Component (static)
+// Reason: No interactivity, no user-specific data.
+// Content is fully static → renders on the server, zero JS to the client.
 
 import { Sparkles } from "lucide-react";
 
@@ -15,7 +15,7 @@ export function LoginHeader() {
             tracking-[0.1em] uppercase"
         >
           <Sparkles size={8} className="animate-pulse" />
-          Masuk ke akun
+          Sign in to your account
         </span>
       </div>
 
@@ -23,11 +23,11 @@ export function LoginHeader() {
         className="font-syne text-[1.9rem] font-extrabold text-[#e8f0ec] tracking-tight
           leading-[1.15] mb-2"
       >
-        Selamat datang kembali
+        Welcome back
       </h2>
 
       <p className="text-[#5a7a6a] text-[0.86rem] leading-relaxed">
-        Masuk ke dashboard rekrutmen dan mulai analisis CV Anda
+        Sign in to your recruitment dashboard and start analyzing your CV
       </p>
     </div>
   );

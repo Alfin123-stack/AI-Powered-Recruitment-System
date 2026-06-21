@@ -23,7 +23,7 @@ export function RegisterStep3({
     <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-3 duration-250">
       <div className="flex flex-col gap-[6px]">
         <label className="text-[0.72rem] font-semibold text-[#7a9585] tracking-[0.08em] uppercase select-none">
-          Daftar Sebagai
+          Sign Up As
         </label>
         <RoleSelect
           value={role}

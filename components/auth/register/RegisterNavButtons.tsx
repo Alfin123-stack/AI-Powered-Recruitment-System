@@ -26,7 +26,7 @@ export function RegisterNavButtons({
             bg-transparent border border-emerald-500/15 text-[#7a9585]
             hover:border-emerald-500/35 hover:text-emerald-400 hover:bg-emerald-500/[0.05]
             text-[0.86rem] font-medium transition-all duration-200 cursor-pointer">
-          <ArrowLeft size={14} /> Kembali
+          <ArrowLeft size={14} /> Back
         </button>
       )}
 
@@ -39,7 +39,7 @@ export function RegisterNavButtons({
             hover:from-emerald-400 hover:to-cyan-400 hover:shadow-[0_8px_32px_rgba(16,185,129,0.35)]
             hover:-translate-y-[1px] active:translate-y-0 active:shadow-none
             transition-all duration-200 cursor-pointer">
-          Lanjut <ArrowRight size={15} />
+          Next <ArrowRight size={15} />
         </button>
       ) : (
         <button
@@ -54,12 +54,12 @@ export function RegisterNavButtons({
           {loading ? (
             <>
               <Spinner />
-              <span>Membuat akun...</span>
+              <span>Creating account...</span>
             </>
           ) : (
             <>
               <Sparkles size={14} />
-              <span>Buat Akun Sekarang</span>
+              <span>Create Account Now</span>
             </>
           )}
         </button>

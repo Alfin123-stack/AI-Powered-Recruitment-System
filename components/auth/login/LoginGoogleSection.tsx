@@ -4,9 +4,9 @@ import { Divider } from "@/components/auth/Divider";
 export function LoginGoogleSection() {
   return (
     <>
-      <GoogleButton label="Lanjutkan dengan Google" />
+      <GoogleButton label="Continue with Google" />
       <div className="my-5">
-        <Divider label="atau masuk dengan email" />
+        <Divider label="or sign in with email" />
       </div>
     </>
   );

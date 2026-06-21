@@ -25,7 +25,7 @@ export function RegisterStep1({
     <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-3 duration-250">
       <InputField
         id="name"
-        label="Nama Lengkap"
+        label="Full Name"
         value={fullName}
         onChange={setFullName}
         placeholder="John Doe"
@@ -48,7 +48,7 @@ export function RegisterStep1({
         onClearError={() => clearError("email")}
       />
       <div className="flex items-center gap-3 my-1">
-        <Divider label="atau daftar cepat" />
+        <Divider label="or sign up quickly" />
       </div>
       <GoogleButton />
     </div>

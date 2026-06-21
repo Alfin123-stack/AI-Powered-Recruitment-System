@@ -20,11 +20,11 @@ export function LoginSubmitButton({ loading }: LoginSubmitButtonProps) {
       {loading ? (
         <>
           <Spinner />
-          <span>Sedang masuk...</span>
+          <span>Signing in...</span>
         </>
       ) : (
         <>
-          Masuk ke Dashboard
+          Sign In to Dashboard
           <ArrowRight size={15} />
         </>
       )}

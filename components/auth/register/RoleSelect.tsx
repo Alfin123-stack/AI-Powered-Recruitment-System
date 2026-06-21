@@ -9,29 +9,29 @@ export const ROLES = [
   {
     value: "candidate",
     label: "Candidate",
-    sub: "Pencari kerja / job seeker",
+    sub: "Job seeker",
     icon: <User size={17} />,
     color: "#10b981",
-    desc: "Analisis CV, job matching, pantau status lamaran",
+    desc: "CV analysis, job matching, application status tracking",
     features: [
-      "Analisis CV + ATS Score otomatis",
-      "Job matching berdasarkan skill",
-      "Rekomendasi perbaikan CV konkret",
-      "Pantau status lamaran real-time",
+      "Automatic CV analysis + ATS Score",
+      "Job matching based on skills",
+      "Concrete CV improvement recommendations",
+      "Real-time application status tracking",
     ],
   },
   {
     value: "hr",
     label: "HR / Company",
-    sub: "Rekruter atau tim HR perusahaan",
+    sub: "Recruiter or company HR team",
     icon: <Building2 size={17} />,
     color: "#06b6d4",
-    desc: "Dashboard rekrutmen, ranking kandidat, manajemen lowongan",
+    desc: "Recruitment dashboard, candidate ranking, job management",
     features: [
-      "Dashboard rekrutmen lengkap",
-      "Ranking kandidat otomatis berbasis AI",
-      "Lihat CV asli + detail skill kandidat",
-      "Manajemen lowongan & status kandidat",
+      "Complete recruitment dashboard",
+      "Automatic AI-based candidate ranking",
+      "View original CV + candidate skill details",
+      "Job posting & candidate status management",
     ],
   },
 ];
@@ -93,7 +93,7 @@ export function RoleSelect({
             </div>
           ) : (
             <span className={hasError ? "text-red-400/60" : "text-[#2e4a3a]"}>
-              Pilih peran Anda...
+              Select your role...
             </span>
           )}
           <ChevronDown
@@ -143,7 +143,7 @@ export function RoleSelect({
                     </span>
                     {value === r.value && (
                       <span className="text-emerald-400 text-[0.75rem] flex items-center gap-[3px]">
-                        <CheckCircle2 size={11} /> Dipilih
+                        <CheckCircle2 size={11} /> Selected
                       </span>
                     )}
                   </div>
