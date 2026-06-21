@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCheck, Clock } from "lucide-react";
-import { timeAgo } from "../../lib/helpers/notifications";
+import { timeAgo } from "../../lib/helpers/main/notifications";
 import type { Notif } from "../../types/main/notifications";
 import { TYPE_CONFIG } from "@/constants/main/notifications";
 

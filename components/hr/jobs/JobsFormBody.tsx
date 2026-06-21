@@ -14,7 +14,7 @@ import {
 import { JobsSection } from "./JobsSection";
 import { JobsField } from "./JobsField";
 import { JobsTagInput } from "./JobsTagInput";
-import { inputCls } from "@/components/shared/input";
+import { inputCls } from "@/components/input";
 
 export type FormState = {
   title: string;

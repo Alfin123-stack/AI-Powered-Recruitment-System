@@ -24,7 +24,7 @@ import { InterviewTypeToggle } from "./InterviewTypeToggle";
 
 import { getColor, getInitials } from "@/lib/utils";
 import { apiFetch } from "@/lib/api";
-import { inputCls, inputErrorCls } from "@/components/shared/input";
+import { inputCls, inputErrorCls } from "@/components/input";
 
 export function InterviewScheduleModal({
   token,

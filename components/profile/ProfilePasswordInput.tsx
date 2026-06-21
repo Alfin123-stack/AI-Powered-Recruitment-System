@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { ProfileFormField } from "./ProfileFormField";
-import { inputCls, inputErrorCls } from "../shared/input";
+import { inputCls, inputErrorCls } from "../input";
 
 export function ProfilePasswordInput({
   label,

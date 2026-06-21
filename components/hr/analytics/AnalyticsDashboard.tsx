@@ -11,7 +11,7 @@ import { AnalyticsPositionTab } from "./AnalyticsPositionTab";
 import { useAnalyticsData } from "@/hooks/dashboard/hr/useAnalyticsData";
 
 import { T } from "@/constants/hr/analytics";
-import { FadeIn } from "@/components/shared/FadeIn";
+import { FadeIn } from "@/components/FadeIn";
 
 type TabId = "overview" | "candidate" | "position";
 

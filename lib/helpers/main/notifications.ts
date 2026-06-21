@@ -1,8 +1,6 @@
-import type { Notif, GroupKey } from "../../types/main/notifications";
+import type { Notif, GroupKey } from "../../../types/main/notifications";
 import { TYPE_CONFIG } from "@/constants/main/notifications";
 export { timeAgoNotif as timeAgo } from "@/lib/utils";
-
-// ─── Normalize raw API response to typed Notif ────────────────────────────────
 
 export function normalizeNotif(n: Record<string, unknown>): Notif {
   const type =
@@ -31,31 +29,27 @@ export function normalizeNotif(n: Record<string, unknown>): Notif {
   };
 }
 
-// ─── Group order constant ─────────────────────────────────────────────────────
-
 export const GROUP_ORDER: GroupKey[] = [
-  "Hari ini",
-  "Kemarin",
-  "Minggu ini",
-  "Lebih lama",
+  "Today",
+  "Yesterday",
+  "This week",
+  "Older",
 ];
-
-// ─── Group notifications by recency ──────────────────────────────────────────
 
 export function groupNotifs(notifs: Notif[]): Record<GroupKey, Notif[]> {
   const groups: Record<GroupKey, Notif[]> = {
-    "Hari ini": [],
-    Kemarin: [],
-    "Minggu ini": [],
-    "Lebih lama": [],
+    Today: [],
+    Yesterday: [],
+    "This week": [],
+    Older: [],
   };
 
   notifs.forEach((n) => {
     const diff = (Date.now() - new Date(n.created_at).getTime()) / 1000;
-    if (diff < 86400) groups["Hari ini"].push(n);
-    else if (diff < 172800) groups["Kemarin"].push(n);
-    else if (diff < 604800) groups["Minggu ini"].push(n);
-    else groups["Lebih lama"].push(n);
+    if (diff < 86400) groups["Today"].push(n);
+    else if (diff < 172800) groups["Yesterday"].push(n);
+    else if (diff < 604800) groups["This week"].push(n);
+    else groups["Older"].push(n);
   });
 
   return groups;

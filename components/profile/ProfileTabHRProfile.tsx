@@ -7,7 +7,7 @@ import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";
 
 import type { TabHRProfileProps } from "@/types/main/profile";
-import { inputCls } from "../shared/input";
+import { inputCls } from "../input";
 
 
 

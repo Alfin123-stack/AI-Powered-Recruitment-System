@@ -32,14 +32,6 @@ export default function BlogHero() {
             global developer community via dev.to.
           </p>
         </div>
-
-        {/*
-          Search input cannot be here — it needs useState.
-          BlogSearchClient (rendered in page.tsx below BlogHero)
-          handles the search input and renders it at the top of its section.
-          Alternatively you can pass a searchParams-based URL approach,
-          but client state is simpler for instant filtering.
-        */}
       </div>
 
       <style>{`

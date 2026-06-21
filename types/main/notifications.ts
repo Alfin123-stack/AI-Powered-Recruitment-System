@@ -1,7 +1,4 @@
-
-
 import type { LucideIcon } from "lucide-react";
-
 
 export type NotifType = "status_update" | "interview" | "general";
 
@@ -12,6 +9,11 @@ export type Notif = {
   message: string;
   created_at: string;
   read: boolean;
+};
+
+export type NotifRaw = Omit<Notif, "created_at"> & {
+  created_at?: string;
+  time?: string;
 };
 
 export type NotifNavItem = {
@@ -45,7 +47,7 @@ export type UserMeta = {
 
 export type FilterId = "all" | "unread" | NotifType;
 
-export type GroupKey = "Hari ini" | "Kemarin" | "Minggu ini" | "Lebih lama";
+export type GroupKey = "Today" | "Yesterday" | "This week" | "Older";
 
 export interface NotificationsPageProps {
   role: "hr" | "candidate";

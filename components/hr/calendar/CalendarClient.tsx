@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useCalendarState } from "@/hooks/dashboard/hr/useCalendarState";
 import { useInterviewFilter } from "@/hooks/dashboard/hr/useInterviewFilter";
-import { navigateDate, getHeaderLabel } from "@/lib/helpers/navigation";
+import { navigateDate, getHeaderLabel } from "@/lib/helpers/main/navigation";
 import { InterviewModal } from "./CalendarInterviewModal";
 import { ScrollbarInject } from "./CalendarScrollbarInject";
 import { CalendarHeader } from "./CalendarHeader";

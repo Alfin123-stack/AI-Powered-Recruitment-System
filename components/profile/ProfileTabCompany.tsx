@@ -8,7 +8,7 @@ import type { CompanyData, ToastType } from "@/types/main/profile";
 import { ProfileErrorBanner } from "./ProfileErrorBanner";
 import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";
-import { inputCls } from "../shared/input";
+import { inputCls } from "../input";
 
 
 

@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import Sidebar from "@/components/Sidebar";
-import Topbar from "@/components/Topbar";
+
 
 import { DashboardContext } from "@/context/DashboardContext";
 import { useDashboardInit } from "@/hooks/dashboard/useDashboardInit";
@@ -16,6 +16,7 @@ import {
 } from "@/constants/dashboardNav";
 import type { Company } from "@/types/main/company";
 import CompanySetupModal from "../../components/hr/dashboard/DashboardCompanySetupModal";
+import { Topbar } from "@/components/topbar/Topbar";
 
 export default function DashboardLayout({
   children,

@@ -21,6 +21,63 @@ function Pulse({
   );
 }
 
+// ── Skeleton: hero (title + subtitle + stats pill) ────────────────────────────
+function JobsHeroSkeleton() {
+  return (
+    <section className="pt-[120px] pb-[80px] relative overflow-hidden text-center">
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16,185,129,0.07) 0%, transparent 65%), #0a0f0d",
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(16,185,129,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.06) 1px, transparent 1px)",
+          backgroundSize: "52px 52px",
+        }}
+      />
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        style={{
+          background: "linear-gradient(to bottom, transparent, #0a0f0d)",
+        }}
+      />
+
+      <div className="relative max-w-[680px] mx-auto px-6 flex flex-col items-center">
+        {/* Title — 2 baris, mirip "Find the Career" + "That's Right for You" */}
+        <Pulse className="h-[34px] sm:h-[44px] w-[85%] rounded-[8px] mb-3" />
+        <Pulse className="h-[34px] sm:h-[44px] w-[62%] rounded-[8px] mb-5" />
+
+        {/* Subtitle */}
+        <div className="flex flex-col items-center gap-2 w-full mb-8">
+          <Pulse className="h-3 w-[88%] rounded-[6px]" />
+          <Pulse className="h-3 w-[58%] rounded-[6px]" />
+        </div>
+
+        {/* Stats pill — 3 item: Openings / Companies / Remote */}
+        <div className="flex items-center bg-[#0d1610] border border-emerald-500/15 rounded-[14px] overflow-hidden">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-center">
+              {i > 0 && <div className="w-px h-9 bg-emerald-500/10" />}
+              <div className="flex items-center gap-3 px-6 py-4">
+                <Pulse className="w-8 h-8 rounded-[8px] flex-shrink-0" />
+                <div className="text-left flex flex-col gap-[6px]">
+                  <Pulse className="h-3 w-8 rounded-[4px]" />
+                  <Pulse className="h-2.5 w-16 rounded-[4px]" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Skeleton: single job card ─────────────────────────────────────────────────
 function JobsCardSkeleton() {
   return (
@@ -105,11 +162,11 @@ function JobsListHeaderSkeleton() {
   );
 }
 
-// ── EXPORT: full-page skeleton (toolbar + grid) ───────────────────────────────
-// Rendered as Suspense fallback in page.tsx
+
 export default function JobsSkeleton({ count = 9 }: { count?: number }) {
   return (
     <>
+      <JobsHeroSkeleton />
       <JobsToolbarSkeleton />
 
       <section className="py-8 pb-20">

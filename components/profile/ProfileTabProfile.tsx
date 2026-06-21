@@ -7,7 +7,7 @@ import { ProfileForm, TabProfileProps } from "@/types/main/profile";
 import { ProfileErrorBanner } from "./ProfileErrorBanner";
 import { ProfileFormField } from "./ProfileFormField";
 import { ProfileSaveButton } from "./ProfileSaveButton";
-import { inputCls } from "../shared/input";
+import { inputCls } from "../input";
 
 export function ProfileTabProfile({ user, token, addToast }: TabProfileProps) {
   const [profileForm, setProfileForm] = useState<ProfileForm>({

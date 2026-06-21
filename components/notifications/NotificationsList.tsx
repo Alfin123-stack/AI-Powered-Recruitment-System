@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BellOff, Inbox } from "lucide-react";
 import NotifCard from "./NotificationsCard";
-import { groupNotifs, GROUP_ORDER } from "../../lib/helpers/notifications";
+import { groupNotifs, GROUP_ORDER } from "../../lib/helpers/main/notifications";
 import type { FilterId, Notif } from "../../types/main/notifications";
 
 // Re-export GROUP_ORDER from helpers so consumers can import from here too.

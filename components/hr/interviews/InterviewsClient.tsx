@@ -10,7 +10,7 @@ import type {
 } from "../../../types/hr/interviews";
 import { useInterviewsClient } from "@/hooks/dashboard/hr/useInterviewsClient";
 import { InterviewScheduleModal } from "./InterviewModals";
-import { FadeIn } from "@/components/shared/FadeIn";
+import { FadeIn } from "@/components/FadeIn";
 
 const T = {
   emerald: "#10b981",

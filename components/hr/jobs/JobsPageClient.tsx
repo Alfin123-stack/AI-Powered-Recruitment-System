@@ -9,7 +9,7 @@ import { JobsSummaryStats } from "./JobsSummaryStats";
 import { JobFormSkeleton } from "./JobsSkeleton";
 import { useJobsPage } from "@/hooks/dashboard/hr/useJobsPage";
 import { Job, RawApplication } from "@/types/hr/dashboard";
-import { FadeIn } from "@/components/shared/FadeIn";
+import { FadeIn } from "@/components/FadeIn";
 
 const JobFormModal = dynamic(
   () => import("./JobsFormModal").then((m) => ({ default: m.JobsFormModal })),

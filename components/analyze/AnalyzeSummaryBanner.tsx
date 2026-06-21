@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
 import type { AnalysisData } from "@/types/main/analyze";
-import { buildAISummary } from "../../lib/helpers/analyze";
+import { buildAISummary } from "../../lib/helpers/main/analyze";
 
 // ─── AI SUMMARY BANNER ────────────────────────────────────────────────────────
 type Props = { data: AnalysisData };

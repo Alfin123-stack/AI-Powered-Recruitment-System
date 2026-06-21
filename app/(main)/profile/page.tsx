@@ -1,5 +1,3 @@
-
-
 import { Suspense } from "react";
 
 import { ProfileShell } from "@/components/profile/ProfileShell";
@@ -8,7 +6,16 @@ import { getServerSession } from "@/lib/auth/getServerSession";
 import { getUserRole } from "@/lib/auth/getUserRole";
 import { fetchCandidateStats, fetchCompanyData } from "@/lib/fetchers/profile";
 
-export default async function ProfilePage() {
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <ProfilePageContent />
+    </Suspense>
+  );
+}
+
+
+async function ProfilePageContent() {
   const session = await getServerSession();
   const { user } = session!;
   const token = session!.access_token;
@@ -23,22 +30,20 @@ export default async function ProfilePage() {
   ]);
 
   return (
-    <Suspense fallback={<ProfileSkeleton />}>
-      <ProfileShell
-        data={{
-          user: {
-            id: user.id,
-            email: user.email ?? "",
-            created_at: user.created_at,
-            user_metadata: user.user_metadata ?? {},
-          },
-          token,
-          role,
-          applicationCount: candidateStats.applicationCount,
-          savedCount: candidateStats.savedCount,
-          company,
-        }}
-      />
-    </Suspense>
+    <ProfileShell
+      data={{
+        user: {
+          id: user.id,
+          email: user.email ?? "",
+          created_at: user.created_at,
+          user_metadata: user.user_metadata ?? {},
+        },
+        token,
+        role,
+        applicationCount: candidateStats.applicationCount,
+        savedCount: candidateStats.savedCount,
+        company,
+      }}
+    />
   );
 }

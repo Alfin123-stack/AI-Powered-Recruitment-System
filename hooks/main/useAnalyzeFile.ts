@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { extractTextFromPDF } from "@/lib/helpers/analyze";
+import { extractTextFromPDF } from "@/lib/helpers/main/analyze";
 import { persistAnalysis } from "@/lib/api/analysis";
 import { mapResultToAnalysisData } from "@/lib/mappers/analysis";
 import { AnalysisData } from "@/types/main/analyze";

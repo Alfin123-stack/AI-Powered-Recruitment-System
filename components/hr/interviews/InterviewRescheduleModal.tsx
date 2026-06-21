@@ -18,7 +18,7 @@ import { InterviewSection } from "./InterviewSection";
 import { InterviewModalShell } from "./InterviewModalShell";
 import { InterviewTypeToggle } from "./InterviewTypeToggle";
 import { formatDate, formatTime } from "@/lib/helpers/hr/interviews";
-import { inputCls, inputErrorCls } from "@/components/shared/input";
+import { inputCls, inputErrorCls } from "@/components/input";
 import { useInterviewReschedule } from "@/hooks/dashboard/hr/useInterviewReschedule";
 
 export function InterviewRescheduleModal({

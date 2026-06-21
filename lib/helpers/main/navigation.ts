@@ -4,7 +4,7 @@
 
 import { MONTHS_EN } from "@/constants/calendar";
 import { ViewMode } from "@/types/calendar";
-import { getWeekDays } from "./hr/calendar";
+import { getWeekDays } from "../hr/calendar";
 
 /**
  * Mengembalikan Date baru hasil navigasi prev/next
