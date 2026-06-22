@@ -85,19 +85,18 @@ export function useNavbar() {
   const name =
     profileName ||
     user?.user_metadata?.full_name ||
-    user?.user_metadata?.name ||         // fallback Google OAuth
+    user?.user_metadata?.name ||
     user?.email?.split("@")[0] ||
     "User";
 
-  // Google OAuth bisa pakai "avatar_url" atau "picture"
   const avatar =
     (user?.user_metadata?.avatar_url as string | undefined) ||
     (user?.user_metadata?.picture as string | undefined);
 
-  const getInitials = (name: string) =>
-    name
+  const getInitials = (n: string) =>
+    n
       .split(" ")
-      .map((n) => n[0])
+      .map((part) => part[0])
       .slice(0, 2)
       .join("")
       .toUpperCase();

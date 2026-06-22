@@ -1,4 +1,4 @@
-export default function NavbarStyles() {
+export default function NavbarKeyframes() {
   return (
     <style>{`
       @keyframes ctaSpin {
@@ -9,8 +9,8 @@ export default function NavbarStyles() {
         from { opacity: 0; transform: translateY(-6px) scale(0.98); }
         to   { opacity: 1; transform: translateY(0)    scale(1);    }
       }
-      .cta-spin { animation: ctaSpin 5s linear infinite; }
-      .nav-drop { animation: navDropIn 0.18s ease forwards; }
+      .cta-spin  { animation: ctaSpin  5s linear infinite; }
+      .nav-drop  { animation: navDropIn 0.18s ease forwards; }
     `}</style>
   );
 }
