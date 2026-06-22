@@ -82,13 +82,17 @@ export function useNavbar() {
     router.replace("/");
   };
 
-  // Same priority as useDashboardInit: users table full_name -> auth metadata -> email -> "User"
   const name =
     profileName ||
     user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||         // fallback Google OAuth
     user?.email?.split("@")[0] ||
     "User";
-  const avatar = user?.user_metadata?.avatar_url as string | undefined;
+
+  // Google OAuth bisa pakai "avatar_url" atau "picture"
+  const avatar =
+    (user?.user_metadata?.avatar_url as string | undefined) ||
+    (user?.user_metadata?.picture as string | undefined);
 
   const getInitials = (name: string) =>
     name

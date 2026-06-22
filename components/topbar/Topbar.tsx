@@ -129,11 +129,20 @@ export function Topbar({
                   ? "bg-emerald-500/[0.07] border-emerald-500/25"
                   : "bg-[#0f1612] border-white/[0.08] hover:border-white/[0.14]"
               }`}>
-            <div
-              aria-hidden="true"
-              className="w-[26px] h-[26px] rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-[0.65rem] text-black flex-shrink-0 select-none">
-              {user ? getInitials(user.full_name) : "U"}
-            </div>
+            {/* Avatar — foto jika ada, fallback initials */}
+            {user?.avatar_url ? (
+              <img
+                src={user.avatar_url}
+                alt={user.full_name}
+                className="w-[26px] h-[26px] rounded-md object-cover flex-shrink-0"
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                className="w-[26px] h-[26px] rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-[0.65rem] text-black flex-shrink-0 select-none">
+                {user ? getInitials(user.full_name) : "U"}
+              </div>
+            )}
             <span className="hidden md:block text-[0.78rem] font-semibold text-[#c5d8cc] max-w-[90px] truncate">
               {user?.full_name?.split(" ")[0] ?? "User"}
             </span>

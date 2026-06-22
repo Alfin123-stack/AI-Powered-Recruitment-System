@@ -49,11 +49,20 @@ export function TopbarUserDropdown({ user, isHR, company, onClose }: TopbarUserD
         shadow-[0_16px_40px_rgba(0,0,0,0.6)]">
       <div className="px-4 py-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-3 mb-3">
-          <div
-            aria-hidden="true"
-            className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-[0.9rem] text-black flex-shrink-0">
-            {getInitials(user.full_name)}
-          </div>
+          {/* Avatar — foto jika ada, fallback initials */}
+          {user.avatar_url ? (
+            <img
+              src={user.avatar_url}
+              alt={user.full_name}
+              className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-[0.9rem] text-black flex-shrink-0">
+              {getInitials(user.full_name)}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="font-bold text-[0.88rem] text-[#dff0e8] truncate">{user.full_name}</p>
             <p className="text-[0.7rem] text-[#3a5245] truncate">{user.email}</p>

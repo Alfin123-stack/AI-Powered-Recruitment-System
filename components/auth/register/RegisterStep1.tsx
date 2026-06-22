@@ -1,4 +1,7 @@
+"use client";
+
 import { Mail, User } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { InputField } from "@/components/auth/InputField";
 import { GoogleButton } from "@/components/auth/GoogleButton";
 import { Divider } from "@/components/auth/Divider";
@@ -21,6 +24,15 @@ export function RegisterStep1({
   fieldErrors,
   clearError,
 }: RegisterStep1Props) {
+  const handleGoogleRegister = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-3 duration-250">
       <InputField
@@ -50,7 +62,7 @@ export function RegisterStep1({
       <div className="flex items-center gap-3 my-1">
         <Divider label="or sign up quickly" />
       </div>
-      <GoogleButton />
+      <GoogleButton label="Sign up with Google" onClick={handleGoogleRegister} />
     </div>
   );
 }

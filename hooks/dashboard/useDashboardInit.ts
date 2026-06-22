@@ -39,15 +39,18 @@ export function useDashboardInit() {
           session.user.email ??
           "User",
         role,
+        // Ambil dari user_metadata session, sama seperti navbar
+        avatar_url:
+          (session.user.user_metadata?.avatar_url as string | undefined) ??
+          (session.user.user_metadata?.picture as string | undefined) ??
+          null,
       });
 
       if (role === "hr") {
-        // Cek localStorage dulu — kalau sudah pernah setup, skip fetch & modal
         const cacheKey = `company_setup_done_${session.user.id}`;
         const cached = localStorage.getItem(cacheKey);
 
         if (cached === "1") {
-          // Tetap fetch data company untuk ditampilkan di UI, tapi tidak munculkan modal
           try {
             const res = await fetch(
               `${process.env.NEXT_PUBLIC_API_URL}/api/companies/me`,
@@ -67,7 +70,6 @@ export function useDashboardInit() {
           return;
         }
 
-        // Belum ada cache — fetch untuk cek apakah company sudah ada
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/companies/me`,
@@ -76,12 +78,9 @@ export function useDashboardInit() {
 
           if (res.ok) {
             const companyData = (await res.json()) as Company | null;
-
-            // Pastikan data valid dengan mengecek keberadaan id
             if (companyData && companyData.id) {
               setCompany(companyData);
               setHasCompany(true);
-              // Simpan ke localStorage agar modal tidak muncul lagi
               localStorage.setItem(cacheKey, "1");
             } else {
               setHasCompany(false);
