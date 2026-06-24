@@ -13,11 +13,24 @@ export const metadata = {
   description:
     "Daftar dan mulai analisis CV dengan AI. Gratis untuk kandidat, tidak perlu kartu kredit.",
 };
-export default async function RegisterPage() {
-  const session = await getServerSession();
-  if (session) {
-    const role = session.user.user_metadata?.role;
-    redirect(role === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
+
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ provider?: string }>;
+}) {
+  const params = await searchParams;
+  const isGoogleOnboarding = params.provider === "google";
+
+  console.log("=== REGISTER PAGE ===", params);
+  console.log("isGoogleOnboarding:", isGoogleOnboarding);
+
+  if (!isGoogleOnboarding) {
+    const session = await getServerSession();
+    if (session) {
+      const role = session.user.user_metadata?.role;
+      redirect(role === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
+    }
   }
 
   return (

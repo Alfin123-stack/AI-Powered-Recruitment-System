@@ -26,11 +26,20 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.session) {
-      const role = data.session.user.user_metadata?.role;
-      const redirectTo = role === "hr"
-        ? "/dashboard/hr"
-        : "/dashboard/candidate";
+      const user = data.session.user;
 
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single<{ role: string | null }>();
+
+      if (!userData?.role) {
+        return NextResponse.redirect(`${origin}/onboarding/role`);
+      }
+
+      const redirectTo =
+        userData.role === "hr" ? "/dashboard/hr" : "/dashboard/candidate";
       return NextResponse.redirect(`${origin}${redirectTo}`);
     }
   }

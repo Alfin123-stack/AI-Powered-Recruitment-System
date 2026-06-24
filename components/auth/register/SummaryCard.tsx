@@ -1,4 +1,3 @@
-// components/auth/register/SummaryCard.tsx
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
@@ -24,26 +23,29 @@ interface SummaryCardProps {
   fullName: string;
   email: string;
   role: string;
+  isGoogleProvider?: boolean;
 }
 
-export function SummaryCard({ fullName, email, role }: SummaryCardProps) {
+export function SummaryCard({
+  fullName,
+  email,
+  role,
+  isGoogleProvider = false,
+}: SummaryCardProps) {
   const selectedRole = ROLES.find((r) => r.value === role);
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Role benefit card */}
       {selectedRole && (
         <div
           className="rounded-[11px] px-4 py-3 border transition-all duration-300"
           style={{
             background: `${selectedRole.color}08`,
             borderColor: `${selectedRole.color}20`,
-          }}
-        >
+          }}>
           <p
             className="text-[0.72rem] font-semibold tracking-[0.07em] uppercase mb-[6px]"
-            style={{ color: selectedRole.color }}
-          >
+            style={{ color: selectedRole.color }}>
             What you&apos;ll get
           </p>
           {selectedRole.features.map((f) => (
@@ -59,14 +61,15 @@ export function SummaryCard({ fullName, email, role }: SummaryCardProps) {
         </div>
       )}
 
-      {/* Account summary */}
       <div className="rounded-[11px] bg-[#0c1510] border border-emerald-500/12 px-4 py-1">
         <p className="text-[0.68rem] font-semibold text-[#3a5444] tracking-[0.08em] uppercase pt-3 pb-2">
           Account Summary
         </p>
-        <SummaryRow label="Name" value={fullName} />
-        <SummaryRow label="Email" value={email} />
-        <SummaryRow label="Password" value="••••••••" />
+        {/* Nama & email hanya tampil jika bukan Google (Google sudah punya dari metadata) */}
+        {!isGoogleProvider && <SummaryRow label="Name" value={fullName} />}
+        {!isGoogleProvider && <SummaryRow label="Email" value={email} />}
+        {/* Password disembunyikan untuk Google user */}
+        {!isGoogleProvider && <SummaryRow label="Password" value="••••••••" />}
         {role && selectedRole && (
           <SummaryRow label="Role" value={selectedRole.label} />
         )}

@@ -7,6 +7,7 @@ interface RegisterStep3Props {
   setRole: (v: string) => void;
   fullName: string;
   email: string;
+  isGoogleProvider?: boolean; // ← tambah prop ini
   fieldErrors: Partial<AuthFieldErrors>;
   clearError: (field: keyof AuthFieldErrors) => void;
 }
@@ -16,6 +17,7 @@ export function RegisterStep3({
   setRole,
   fullName,
   email,
+  isGoogleProvider = false,
   fieldErrors,
   clearError,
 }: RegisterStep3Props) {
@@ -32,7 +34,12 @@ export function RegisterStep3({
           onClearError={() => clearError("role")}
         />
       </div>
-      <SummaryCard fullName={fullName} email={email} role={role} />
+      <SummaryCard
+        fullName={fullName}
+        email={email}
+        role={role}
+        isGoogleProvider={isGoogleProvider}
+      />
     </div>
   );
 }

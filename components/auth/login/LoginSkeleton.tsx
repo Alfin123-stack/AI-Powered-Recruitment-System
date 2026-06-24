@@ -16,14 +16,11 @@ function Shimmer({ className }: { className?: string }) {
   );
 }
 
-// ─── LoginHeaderSkeleton ─────────────────────────────────────────────────
-// Mimics: the "Sign in to your account" badge + h2 + description paragraph
 
 export function LoginHeaderSkeleton() {
   return (
     <div className="mb-8" aria-hidden="true">
-      {/* Badge */}
-      <Shimmer className="mb-3 h-[22px] w-[130px] rounded-full" />
+
 
       {/* h2 title — two lines */}
       <Shimmer className="mb-2 h-[34px] w-[75%]" />

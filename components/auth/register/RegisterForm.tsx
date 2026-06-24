@@ -25,6 +25,7 @@ export function RegisterForm() {
     step,
     isFirstStep,
     isLastStep,
+    isGoogleProvider,
     loading,
     error,
     fieldErrors,
@@ -45,7 +46,8 @@ export function RegisterForm() {
       <ErrorBanner message={error} />
 
       <form onSubmit={handleRegister} noValidate>
-        {step === 1 && (
+        {/* Step 1 & 2 hanya tampil jika bukan Google provider */}
+        {step === 1 && !isGoogleProvider && (
           <RegisterStep1
             fullName={fullName}
             setFullName={setFullName}
@@ -56,7 +58,7 @@ export function RegisterForm() {
           />
         )}
 
-        {step === 2 && (
+        {step === 2 && !isGoogleProvider && (
           <RegisterStep2
             password={password}
             setPassword={setPassword}
@@ -74,6 +76,7 @@ export function RegisterForm() {
             setRole={setRole}
             fullName={fullName}
             email={email}
+            isGoogleProvider={isGoogleProvider}
             fieldErrors={fieldErrors}
             clearError={clearError}
           />

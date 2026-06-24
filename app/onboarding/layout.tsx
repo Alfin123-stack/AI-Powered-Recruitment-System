@@ -1,13 +1,8 @@
 import { Toaster } from "sonner";
 import AuthLeftPanel from "@/components/auth/layout/AuthLeftPanel";
 import AuthRightPanel from "@/components/auth/layout/AuthRightPanel";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Autentikasi · RecruitAI",
-};
-
-export default function AuthLayout({
+export default function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
