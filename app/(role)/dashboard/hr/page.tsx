@@ -1,13 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// HR DASHBOARD PAGE — Server Component (SSR + ISR)
-// Route: app/dashboard/hr/page.tsx
-//
-// Rendering strategy:
-//   • SSR      : fetch data di server saat request (real-time candidate data)
-//   • ISR      : revalidate setiap 60 detik (company info)
-//   • CSR      : semua interaksi di HRDashboardClient (status update, filter, modal)
-//   • Suspense : skeleton tampil segera saat server fetch belum selesai
-// ─────────────────────────────────────────────────────────────────────────────
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";

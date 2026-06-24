@@ -4,8 +4,6 @@ import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import Sidebar from "@/components/Sidebar";
-
-
 import { DashboardContext } from "@/context/DashboardContext";
 import { useDashboardInit } from "@/hooks/dashboard/useDashboardInit";
 import {
@@ -17,6 +15,7 @@ import {
 import type { Company } from "@/types/main/company";
 import CompanySetupModal from "../../components/hr/dashboard/DashboardCompanySetupModal";
 import { Topbar } from "@/components/topbar/Topbar";
+import { ChatbotWidget } from "@/components/ChatbotWidget";
 
 export default function DashboardLayout({
   children,
@@ -94,6 +93,9 @@ export default function DashboardLayout({
           <div className="px-8 pt-7 pb-[60px]">{children}</div>
         </div>
       </div>
+
+      {/* Floating chatbot — muncul di semua halaman dashboard */}
+      <ChatbotWidget />
     </DashboardContext.Provider>
   );
 }
