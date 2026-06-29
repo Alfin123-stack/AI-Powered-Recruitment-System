@@ -9,7 +9,7 @@ const isAuthRoute = (p: string) =>
   AUTH_ROUTES.some((r) => p === r || p.startsWith(r + "/"));
 const isHRRoute = (p: string) => p.startsWith("/dashboard/hr");
 const isCandidateRoute = (p: string) => p.startsWith("/dashboard/candidate");
-const getDashboard = (role: string) =>
+const getDashboard = (role: "hr" | "candidate") =>
   role === "hr" ? "/dashboard/hr" : "/dashboard/candidate";
 
 export async function proxy(req: NextRequest) {
@@ -43,8 +43,16 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!session;
 
-  // Ambil role dari database, bukan dari user_metadata
-  let role: "hr" | "candidate" = "candidate"; // default fallback
+  // ── 1. Belum login → redirect ke /login ──────────────────────────────────
+  if (!isLoggedIn && pathname.startsWith("/dashboard")) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // ── 2. Sudah login → ambil role dari database ────────────────────────────
+  let role: "hr" | "candidate" | null = null;
+
   if (isLoggedIn && session?.user?.id) {
     const { data: userData } = await supabase
       .from("users")
@@ -52,36 +60,42 @@ export async function proxy(req: NextRequest) {
       .eq("id", session.user.id)
       .single();
 
-    if (userData?.role === "hr") {
-      role = "hr";
-    }
+    if (userData?.role === "hr") role = "hr";
+    else if (userData?.role === "candidate") role = "candidate";
+    // selain itu tetap null → akan di-block di bawah
   }
 
-  if (isLoggedIn && isAuthRoute(pathname)) {
+  // ── 3. Sudah login tapi role null (belum setup / data tidak valid) ────────
+  if (isLoggedIn && role === null && pathname.startsWith("/dashboard")) {
+    // Redirect ke halaman khusus "setup akun" atau login dengan pesan error
+    const url = new URL("/login", req.url);
+    url.searchParams.set("error", "role_not_found");
+    return NextResponse.redirect(url);
+  }
+
+  // ── 4. Sudah login + punya role → redirect dari auth pages ───────────────
+  if (isLoggedIn && role !== null && isAuthRoute(pathname)) {
     return NextResponse.redirect(new URL(getDashboard(role), req.url));
   }
 
-  if (!isLoggedIn && pathname.startsWith("/dashboard")) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+  // ── 5. Redirect /dashboard → dashboard sesuai role ───────────────────────
+  if (isLoggedIn && role !== null && pathname === "/dashboard") {
+    return NextResponse.redirect(new URL(getDashboard(role), req.url));
   }
 
+  // ── 6. Guard cross-role: HR tidak boleh akses /dashboard/candidate ────────
   if (isLoggedIn && role === "hr" && isCandidateRoute(pathname)) {
     return NextResponse.redirect(new URL("/dashboard/hr", req.url));
   }
 
+  // ── 7. Guard cross-role: kandidat tidak boleh akses /dashboard/hr ─────────
   if (isLoggedIn && role === "candidate" && isHRRoute(pathname)) {
     return NextResponse.redirect(new URL("/dashboard/candidate", req.url));
-  }
-
-  if (isLoggedIn && pathname === "/dashboard") {
-    return NextResponse.redirect(new URL(getDashboard(role), req.url));
   }
 
   return supabaseResponse;
 }
 
-export const config = {
+export const config = {  
   matcher: ["/dashboard/:path*", "/login", "/register", "/forgot-password"],
 };

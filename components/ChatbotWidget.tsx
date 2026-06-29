@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Bot, Loader2, RotateCcw, ChevronDown } from "lucide-react";
+import { X, Send, Loader2, RotateCcw, ChevronDown } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { DashboardContext } from "@/context/DashboardContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -10,9 +11,10 @@ import { DashboardContext } from "@/context/DashboardContext";
 type Message = {
   role: "user" | "assistant";
   content: string;
+  streaming?: boolean;
 };
 
-// ─── Inline styles (no Tailwind purge risk for dynamic values) ────────────────
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const S = {
   overlay: {
@@ -28,8 +30,7 @@ const S = {
     overflow: "hidden",
     background: "#0a0f0d",
     border: "1px solid rgba(16,185,129,0.18)",
-    boxShadow:
-      "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,185,129,0.06)",
+    boxShadow: "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,185,129,0.06)",
   },
   header: {
     display: "flex",
@@ -64,21 +65,13 @@ const S = {
     maxWidth: "88%",
     alignSelf: role === "user" ? "flex-end" : ("flex-start" as const),
     padding: "9px 13px",
-    borderRadius:
-      role === "user" ? "12px 12px 3px 12px" : "12px 12px 12px 3px",
+    borderRadius: role === "user" ? "12px 12px 3px 12px" : "12px 12px 12px 3px",
     fontSize: "0.8rem",
-    lineHeight: "1.55",
-    background:
-      role === "user"
-        ? "rgba(16,185,129,0.15)"
-        : "rgba(255,255,255,0.04)",
-    border:
-      role === "user"
-        ? "1px solid rgba(16,185,129,0.25)"
-        : "1px solid rgba(255,255,255,0.07)",
+    lineHeight: "1.6",
+    background: role === "user" ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.04)",
+    border: role === "user" ? "1px solid rgba(16,185,129,0.25)" : "1px solid rgba(255,255,255,0.07)",
     color: role === "user" ? "#d1fae5" : "#c8ddd3",
     wordBreak: "break-word" as const,
-    whiteSpace: "pre-wrap" as const,
   }),
   inputRow: {
     display: "flex",
@@ -111,9 +104,7 @@ const S = {
     borderRadius: "10px",
     border: "none",
     cursor: disabled ? "not-allowed" : "pointer",
-    background: disabled
-      ? "rgba(16,185,129,0.08)"
-      : "rgba(16,185,129,0.85)",
+    background: disabled ? "rgba(16,185,129,0.08)" : "rgba(16,185,129,0.85)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -138,7 +129,56 @@ const S = {
   },
 };
 
-// ─── Quick suggestions per role ───────────────────────────────────────────────
+// ─── Markdown styles (injected once) ─────────────────────────────────────────
+
+const MD_STYLE = `
+  .chat-md p { margin: 0 0 6px 0; }
+  .chat-md p:last-child { margin-bottom: 0; }
+  .chat-md strong { color: #6ee7b7; font-weight: 600; }
+  .chat-md em { color: #a7c4b2; font-style: italic; }
+  .chat-md ul { margin: 4px 0 6px 0; padding-left: 16px; }
+  .chat-md ol { margin: 4px 0 6px 0; padding-left: 16px; }
+  .chat-md li { margin-bottom: 3px; }
+  .chat-md code {
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.75rem;
+    color: #6ee7b7;
+    font-family: monospace;
+  }
+  .chat-md pre {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(16,185,129,0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    margin: 6px 0;
+  }
+  .chat-md pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #a7c4b2;
+  }
+  .chat-md h1, .chat-md h2, .chat-md h3 {
+    color: #e8f0ec;
+    font-weight: 700;
+    margin: 8px 0 4px 0;
+    font-size: 0.85rem;
+  }
+  .chat-md blockquote {
+    border-left: 2px solid rgba(16,185,129,0.4);
+    padding-left: 10px;
+    margin: 4px 0;
+    color: #7a9585;
+  }
+  .chat-md a { color: #34d399; text-decoration: underline; }
+  .chat-md hr { border-color: rgba(16,185,129,0.15); margin: 8px 0; }
+`;
+
+// ─── Suggestions ──────────────────────────────────────────────────────────────
 
 const SUGGESTIONS = {
   hr: [
@@ -153,7 +193,7 @@ const SUGGESTIONS = {
   ],
 };
 
-// ─── Robot SVG icon (custom, bukan lucide) ────────────────────────────────────
+// ─── Robot SVG ────────────────────────────────────────────────────────────────
 
 function RobotIcon({ size = 24, color = "#10b981" }: { size?: number; color?: string }) {
   return (
@@ -170,7 +210,7 @@ function RobotIcon({ size = 24, color = "#10b981" }: { size?: number; color?: st
   );
 }
 
-// ─── Loading dots ─────────────────────────────────────────────────────────────
+// ─── Typing dots ──────────────────────────────────────────────────────────────
 
 function TypingDots() {
   return (
@@ -193,6 +233,74 @@ function TypingDots() {
   );
 }
 
+// ─── Streaming text hook ──────────────────────────────────────────────────────
+
+/**
+ * Simulasi typewriter effect untuk response AI.
+ * Muncul bertahap per chunk kata, bukan per karakter,
+ * agar terasa natural dan tidak terlalu lambat.
+ */
+function useStreamText(fullText: string, active: boolean) {
+  const [displayed, setDisplayed] = useState("");
+
+  useEffect(() => {
+    if (!active || !fullText) {
+      setDisplayed(fullText);
+      return;
+    }
+
+    setDisplayed("");
+    // Split per ~3 karakter agar streaming terasa smooth
+    const chunks: string[] = [];
+    for (let i = 0; i < fullText.length; i += 3) {
+      chunks.push(fullText.slice(i, i + 3));
+    }
+
+    let idx = 0;
+    // Mulai lambat, lalu percepat sesuai panjang teks
+    const baseDelay = Math.max(8, Math.min(20, 1200 / fullText.length));
+
+    const tick = () => {
+      if (idx >= chunks.length) return;
+      setDisplayed((prev) => prev + chunks[idx]);
+      idx++;
+      setTimeout(tick, baseDelay);
+    };
+
+    const t = setTimeout(tick, 60); // sedikit delay sebelum mulai
+    return () => clearTimeout(t);
+  }, [fullText, active]);
+
+  return displayed;
+}
+
+// ─── Streaming bubble ─────────────────────────────────────────────────────────
+
+function AssistantBubble({ content, streaming }: { content: string; streaming: boolean }) {
+  const displayed = useStreamText(content, streaming);
+  const text = streaming ? displayed : content;
+
+  return (
+    <div style={S.bubble("assistant")} className="chat-md">
+      <ReactMarkdown>{text}</ReactMarkdown>
+      {streaming && displayed.length < content.length && (
+        <span
+          style={{
+            display: "inline-block",
+            width: "6px",
+            height: "13px",
+            background: "#10b981",
+            borderRadius: "2px",
+            marginLeft: "2px",
+            verticalAlign: "middle",
+            animation: "blink 0.7s step-end infinite",
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function ChatbotWidget() {
@@ -207,19 +315,25 @@ export function ChatbotWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Scroll to bottom on new message
+  // Inject CSS sekali
+  useEffect(() => {
+    if (document.getElementById("chat-md-style")) return;
+    const style = document.createElement("style");
+    style.id = "chat-md-style";
+    style.textContent =
+      MD_STYLE +
+      `@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`;
+    document.head.appendChild(style);
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Focus textarea when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => textareaRef.current?.focus(), 200);
-    }
+    if (open) setTimeout(() => textareaRef.current?.focus(), 200);
   }, [open]);
 
-  // Auto-resize textarea
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     const el = e.target;
@@ -236,40 +350,53 @@ export function ChatbotWidget() {
 
     setMessages(nextHistory);
     setInput("");
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
     setLoading(true);
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            message: msg,
-            conversationHistory: messages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-          }),
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          message: msg,
+          conversationHistory: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
 
       if (!res.ok) throw new Error("API error");
 
       const data = (await res.json()) as { reply: string };
-      setMessages([...nextHistory, { role: "assistant", content: data.reply }]);
+
+      // Tambahkan pesan dengan flag streaming=true
+      setMessages([
+        ...nextHistory,
+        { role: "assistant", content: data.reply, streaming: true },
+      ]);
+
+      // Setelah animasi selesai (~panjang teks * delay), matikan streaming flag
+      const estimatedDuration =
+        Math.max(800, Math.ceil(data.reply.length / 3) * Math.max(8, Math.min(20, 1200 / data.reply.length))) + 200;
+
+      setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((m, i) =>
+            i === prev.length - 1 ? { ...m, streaming: false } : m
+          )
+        );
+      }, estimatedDuration);
     } catch {
       setMessages([
         ...nextHistory,
         {
           role: "assistant",
           content: "Maaf, terjadi kesalahan. Silakan coba lagi.",
+          streaming: false,
         },
       ]);
     } finally {
@@ -285,12 +412,11 @@ export function ChatbotWidget() {
   };
 
   const resetChat = () => setMessages([]);
-
   const suggestions = SUGGESTIONS[role];
 
   return (
     <>
-      {/* ── Floating Action Button ── */}
+      {/* ── FAB ── */}
       <motion.button
         style={S.fab}
         onClick={() => setOpen((v) => !v)}
@@ -323,7 +449,6 @@ export function ChatbotWidget() {
           )}
         </AnimatePresence>
 
-        {/* Pulse ring */}
         {!open && (
           <motion.span
             style={{
@@ -355,23 +480,10 @@ export function ChatbotWidget() {
                 <RobotIcon size={16} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    color: "#e8f0ec",
-                    lineHeight: 1,
-                  }}
-                >
+                <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#e8f0ec", lineHeight: 1 }}>
                   AI Assistant
                 </div>
-                <div
-                  style={{
-                    fontSize: "0.65rem",
-                    color: "#4a6a5a",
-                    marginTop: "2px",
-                  }}
-                >
+                <div style={{ fontSize: "0.65rem", color: "#4a6a5a", marginTop: "2px" }}>
                   {role === "hr" ? "HR · Rekrutmen & Kandidat" : "Kandidat · Karier & Lamaran"}
                 </div>
               </div>
@@ -415,13 +527,7 @@ export function ChatbotWidget() {
             <div style={S.messages}>
               {messages.length === 0 && (
                 <div style={{ padding: "4px 0 8px" }}>
-                  {/* Welcome */}
-                  <div
-                    style={{
-                      textAlign: "center",
-                      marginBottom: "16px",
-                    }}
-                  >
+                  <div style={{ textAlign: "center", marginBottom: "16px" }}>
                     <div
                       style={{
                         width: "44px",
@@ -437,32 +543,16 @@ export function ChatbotWidget() {
                     >
                       <RobotIcon size={22} />
                     </div>
-                    <div
-                      style={{
-                        fontSize: "0.82rem",
-                        fontWeight: 700,
-                        color: "#c8ddd3",
-                        marginBottom: "4px",
-                      }}
-                    >
+                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#c8ddd3", marginBottom: "4px" }}>
                       Halo! Ada yang bisa saya bantu?
                     </div>
-                    <div
-                      style={{ fontSize: "0.72rem", color: "#4a6a5a" }}
-                    >
+                    <div style={{ fontSize: "0.72rem", color: "#4a6a5a" }}>
                       Tanya seputar platform atau{" "}
                       {role === "hr" ? "data kandidat" : "karier kamu"}
                     </div>
                   </div>
 
-                  {/* Suggestions */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "6px",
-                    }}
-                  >
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     {suggestions.map((s) => (
                       <button
                         key={s}
@@ -480,16 +570,12 @@ export function ChatbotWidget() {
                           lineHeight: 1.4,
                         }}
                         onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLButtonElement).style.background =
-                            "rgba(16,185,129,0.08)";
-                          (e.currentTarget as HTMLButtonElement).style.color =
-                            "#a7c4b2";
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(16,185,129,0.08)";
+                          (e.currentTarget as HTMLButtonElement).style.color = "#a7c4b2";
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLButtonElement).style.background =
-                            "rgba(255,255,255,0.03)";
-                          (e.currentTarget as HTMLButtonElement).style.color =
-                            "#7a9585";
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)";
+                          (e.currentTarget as HTMLButtonElement).style.color = "#7a9585";
                         }}
                       >
                         {s}
@@ -507,7 +593,14 @@ export function ChatbotWidget() {
                   transition={{ duration: 0.18 }}
                   style={{ display: "flex", flexDirection: "column" }}
                 >
-                  <div style={S.bubble(m.role)}>{m.content}</div>
+                  {m.role === "assistant" ? (
+                    <AssistantBubble
+                      content={m.content}
+                      streaming={m.streaming ?? false}
+                    />
+                  ) : (
+                    <div style={S.bubble("user")}>{m.content}</div>
+                  )}
                 </motion.div>
               ))}
 
@@ -530,7 +623,7 @@ export function ChatbotWidget() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input row */}
+            {/* Input */}
             <div style={S.inputRow}>
               <textarea
                 ref={textareaRef}
