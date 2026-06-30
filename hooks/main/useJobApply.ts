@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Job } from "@/types/jobs";
+import { calcMatchScore } from "@/lib/helpers/candidate/matches";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -110,13 +111,35 @@ export function useJobApply({
       if (!aiRes.ok) throw new Error("Failed to analyze CV");
       const analysis = await aiRes.json();
 
+      // ── Hitung matching score job-specific di sini ──────────
+      // Gemini tidak menghasilkan field matchingScore, jadi kita
+      // hitung manual pakai calcMatchScore yang sama dengan yang
+      // dipakai di halaman Job Matches, supaya konsisten.
+      const candidateSkillNames: string[] = Array.isArray(analysis.skills)
+        ? analysis.skills.map((s: { name: string }) => s.name)
+        : [];
+
+      const { score: matchingScore } = calcMatchScore(
+        candidateSkillNames,
+        job.skills || [],
+      );
+
+      const analysisWithMatch = {
+        ...analysis,
+        matchingScore,
+      };
+
       const applyRes = await fetch(`${API}/api/applications/apply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ job_id: job.id, cv_url, analysis }),
+        body: JSON.stringify({
+          job_id: job.id,
+          cv_url,
+          analysis: analysisWithMatch,
+        }),
       });
       if (!applyRes.ok) {
         const err = await applyRes.json();

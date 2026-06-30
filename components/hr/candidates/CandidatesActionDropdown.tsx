@@ -9,6 +9,7 @@ import {
   ThumbsDown,
   RotateCcw,
   MoreHorizontal,
+  Check,
 } from "lucide-react";
 import { CandidateRaw, CandidateStatus } from "@/types/candidates";
 
@@ -52,46 +53,40 @@ export function CandidatesActionDropdown({
     };
   }, [open]);
 
-  const menuItems: Array<{
+  // ── Item aksi (View Detail selalu aktif, tidak terkait status) ─────────
+  const viewItem = {
+    label: "View Detail",
+    icon: Eye,
+    action: () => {
+      onView();
+      setOpen(false);
+    },
+    color: "#e8f0ec",
+  };
+
+  // ── Item status — masing-masing dicek terhadap status kandidat saat ini ─
+  const statusItems: Array<{
     label: string;
+    status: CandidateStatus;
     icon: React.ElementType;
-    action: () => void;
     color: string;
   }> = [
     {
-      label: "View Detail",
-      icon: Eye,
-      action: () => {
-        onView();
-        setOpen(false);
-      },
-      color: "#e8f0ec",
-    },
-    {
       label: "Shortlist",
+      status: "shortlisted",
       icon: ThumbsUp,
-      action: () => {
-        onStatusChange(candidate.id, "shortlisted");
-        setOpen(false);
-      },
       color: "#10b981",
     },
     {
       label: "In Review",
+      status: "review",
       icon: RotateCcw,
-      action: () => {
-        onStatusChange(candidate.id, "review");
-        setOpen(false);
-      },
       color: "#06b6d4",
     },
     {
       label: "Reject",
+      status: "rejected",
       icon: ThumbsDown,
-      action: () => {
-        onStatusChange(candidate.id, "rejected");
-        setOpen(false);
-      },
       color: "#f43f5e",
     },
   ];
@@ -109,7 +104,7 @@ export function CandidatesActionDropdown({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.12 }}
-            className="fixed z-[9999] rounded-[10px] overflow-hidden w-40"
+            className="fixed z-[9999] rounded-[10px] overflow-hidden w-44"
             style={{
               top: pos.top,
               left: pos.left,
@@ -117,21 +112,67 @@ export function CandidatesActionDropdown({
               border: "1px solid rgba(16,185,129,0.2)",
               boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
             }}>
-            {menuItems.map(({ label, icon: Icon, action, color }) => (
-              <button
-                key={label}
-                type="button"
-                title={label}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  action();
-                }}
-                className="flex items-center gap-2 w-full px-3 py-[9px] text-[12px] font-semibold text-left transition-colors hover:bg-[rgba(16,185,129,0.06)]"
-                style={{ color }}>
-                <Icon size={12} />
-                {label}
-              </button>
-            ))}
+            {/* View Detail */}
+            <button
+              type="button"
+              title={viewItem.label}
+              onClick={(e) => {
+                e.stopPropagation();
+                viewItem.action();
+              }}
+              className="flex items-center gap-2 w-full px-3 py-[9px] text-[12px] font-semibold text-left transition-colors hover:bg-[rgba(16,185,129,0.06)]"
+              style={{ color: viewItem.color }}>
+              <viewItem.icon size={12} />
+              {viewItem.label}
+            </button>
+
+            <div
+              className="h-px mx-1"
+              style={{ background: "rgba(16,185,129,0.1)" }}
+            />
+
+            {/* Status actions */}
+            {statusItems.map(({ label, status, icon: Icon, color }) => {
+              const isActive = candidate.status === status;
+              return (
+                <button
+                  key={status}
+                  type="button"
+                  title={
+                    isActive
+                      ? `Kandidat sudah berstatus ${label}`
+                      : `Ubah status ke ${label}`
+                  }
+                  disabled={isActive}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isActive) return;
+                    onStatusChange(candidate.id, status);
+                    setOpen(false);
+                  }}
+                  className="flex items-center justify-between gap-2 w-full px-3 py-[9px] text-[12px] font-semibold text-left transition-colors disabled:cursor-default"
+                  style={{
+                    color,
+                    background: isActive ? `${color}14` : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive)
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "rgba(16,185,129,0.06)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive)
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "transparent";
+                  }}>
+                  <span className="flex items-center gap-2">
+                    <Icon size={12} />
+                    {label}
+                  </span>
+                  {isActive && <Check size={12} />}
+                </button>
+              );
+            })}
           </motion.div>
         </>
       )}

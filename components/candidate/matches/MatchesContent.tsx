@@ -1,5 +1,4 @@
-// components/candidate/matches/MatchesContent.tsx
-// Server Component — fetch semua data di server lalu pass ke JobMatchList.
+
 
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/getServerSession";

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import AnimatedBar from "./AnalyzeAnimatedBar";
 import type { AnalysisData } from "@/types/main/analyze";
-import { getColor } from "@/lib/utils";
+import { getScoreColor } from "@/lib/utils";
 
 // ─── OVERVIEW TAB ─────────────────────────────────────────────────────────────
 type Props = { data: AnalysisData };
@@ -44,7 +44,7 @@ export default function OverviewTab({ data }: Props) {
           <>
             <div className="space-y-[10px]">
               {visibleSkills.map((s, i) => {
-                const col = getColor(s.level);
+                const col = getScoreColor(s.level);
                 return (
                   <div key={i} className="flex items-center gap-3">
                     <div
@@ -111,7 +111,7 @@ export default function OverviewTab({ data }: Props) {
         ) : (
           <div className="space-y-[12px]">
             {data.categories.map((c, i) => {
-              const col = getColor(c.score);
+              const col = getScoreColor(c.score);
               return (
                 <div key={i}>
                   <div className="flex justify-between mb-[5px]">

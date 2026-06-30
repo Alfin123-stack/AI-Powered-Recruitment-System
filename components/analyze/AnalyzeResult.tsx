@@ -13,7 +13,7 @@ import FeedbackTab from "./AnalyzeFeedbackTab";
 import WritingTab from "./AnalyzeWritingTab";
 import type { AnalysisData, Tab } from "@/types/main/analyze";
 import type { UserRole } from "@/hooks/main/useUserRole";
-import { getColor } from "@/lib/utils";
+import { getScoreColor } from "@/lib/utils";
 
 type Props = {
   data: AnalysisData;
@@ -158,14 +158,14 @@ export default function AnalyzeResult({
               <div className="flex-1">
                 <AnimatedBar
                   value={readability}
-                  color={getColor(readability)}
+                  color={getScoreColor(readability)}
                   delay={700}
                   height={4}
                 />
               </div>
               <div
                 className="text-[12px] font-bold flex-shrink-0"
-                style={{ color: getColor(readability) }}>
+                style={{ color: getScoreColor(readability) }}>
                 {readability}/100
               </div>
             </div>

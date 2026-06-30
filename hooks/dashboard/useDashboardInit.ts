@@ -14,10 +14,31 @@ export function useDashboardInit() {
 
   useEffect(() => {
     const init = async () => {
-      const {
+      // ── Pastikan session yang dipakai masih fresh ────────────────────
+      // getSession() cuma baca dari local storage, token bisa saja sudah
+      // expired kalau tab dibiarkan lama tanpa ada request apa pun yang
+      // memicu auto-refresh dari Supabase client.
+      let {
         data: { session },
       } = await supabase.auth.getSession();
-      if (!session) return;
+
+      if (session) {
+        const expiresAt = session.expires_at ?? 0;
+        const nowInSeconds = Math.floor(Date.now() / 1000);
+        // Refresh kalau sudah expired atau akan expired dalam 60 detik ke depan
+        if (expiresAt - nowInSeconds < 60) {
+          const { data: refreshed, error: refreshError } =
+            await supabase.auth.refreshSession();
+          if (!refreshError && refreshed.session) {
+            session = refreshed.session;
+          }
+        }
+      }
+
+      if (!session) {
+        setLoading(false);
+        return;
+      }
 
       const { data: userData } = await supabase
         .from("users")
@@ -99,6 +120,27 @@ export function useDashboardInit() {
     };
 
     void init();
+
+    // ── Dengar perubahan auth state (termasuk auto token refresh) ─────
+    // Supabase client otomatis refresh token di background selama tab
+    // terbuka. Listener ini memastikan state `token` di React selalu
+    // ikut ter-update setiap kali itu terjadi, supaya request berikutnya
+    // (misalnya update status candidate) selalu pakai token yang fresh.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (newSession?.access_token) {
+        setToken(newSession.access_token);
+      }
+      if (event === "SIGNED_OUT") {
+        setToken("");
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return {

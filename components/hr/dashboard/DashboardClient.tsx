@@ -15,6 +15,8 @@ import {
   CandidateUI,
 } from "@/types/hr/dashboard";
 import { PALETTE_COLORS } from "@/constants/shared";
+import { useDashboard } from "@/context/DashboardContext";
+import { apiFetch } from "@/lib/api";
 
 interface DashboardClientProps {
   initialCandidates: CandidateUI[];
@@ -44,22 +46,29 @@ export function DashboardClient({
   initialInterviews,
   company,
 }: DashboardClientProps) {
+  const { token } = useDashboard();
   const [candidates, setCandidates] =
     useState<CandidateUI[]>(initialCandidates);
   const [interviews] = useState<Interview[]>(initialInterviews);
 
   const updateStatus = async (id: string, status: string) => {
+    // Simpan status lama untuk rollback kalau request ke backend gagal
+    const prevCandidates = candidates;
+
+    // Optimistic update di UI
     setCandidates((prev) =>
       prev.map((c) => (c.id === id ? { ...c, status } : c)),
     );
+
     try {
-      await fetch(`/api/applications/${id}/status`, {
+      await apiFetch(`/api/applications/${id}/status`, token, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-    } catch {
-      // Revert on error — optional: add rollback if needed
+    } catch (err) {
+      console.error("Gagal update status candidate:", err);
+      // Rollback ke status sebelumnya karena update di backend gagal
+      setCandidates(prevCandidates);
     }
   };
 
@@ -101,7 +110,9 @@ export function DashboardClient({
       <div className="relative">
         {/* ── PAGE HEADER ── */}
         <FadeIn>
-          <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+          <div
+            data-tour="hr-welcome"
+            className="flex items-center justify-between mb-6 gap-3 flex-wrap">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
                 <LayoutDashboard size={18} className="text-emerald-400" />
@@ -135,19 +146,23 @@ export function DashboardClient({
 
         {/* ── STAT CARDS ── */}
         <FadeIn delay={0.03}>
-          <StatCards
-            uniqueJobsCount={uniqueJobs.length}
-            total={total}
-            totalInterviews={totalInterviews}
-            totalHired={totalHired}
-            totalRejected={totalRejected}
-            shortlisted={shortlisted}
-          />
+          <div data-tour="hr-stats">
+            <StatCards
+              uniqueJobsCount={uniqueJobs.length}
+              total={total}
+              totalInterviews={totalInterviews}
+              totalHired={totalHired}
+              totalRejected={totalRejected}
+              shortlisted={shortlisted}
+            />
+          </div>
         </FadeIn>
 
         {/* ── AI INSIGHT ── */}
         <FadeIn delay={0.06}>
-          <AIInsightPanel candidates={candidates} />
+          <div data-tour="hr-ai-insight">
+            <AIInsightPanel candidates={candidates} />
+          </div>
         </FadeIn>
 
         {/* ── ANALYTICS + SIDEBAR ── */}
@@ -155,27 +170,33 @@ export function DashboardClient({
           <div
             className="grid gap-5 mb-5"
             style={{ gridTemplateColumns: "minmax(0,1fr) 280px" }}>
-            <AnalyticsSection
-              candidates={candidates}
-              jobGroups={jobGroups}
-              total={total}
-              shortlisted={shortlisted}
-              inReview={inReview}
-              totalInterviews={totalInterviews}
-              totalRejected={totalRejected}
-              totalHired={totalHired}
-            />
-            <DashboardSidebar interviews={interviews} />
+            <div data-tour="hr-analytics">
+              <AnalyticsSection
+                candidates={candidates}
+                jobGroups={jobGroups}
+                total={total}
+                shortlisted={shortlisted}
+                inReview={inReview}
+                totalInterviews={totalInterviews}
+                totalRejected={totalRejected}
+                totalHired={totalHired}
+              />
+            </div>
+            <div data-tour="hr-calendar-sidebar">
+              <DashboardSidebar interviews={interviews} />
+            </div>
           </div>
         </FadeIn>
 
         {/* ── CANDIDATE RANKING ── */}
         <FadeIn delay={0.18}>
-          <CandidateRanking
-            jobGroups={jobGroups}
-            total={total}
-            onStatusChange={updateStatus}
-          />
+          <div data-tour="hr-candidate-ranking">
+            <CandidateRanking
+              jobGroups={jobGroups}
+              total={total}
+              onStatusChange={updateStatus}
+            />
+          </div>
         </FadeIn>
 
         {/* ── COMPANY FOOTER ── */}

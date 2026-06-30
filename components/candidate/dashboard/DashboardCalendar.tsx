@@ -15,6 +15,28 @@ import { DAYS_ID, MONTHS_ID } from "@/constants/candidate/dashboard";
 import type { Interview } from "@/types/candidate/dashboard";
 import { formatDate, formatTime } from "@/lib/helpers/hr/interviews";
 
+// ── Hitung selisih hari berbasis tanggal kalender, bukan selisih waktu
+//    mentah. Membandingkan ms langsung (lalu dibagi 86400000 dan
+//    di-Math.ceil) bisa salah 1 hari kalau jam interview lebih lambat
+//    dari jam sekarang di hari yang sama — misal sekarang jam 09:00 dan
+//    interview jam 14:45 hari ini, selisihnya cuma sekitar 5 jam (~0.24
+//    hari), tapi Math.ceil membulatkannya ke 1 sehingga dianggap "besok".
+function daysUntilDate(target: Date, from: Date = new Date()): number {
+  const startOfTarget = new Date(
+    target.getFullYear(),
+    target.getMonth(),
+    target.getDate(),
+  );
+  const startOfFrom = new Date(
+    from.getFullYear(),
+    from.getMonth(),
+    from.getDate(),
+  );
+  return Math.round(
+    (startOfTarget.getTime() - startOfFrom.getTime()) / 86400000,
+  );
+}
+
 export function DashboardCalendar({ interviews }: { interviews: Interview[] }) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
@@ -41,11 +63,15 @@ export function DashboardCalendar({ interviews }: { interviews: Interview[] }) {
   ];
   while (cells.length % 7 !== 0) cells.push(null);
 
+  // ── "Akan datang" sekarang termasuk interview hari ini yang belum lewat
   const upcomingAll = interviews
-    .filter(
-      (iv) =>
-        iv.status === "scheduled" && new Date(iv.scheduled_at) > new Date(),
-    )
+    .filter((iv) => {
+      if (iv.status !== "scheduled") return false;
+      const ivDate = new Date(iv.scheduled_at);
+      // Interview hari ini (meski jamnya sudah lewat sedikit) tetap masuk,
+      // selama tanggal kalendernya >= hari ini.
+      return daysUntilDate(ivDate, today) >= 0;
+    })
     .sort(
       (a, b) =>
         new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime(),
@@ -222,9 +248,9 @@ export function DashboardCalendar({ interviews }: { interviews: Interview[] }) {
               <div className="space-y-2">
                 {selectedInterviews.map((iv) => {
                   const isOnline = iv.type === "online";
-                  const daysUntil = Math.ceil(
-                    (new Date(iv.scheduled_at).getTime() - Date.now()) /
-                      86400000,
+                  const daysUntil = daysUntilDate(
+                    new Date(iv.scheduled_at),
+                    today,
                   );
                   return (
                     <div
@@ -268,9 +294,7 @@ export function DashboardCalendar({ interviews }: { interviews: Interview[] }) {
           <div className="space-y-2">
             {upcomingAll.slice(0, 3).map((iv) => {
               const isOnline = iv.type === "online";
-              const daysUntil = Math.ceil(
-                (new Date(iv.scheduled_at).getTime() - Date.now()) / 86400000,
-              );
+              const daysUntil = daysUntilDate(new Date(iv.scheduled_at), today);
               return (
                 <div
                   key={iv.id}
@@ -289,8 +313,8 @@ export function DashboardCalendar({ interviews }: { interviews: Interview[] }) {
                     </div>
                   </div>
                   <div
-                    className={`text-[0.62rem] font-bold flex-shrink-0 ${daysUntil <= 1 ? "text-red-400" : daysUntil <= 3 ? "text-amber-400" : "text-cyan-400"}`}>
-                    {daysUntil === 0
+                    className={`text-[0.62rem] font-bold flex-shrink-0 ${daysUntil <= 0 ? "text-red-400" : daysUntil === 1 ? "text-amber-400" : "text-cyan-400"}`}>
+                    {daysUntil <= 0
                       ? "Hari ini!"
                       : daysUntil === 1
                         ? "Besok"

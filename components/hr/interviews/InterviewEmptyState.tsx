@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarX2 } from "lucide-react";
 import { InterviewFilterType } from "@/types/hr/interviews";
 
 const LABEL_MAP: Record<string, string> = {
@@ -18,8 +19,8 @@ export function InterviewEmptyState({
 
   return (
     <div className="flex flex-col items-center justify-center py-[80px] gap-3">
-      <div className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center text-[1.6rem] bg-white/[0.03] border border-white/[0.07]">
-        📅
+      <div className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center bg-white/[0.03] border border-white/[0.07]">
+        <CalendarX2 size={24} className="text-[#7a9585]" aria-hidden="true" />
       </div>
       <div className="font-bold text-[0.93rem] text-[#e8f0ec]">
         {label ? `Tidak ada interview ${label}` : "Belum ada jadwal interview"}

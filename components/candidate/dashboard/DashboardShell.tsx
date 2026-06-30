@@ -18,6 +18,7 @@ import {
   DashboardRecommendations,
   DashboardUploadCTA,
 } from "./DashboardRecommendations";
+import DashboardTour from "../../DashboardTour";
 import { useDashboardDerived } from "@/hooks/dashboard/candidate/useDashboardDerived";
 
 interface DashboardShellProps {
@@ -50,21 +51,28 @@ export function DashboardShell({
     initialJobs,
   );
 
+
   return (
     <div>
-      <DashboardWelcome
-        user={user}
-        shortlistedCount={shortlistedCount}
-        upcomingInterviewCount={upcomingInterviews.length}
-      />
+      {/* data-tour="welcome" → step 1 */}
+      <div data-tour="welcome">
+        <DashboardWelcome
+          user={user}
+          shortlistedCount={shortlistedCount}
+          upcomingInterviewCount={upcomingInterviews.length}
+        />
+      </div>
 
-      <DashboardStatsGrid
-        totalApplications={initialApplications.length}
-        shortlistedCount={shortlistedCount}
-        upcomingInterviewCount={upcomingInterviews.length}
-        avgMatchScore={avgMatchScore}
-        hasCv={!!initialCvAnalysis}
-      />
+      {/* data-tour="stats" → step 2 */}
+      <div data-tour="stats">
+        <DashboardStatsGrid
+          totalApplications={initialApplications.length}
+          shortlistedCount={shortlistedCount}
+          upcomingInterviewCount={upcomingInterviews.length}
+          avgMatchScore={avgMatchScore}
+          hasCv={!!initialCvAnalysis}
+        />
+      </div>
 
       <DashboardAIInsight cv={initialCvAnalysis} />
 
@@ -90,9 +98,13 @@ export function DashboardShell({
             hasCv={!!initialCvAnalysis}
           />
 
-          <DashboardUploadCTA hasCv={!!initialCvAnalysis} />
+          {/* data-tour="upload-cta" → step 3 */}
+          <div data-tour="upload-cta">
+            <DashboardUploadCTA hasCv={!!initialCvAnalysis} />
+          </div>
         </div>
       </div>
+
     </div>
   );
 }
