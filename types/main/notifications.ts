@@ -1,6 +1,29 @@
 import type { LucideIcon } from "lucide-react";
 
-export type NotifType = "status_update" | "interview" | "general";
+export type NotifType =
+  | "status_update"
+  | "interview"
+  | "offer_letter"
+  | "rejection"
+  | "general";
+
+export type OfferStatus = "pending" | "accepted" | "declined" | "expired";
+
+export type NotifMetadata = {
+  // offer_letter
+  salary?: string;
+  start_date?: string;
+  notes?: string;
+  expires_at?: string;
+  offer_status?: OfferStatus;
+  accept_url?: string;
+  decline_url?: string;
+  // rejection
+  feedback?: string;
+  // shared
+  application_id?: string;
+  offer_id?: string;
+};
 
 export type Notif = {
   id: string;
@@ -9,6 +32,7 @@ export type Notif = {
   message: string;
   created_at: string;
   read: boolean;
+  metadata?: NotifMetadata;
 };
 
 export type NotifRaw = Omit<Notif, "created_at"> & {

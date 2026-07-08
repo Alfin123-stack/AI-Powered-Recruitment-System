@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Job } from "@/types/hr/dashboard";
 import { apiFetch } from "@/lib/api";
 import type { FormState } from "@/components/hr/jobs/JobsFormBody";
@@ -48,7 +49,11 @@ export function useJobsForm({
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    if (!form.title.trim()) return setError("Job title is required");
+    if (!form.title.trim()) {
+      setError("Job title is required");
+      toast.error("Job title is required");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -64,15 +69,19 @@ export function useJobsForm({
           method: "PUT",
           body: JSON.stringify(payload),
         });
+        toast.success(`Job "${form.title}" berhasil diperbarui`);
       } else {
         await apiFetch("/api/jobs/create", token, {
           method: "POST",
           body: JSON.stringify(payload),
         });
+        toast.success(`Job "${form.title}" berhasil dibuat`);
       }
       onDone();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const message = err instanceof Error ? err.message : "An error occurred";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

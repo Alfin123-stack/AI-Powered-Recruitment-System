@@ -37,6 +37,9 @@ interface InterviewTableProps {
   token: string;
   onUpdate: () => void;
   filter: InterviewFilterType;
+  onEvaluate: (interview: Interview) => void;
+  /** Resume langsung ke step Offer Letter untuk kandidat status "evaluated" */
+  onSendOffer: (interview: Interview) => void;
 }
 
 export default function InterviewTable({
@@ -44,6 +47,8 @@ export default function InterviewTable({
   token,
   onUpdate,
   filter,
+  onEvaluate,
+  onSendOffer,
 }: InterviewTableProps) {
   const grouped = groupByDay(interviews);
 
@@ -67,6 +72,8 @@ export default function InterviewTable({
                   token={token}
                   onUpdate={onUpdate}
                   index={i}
+                  onEvaluate={onEvaluate}
+                  onSendOffer={onSendOffer}
                 />
               ))}
             </AnimatePresence>

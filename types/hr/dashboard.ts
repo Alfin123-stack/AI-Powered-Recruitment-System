@@ -4,8 +4,12 @@ export type {
   Application,
   ApplicationStatus,
   RawApplication,
+  OfferStatus,
 } from "../candidate/dashboard";
 export type { Company as CompanyInfo } from "../main/company";
+
+import type { CandidateStatus } from "../candidates";
+import type { OfferStatus } from "../candidate/dashboard";
 
 export type CandidateUI = {
   id: string;
@@ -17,11 +21,19 @@ export type CandidateUI = {
   resumeScore: number;
   matchScore: number;
   skills: string[];
-  status: string;
+  status: CandidateStatus; // FIX: sebelumnya `string` bebas
   appliedDate: string;
   createdAt: string;
   color: string;
   cv_url: string | null;
+  // TAMBAHAN: dibutuhkan untuk fitur onboarding email (tombol "Kirim
+  // Onboarding Email" di CandidateRanking) — offer_status/onboarding_sent
+  // sudah ada di kolom tabel `applications` backend (lihat migration
+  // onboarding_sent sebelumnya), tinggal dipetakan ke sini. `email` dipakai
+  // sebagai candidateEmail saat memanggil OnboardingModal.
+  email?: string;
+  offer_status?: OfferStatus; // FIX: reuse OfferStatus, bukan union inline
+  onboarding_sent?: boolean;
 };
 
 // ── Job Summary ───────────────────────────────────────────────────────────────
@@ -89,9 +101,13 @@ export type InsightPanel = {
   Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
 };
 
+// FIX: `status` sebelumnya `string` bebas — StatusAction[] dipakai di
+// DashboardCandidateRanking.tsx (statusActions) untuk memanggil
+// onStatusChange(candidate.id, status), yang sekarang menerima
+// CandidateStatus, bukan string sembarang.
 export type StatusAction = {
   label: string;
-  status: string;
+  status: CandidateStatus;
   Icon: React.ComponentType<{ size?: number }>;
   color: string;
   bg: string;

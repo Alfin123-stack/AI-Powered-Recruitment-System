@@ -8,7 +8,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   ChevronDown,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import AnimatedBar from "./AnalyzeAnimatedBar";
 import type { AnalysisData } from "@/types/main/analyze";
 import { getScoreColor } from "@/lib/utils";
@@ -85,6 +87,26 @@ export default function OverviewTab({ data }: Props) {
                   }}
                 />
               </button>
+            )}
+
+            {/* Contextual link to Job Matches */}
+            {data.skills.length > 0 && (
+              <Link
+                href="/dashboard/candidate/matches"
+                className="mt-4 pt-3 flex items-center justify-between no-underline group"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                <span
+                  className="text-[11px]"
+                  style={{ color: "rgba(255,255,255,0.28)" }}>
+                  {data.skills.length} skills detected — find jobs that need them
+                </span>
+                <span
+                  className="flex items-center gap-1 text-[11px] font-semibold transition-all"
+                  style={{ color: "rgba(74,222,128,0.7)" }}>
+                  View Job Matches
+                  <ArrowRight size={10} />
+                </span>
+              </Link>
             )}
           </>
         )}

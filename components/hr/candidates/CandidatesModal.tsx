@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { getRec, getScoreColor } from "@/lib/helpers/candidate/dashboard";
 import { CandidateRaw, CandidateStatus } from "@/types/candidates";
 import { motion } from "framer-motion";
@@ -12,25 +13,86 @@ import {
   Clock,
   FileText,
   ExternalLink,
+  Lock,
+  ClipboardList,
 } from "lucide-react";
 import { STATUS_CONFIG } from "@/constants/candidates";
+import {
+  isStatusLocked,
+  CandidatesStatusConfirmModal,
+  showStatusToast,
+  type ConfirmableStatus,
+} from "./CandidatesStatusConfirmModal";
+
+// Same lock set as CandidatesActionDropdown — kept in sync manually since
+// each file already keeps its own local action-button config.
+//
+// FIX: "accepted" dibuang — sudah dihapus dari CandidateStatus juga
+// (types/candidates.ts), karena deriveDisplayStatus() tidak pernah
+// benar-benar mengembalikan nilai ini ke UI.
+const OFFER_FLOW_STATUSES: CandidateStatus[] = [
+  "offered",
+  "declined",
+  "expired",
+  "hired",
+];
 
 export function CandidatesModal({
   candidate,
   onClose,
   onStatusChange,
+  onSendOnboarding,
 }: {
   candidate: CandidateRaw;
   onClose: () => void;
   onStatusChange: (id: string, status: CandidateStatus) => void;
+  // Sama seperti di CandidatesActionDropdown — buka OnboardingModal untuk
+  // candidate ini, hanya relevan kalau status === "hired".
+  onSendOnboarding: (candidate: CandidateRaw) => void;
 }) {
   const rec = getRec(candidate.resumeScore, candidate.matchScore);
   const RecIcon = rec.icon;
   const st = STATUS_CONFIG[candidate.status as CandidateStatus];
+  const isLocked = OFFER_FLOW_STATUSES.includes(
+    candidate.status as CandidateStatus,
+  );
+  // FIX: sebelumnya kondisi ini cek `status === "accepted" || status ===
+  // "hired"`. Backend (updateOfferStatus) men-set `status` langsung ke
+  // "hired" di baris yang sama saat offer_status jadi "accepted", jadi
+  // "accepted" tidak pernah benar-benar sampai ke UI sebagai nilai
+  // `candidate.status` (lihat deriveDisplayStatus di
+  // useCandidatesData.ts). Disederhanakan jadi satu-satunya kondisi yang
+  // memang bisa terjadi.
+  const canSendOnboarding = candidate.status === "hired";
+
+  // TAMBAHAN: sama seperti di CandidatesActionDropdown — klik
+  // Shortlist/Review/Reject sebelumnya langsung memanggil onStatusChange +
+  // onClose tanpa dialog konfirmasi. CandidatesStatusConfirmModal sudah ada
+  // lengkap tapi tidak pernah dirender di mana pun. Sekarang klik tombol
+  // cuma men-set pending status; eksekusi + tutup modal detail pindah ke
+  // handleConfirm.
+  const [pendingStatus, setPendingStatus] = useState<ConfirmableStatus | null>(
+    null,
+  );
+
+  // NOTE: sama seperti di CandidatesActionDropdown — onStatusChange
+  // bertipe `(id, status) => void`, tidak ada Promise untuk di-await, jadi
+  // `loading` di CandidatesStatusConfirmModal tidak merepresentasikan
+  // request in-flight yang sesungguhnya.
+  const handleConfirm = () => {
+    if (!pendingStatus) return;
+    onStatusChange(candidate.id, pendingStatus);
+    // TAMBAHAN: toast konfirmasi visual setelah status berhasil diubah.
+    showStatusToast(pendingStatus, candidate.name);
+    setPendingStatus(null);
+    onClose();
+  };
+
+  const handleCancel = () => setPendingStatus(null);
 
   const actionButtons: Array<{
     label: string;
-    status: CandidateStatus;
+    status: ConfirmableStatus;
     Icon: React.ElementType;
     color: string;
     bg: string;
@@ -279,31 +341,109 @@ export function CandidatesModal({
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="grid grid-cols-3 gap-2">
-            {actionButtons.map(({ label, status, Icon, color, bg, border }) => (
-              <button
-                key={status}
-                type="button"
-                title={`Change candidate status to ${label}`}
-                onClick={() => {
-                  onStatusChange(candidate.id, status);
-                  onClose();
-                }}
-                disabled={candidate.status === status}
-                className="flex items-center justify-center gap-[6px] py-[9px] rounded-[10px] font-bold text-[13px] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          {/* Action buttons — hidden once in the offer flow; that stage is
+              only ever changed via Evaluate & Offer, not this modal. */}
+          {isLocked ? (
+            <>
+              {/* Kirim Onboarding Email — hanya untuk status "hired". */}
+              {canSendOnboarding && (
+                <button
+                  type="button"
+                  title={
+                    candidate.onboarding_sent
+                      ? "Onboarding email sudah dikirim"
+                      : "Kirim detail onboarding ke kandidat ini"
+                  }
+                  onClick={() => onSendOnboarding(candidate)}
+                  disabled={candidate.onboarding_sent}
+                  className="flex items-center justify-center gap-2 w-full py-[10px] rounded-[10px] font-bold text-[13px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: "rgba(16,185,129,0.1)",
+                    color: "#10b981",
+                    border: "1px solid rgba(16,185,129,0.28)",
+                  }}>
+                  <ClipboardList size={14} />
+                  {candidate.onboarding_sent
+                    ? "Onboarding Email Sudah Dikirim"
+                    : "Kirim Onboarding Email"}
+                </button>
+              )}
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-[10px] text-[12px] font-medium"
                 style={{
-                  background: bg,
-                  color,
-                  border: `1px solid ${border}`,
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "#5d7a6a",
                 }}>
-                <Icon size={13} />
-                {label}
-              </button>
-            ))}
-          </div>
+                <Lock size={13} className="flex-shrink-0" />
+                Status is managed via the Evaluate &amp; Offer flow on the
+                Interviews page.
+              </div>
+            </>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
+              {actionButtons.map(({ label, status, Icon, color, bg, border }) => {
+                const isActive = candidate.status === status;
+
+                // TAMBAHAN: aturan lock yang sama dengan
+                // CandidatesActionDropdown (satu sumber kebenaran di
+                // CandidatesStatusConfirmModal.tsx) — kalau kandidat sudah
+                // shortlisted, Review & Reject terkunci; kalau sudah
+                // rejected, Shortlist & Review terkunci. Status "review"
+                // tidak mengunci apa pun.
+                const isCrossLocked = isStatusLocked(
+                  candidate.status as CandidateStatus,
+                  status,
+                );
+                const disabled = isActive || isCrossLocked;
+
+                const title = isActive
+                  ? `Kandidat sudah berstatus ${label}`
+                  : isCrossLocked
+                    ? `Tidak bisa diubah — kandidat sudah ${
+                        STATUS_CONFIG[candidate.status as CandidateStatus]
+                          ?.label ?? candidate.status
+                      }`
+                    : `Change candidate status to ${label}`;
+
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    title={title}
+                    onClick={() => {
+                      // FIX: sebelumnya `onStatusChange(candidate.id, status);
+                      // onClose();` langsung dipanggil di sini tanpa
+                      // konfirmasi. Sekarang cuma buka
+                      // CandidatesStatusConfirmModal — eksekusi + penutupan
+                      // modal detail pindah ke handleConfirm.
+                      setPendingStatus(status);
+                    }}
+                    disabled={disabled}
+                    className="flex items-center justify-center gap-[6px] py-[9px] rounded-[10px] font-bold text-[13px] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{
+                      background: bg,
+                      color,
+                      border: `1px solid ${border}`,
+                    }}>
+                    <Icon size={13} />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </motion.div>
+      {/* TAMBAHAN: konfirmasi sebelum status benar-benar berubah */}
+      {pendingStatus && (
+        <CandidatesStatusConfirmModal
+          status={pendingStatus}
+          candidateName={candidate.name}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, FileText, Loader2, RefreshCw } from "lucide-react";
+import { Download, FileText, Loader2, RefreshCw, Target, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import ScoreBlock from "./AnalyzeScoreBlock";
 import AnimatedBar from "./AnalyzeAnimatedBar";
 import SummaryBanner from "./AnalyzeSummaryBanner";
@@ -173,6 +174,60 @@ export default function AnalyzeResult({
 
           {/* AI Summary */}
           <SummaryBanner data={data} />
+
+          {/* Job Matches CTA — only for candidates, after CV is analyzed */}
+          {!isHR && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="rounded-[12px] p-4 mb-5 flex items-center justify-between gap-4 flex-wrap"
+              style={{
+                background:
+                  "linear-gradient(135deg,rgba(16,185,129,0.07) 0%,rgba(6,182,212,0.05) 100%)",
+                border: "1px solid rgba(16,185,129,0.18)",
+              }}>
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0"
+                  style={{ background: "rgba(16,185,129,0.12)" }}>
+                  <Target size={14} style={{ color: "rgba(74,222,128,0.85)" }} />
+                </div>
+                <div className="min-w-0">
+                  <div
+                    className="font-semibold text-[12.5px] mb-[2px]"
+                    style={{ color: "rgba(255,255,255,0.75)" }}>
+                    See jobs that match your CV skills
+                  </div>
+                  <div
+                    className="text-[11px]"
+                    style={{ color: "rgba(255,255,255,0.28)" }}>
+                    Your detected skills are used to rank the most relevant job
+                    openings for you.
+                  </div>
+                </div>
+              </div>
+              <Link
+                href="/dashboard/candidate/matches"
+                className="flex items-center gap-[6px] text-[12px] font-semibold px-4 py-[7px] rounded-[8px] flex-shrink-0 no-underline transition-all"
+                style={{
+                  background: "rgba(16,185,129,0.15)",
+                  border: "1px solid rgba(16,185,129,0.3)",
+                  color: "rgba(74,222,128,0.9)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background =
+                    "rgba(16,185,129,0.25)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background =
+                    "rgba(16,185,129,0.15)";
+                }}>
+                View Job Matches
+                <ArrowRight size={12} />
+              </Link>
+            </motion.div>
+          )}
 
           {/* Divider */}
           <div

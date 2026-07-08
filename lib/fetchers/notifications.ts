@@ -6,16 +6,18 @@ import { API } from "@/lib/api";
 
 // ─── Server-side fetch (used in RSC / SSR) ────────────────────────────────────
 // Called from Server Components — receives token from server session.
-// Uses Next.js fetch with revalidation for ISR behavior.
+// Always fetches fresh data — notifications are per-user, mutable, and must
+// reflect the latest read/unread state immediately after mark-read actions.
+// Do NOT use `next: { revalidate }` here — Next.js Data Cache would serve
+// stale results right after a mark-all-read mutation on full page reload.
 
 export async function fetchNotificationsServer(
-  token: string,
-  revalidate = 30
+  token: string
 ): Promise<Notif[]> {
   try {
     const res = await fetch(`${API}/api/notifications`, {
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate }, // ISR: revalidate every N seconds
+      cache: "no-store", // always fresh — see note above
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data: unknown[] = await res.json();
@@ -86,5 +88,3 @@ export async function fetchNotificationsClient(
   if (!Array.isArray(data)) return [];
   return data.map((n) => normalizeNotif(n as Record<string, unknown>));
 }
-
-

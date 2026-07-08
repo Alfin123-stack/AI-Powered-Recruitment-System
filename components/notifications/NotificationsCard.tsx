@@ -5,12 +5,17 @@ import { CheckCheck, Clock } from "lucide-react";
 import { timeAgo } from "../../lib/helpers/main/notifications";
 import type { Notif } from "../../types/main/notifications";
 import { TYPE_CONFIG } from "@/constants/main/notifications";
+import OfferNotifCard from "./OfferNotifCard";
 
 interface NotifCardProps {
   notif: Notif;
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
   index: number;
+  /** Required for offer_letter notifs so Accept/Decline can call the backend */
+  token?: string;
+  /** Called when candidate responds to an offer (accept/decline) */
+  onOfferResponded?: (id: string, status: "accepted" | "declined") => void;
 }
 
 export default function NotificationsCard({
@@ -18,7 +23,41 @@ export default function NotificationsCard({
   onMarkRead,
   onDelete: _onDelete,
   index,
+  token,
+  onOfferResponded,
 }: NotifCardProps) {
+  // ── Special rendering for offer letters ──────────────────────────────────────
+  // Offer letters need Accept/Decline buttons + salary/start date details,
+  // which don't fit the generic notif card layout below.
+  if (notif.type === "offer_letter") {
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+        transition={{
+          duration: 0.2,
+          delay: index * 0.04,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="relative mb-2"
+        onMouseEnter={() => {
+          if (!notif.read) onMarkRead(notif.id);
+        }}>
+        <OfferNotifCard
+          notif={notif}
+          token={token ?? ""}
+          onResponded={(id, status) => {
+            onMarkRead(id);
+            onOfferResponded?.(id, status);
+          }}
+        />
+      </motion.div>
+    );
+  }
+
+  // ── Default rendering (status_update, interview, rejection, general) ────────
   const cfg = TYPE_CONFIG[notif.type] ?? TYPE_CONFIG.general;
   const Icon = cfg.iconEl;
 

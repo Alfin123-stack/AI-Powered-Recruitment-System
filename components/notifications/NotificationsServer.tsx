@@ -28,7 +28,7 @@ async function NotificationsData({
   subtitle,
   user,
 }: Pick<NotificationsServerProps, "token" | "stats" | "subtitle" | "user">) {
-  const initialNotifs: Notif[] = await fetchNotificationsServer(token, 30);
+  const initialNotifs: Notif[] = await fetchNotificationsServer(token);
 
   return (
     <NotificationsClient

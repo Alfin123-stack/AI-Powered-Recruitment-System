@@ -23,10 +23,20 @@ export { getRec } from "@/lib/helpers/candidate/dashboard";
  */
 export { INTERVIEW_ROUND_CONFIG as roundConfig } from "@/constants/hr/Interviews";
 
+// FIX: sebelumnya statusMap tidak punya entry untuk "offered", "declined",
+// "expired" — begitu fetchDashboardData.ts mulai men-derive status-status
+// ini (lihat deriveDisplayStatus), badge di DashboardCandidateRanking.tsx
+// akan fallback ke `{ label: c.status, color: "#475569" }` (nama status
+// mentah tanpa terjemahan/warna yang sesuai). Warna disamakan dengan
+// STATUS_CONFIG di constants/candidates.ts supaya konsisten dengan halaman
+// /candidates.
 export const statusMap: Record<string, { label: string; color: string }> = {
   applied: { label: "Applied", color: "#06b6d4" },
   review: { label: "In Review", color: "#f59e0b" },
   shortlisted: { label: "Shortlisted", color: "#10b981" },
+  offered: { label: "Offer Sent", color: "#f59e0b" },
+  declined: { label: "Offer Declined", color: "#6b7280" },
+  expired: { label: "Offer Expired", color: "#57534e" },
   rejected: { label: "Ditolak", color: "#ef4444" },
   hired: { label: "Hired", color: "#8b5cf6" },
 };

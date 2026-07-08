@@ -1,4 +1,4 @@
-import { BarChart3, Bell, Calendar, FileText } from "lucide-react";
+import { BarChart3, Bell, Calendar, FileText, Gift, XCircle } from "lucide-react";
 import type { FilterId, StatDef } from "@/types/main/notifications";
 
 export const FILTER_LABELS: Record<string, string> = {
@@ -12,6 +12,8 @@ export const FILTERS: { id: FilterId; label: string }[] = [
   { id: "unread", label: "Unread" },
   { id: "status_update", label: "Status" },
   { id: "interview", label: "Interview" },
+  { id: "offer_letter", label: "Offers" },
+  { id: "rejection", label: "Rejections" },
   { id: "general", label: "General" },
 ];
 
@@ -67,6 +69,34 @@ export const TYPE_CONFIG = {
     pillBg: "bg-sky-500/10",
     pillText: "text-sky-400",
     label: "Interview",
+  },
+  offer_letter: {
+    gradient: "from-emerald-500/15 to-cyan-500/5",
+    border: "border-emerald-500/30",
+    accentColors: "linear-gradient(180deg,#10b981,#06b6d4)",
+    shimmerColors:
+      "linear-gradient(90deg,transparent 5%,#10b981 40%,#06b6d4 60%,transparent 95%)",
+    iconBg: "bg-emerald-500/15",
+    iconColor: "text-emerald-400",
+    iconEl: Gift,
+    dotColor: "bg-emerald-400",
+    pillBg: "bg-emerald-500/15",
+    pillText: "text-emerald-300",
+    label: "Offer",
+  },
+  rejection: {
+    gradient: "from-gray-500/10 to-slate-500/5",
+    border: "border-gray-500/20",
+    accentColors: "linear-gradient(180deg,#6b7280,#4b5563)",
+    shimmerColors:
+      "linear-gradient(90deg,transparent 5%,#6b7280 40%,#4b5563 60%,transparent 95%)",
+    iconBg: "bg-gray-500/10",
+    iconColor: "text-gray-400",
+    iconEl: XCircle,
+    dotColor: "bg-gray-400",
+    pillBg: "bg-gray-500/10",
+    pillText: "text-gray-400",
+    label: "Rejection",
   },
   general: {
     gradient: "from-violet-500/10 to-purple-500/5",

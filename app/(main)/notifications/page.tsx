@@ -1,11 +1,4 @@
-// app/notifications/page.tsx
-// ─────────────────────────────────────────────
-// RENDERING STRATEGY: SSR (force-dynamic)
-//
-// Depends on auth session cookie + DB query (per-request).
-// Middleware sudah handle session guard untuk semua protected routes,
-// tapi redirect manual tetap ada sebagai safety net.
-// ─────────────────────────────────────────────
+
 
 import { redirect } from "next/navigation";
 

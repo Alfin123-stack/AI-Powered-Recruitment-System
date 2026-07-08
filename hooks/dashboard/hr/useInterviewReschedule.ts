@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Interview, AnyInputEvent, InterviewType } from "@/types/hr/interviews";
 import { apiFetch } from "@/lib/api";
 
@@ -45,6 +46,7 @@ export function useInterviewReschedule({
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
+      toast.error("Tanggal dan jam wajib diisi");
       return;
     }
     setLoading(true);
@@ -62,11 +64,12 @@ export function useInterviewReschedule({
           notes: form.notes || null,
         }),
       });
+      toast.success("Interview berhasil dijadwalkan ulang");
       onDone();
     } catch (err: unknown) {
-      setErrors({
-        submit: err instanceof Error ? err.message : "Terjadi kesalahan",
-      });
+      const message = err instanceof Error ? err.message : "Terjadi kesalahan";
+      setErrors({ submit: message });
+      toast.error(message);
     } finally {
       setLoading(false);
     }

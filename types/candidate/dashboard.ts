@@ -14,12 +14,37 @@ export type { Job, JobWithMatch } from "../jobs";
 export type { Interview, InterviewType, InterviewStatus } from "../calendar";
 
 // ── Application Status ────────────────────────────────────────────────────────
+// FIX: tambah "offered" — deriveDisplayStatus (useCandidatesData.ts &
+// dashboard fetcher) bisa mengembalikan a.status apa adanya kalau HR baru
+// pindahin kandidat ke "offered" secara manual tapi belum ada offer_status
+// (belum kirim link offer). Tanpa "offered" di sini, `as CandidateStatus`
+// di deriveDisplayStatus jadi type-unsafe secara diam-diam.
+// TAMBAHAN: "interview" & "evaluated" — sama seperti "offered" di atas,
+// ini nilai kolom `status` mentah yang di-set langsung lewat PUT
+// /api/applications/:id/status (lihat useInterviewSchedule.ts &
+// useEvaluationFlow.ts), bukan diturunkan dari offer_status. "onboard"
+// juga ditambahkan di sini dengan alasan yang sama (di-set lewat
+// updateStatus di useCandidatesData.ts saat onboarding email sukses
+// terkirim). "declined"/"expired" TETAP tidak dimasukkan ke sini karena
+// keduanya murni diturunkan dari offer_status di deriveDisplayStatus(),
+// tidak pernah jadi nilai kolom `status` itu sendiri.
 export type ApplicationStatus =
   | "applied"
   | "review"
   | "shortlisted"
+  | "interview"
+  | "evaluated"
+  | "offered"
   | "hired"
+  | "onboard"
   | "rejected";
+
+// ── Offer Status ───────────────────────────────────────────────────────────────
+// Satu sumber kebenaran untuk offer_status, dipakai di Application,
+// RawApplication, dan CandidateUI (hr/dashboard.ts) — sebelumnya
+// CandidateUI mendefinisikan union ini secara terpisah/inline, rawan
+// ketinggalan sinkron kalau salah satu berubah.
+export type OfferStatus = "pending" | "accepted" | "declined" | null;
 
 export type Application = {
   id: string;
@@ -36,6 +61,16 @@ export type Application = {
   candidate_phone?: string;
   location?: string;
   created_at: string;
+  // FIX: 3 field ini sebelumnya tidak ada sama sekali di type, padahal
+  // deriveDisplayStatus() di useCandidatesData.ts sudah mengaksesnya
+  // (a.offer_status, a.offer_expires_at) dan mapping candidates.ts
+  // mengakses a.onboarding_sent. Tanpa ini, TS harusnya sudah error di
+  // useCandidatesData.ts — kalau lolos build, kemungkinan strict mode
+  // belum full nyala di situ. Tolong cek lagi setelah nambah ini, siapa
+  // tau ada type error lain yang selama ini ketutup.
+  offer_status?: OfferStatus;
+  offer_expires_at?: string | null;
+  onboarding_sent?: boolean;
 };
 
 /** @deprecated Gunakan `Application` */
@@ -50,12 +85,18 @@ export type RawApplication = {
   resume_score?: number | null;
   matching_score?: number | null;
   extracted_skills?: Array<string | { name: string }>;
-  status: string;
+  status: ApplicationStatus; // FIX: sebelumnya `string` bebas
   created_at?: string;
   cv_url?: string | null;
   candidate_email?: string;
   candidate_phone?: string;
   location?: string;
+  // FIX: sama seperti Application di atas — dipakai langsung di
+  // fetchDashboardData (server-side fetcher): a.offer_status,
+  // a.offer_expires_at, a.onboarding_sent.
+  offer_status?: OfferStatus;
+  offer_expires_at?: string | null;
+  onboarding_sent?: boolean;
 };
 
 // ── CV Analysis ───────────────────────────────────────────────────────────────

@@ -14,6 +14,7 @@ import {
   CompanyInfo,
   CandidateUI,
 } from "@/types/hr/dashboard";
+import type { CandidateStatus } from "@/types/candidates";
 import { PALETTE_COLORS } from "@/constants/shared";
 import { useDashboard } from "@/context/DashboardContext";
 import { apiFetch } from "@/lib/api";
@@ -51,7 +52,14 @@ export function DashboardClient({
     useState<CandidateUI[]>(initialCandidates);
   const [interviews] = useState<Interview[]>(initialInterviews);
 
-  const updateStatus = async (id: string, status: string) => {
+  // FIX: parameter `status` sebelumnya `string` — itu penyebab error
+  // "Type 'string' is not assignable to type 'CandidateStatus'" saat
+  // spread `{ ...c, status }` masuk ke setCandidates, karena CandidateUI.status
+  // sekarang bertipe CandidateStatus (bukan string bebas). Diketatkan jadi
+  // CandidateStatus, sinkron dengan signature updateStatus di
+  // useCandidatesData.ts dan prop onStatusChange yang diteruskan ke
+  // CandidateRanking di bawah.
+  const updateStatus = async (id: string, status: CandidateStatus) => {
     // Simpan status lama untuk rollback kalau request ke backend gagal
     const prevCandidates = candidates;
 
@@ -195,6 +203,23 @@ export function DashboardClient({
               jobGroups={jobGroups}
               total={total}
               onStatusChange={updateStatus}
+              // TAMBAHAN: dibutuhkan OnboardingModal untuk isi nama perusahaan
+              // di email onboarding.
+              companyName={company?.name ?? "Perusahaan"}
+              // TAMBAHAN: setelah onboarding email terkirim, tandai
+              // onboarding_sent=true di state lokal secara optimistic —
+              // mengikuti pola optimistic update yang sama dengan
+              // updateStatus di atas. Kalau backend PUT
+              // /api/applications/:id/onboarding-sent gagal, flag ini akan
+              // "salah" sampai next refresh — non-critical karena email-nya
+              // sendiri sudah terkirim duluan di sendOnboardingEmailAction.
+              onOnboardingSent={(id) => {
+                setCandidates((prev) =>
+                  prev.map((c) =>
+                    c.id === id ? { ...c, onboarding_sent: true } : c,
+                  ),
+                );
+              }}
             />
           </div>
         </FadeIn>

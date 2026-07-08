@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Toaster } from "sonner";
 
 import Sidebar from "@/components/Sidebar";
 import { DashboardContext } from "@/context/DashboardContext";
@@ -124,6 +125,23 @@ export default function DashboardLayout({
           onSkip={tour.skip}
         />
       )}
+
+      {/* Global toast notifications — dipakai oleh semua hook (useJobsForm,
+          useInterviewSchedule, useInterviewReschedule, useJobApply, dll)
+          di seluruh halaman dashboard. richColors otomatis mewarnai
+          toast.success (hijau) dan toast.error (merah). */}
+      <Toaster
+        richColors
+        position="top-right"
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: "#0a0f0c",
+            border: "1px solid rgba(16,185,129,0.15)",
+            color: "#e8f0ec",
+          },
+        }}
+      />
     </DashboardContext.Provider>
   );
 }

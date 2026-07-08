@@ -11,6 +11,8 @@ import type {
 import { useInterviewsClient } from "@/hooks/dashboard/hr/useInterviewsClient";
 import { InterviewScheduleModal } from "./InterviewModals";
 import { FadeIn } from "@/components/FadeIn";
+import { useEvaluationFlow } from "@/hooks/dashboard/hr/useEvaluationFlow";
+import EvaluationFlowController from "./EvaluationFlowController";
 
 const T = {
   emerald: "#10b981",
@@ -22,12 +24,15 @@ type Props = {
   initialInterviews: Interview[];
   initialShortlisted: ShortlistedCandidate[];
   token: string;
+  /** Company name dibutuhkan untuk EvaluationFlowController */
+  companyName: string;
 };
 
 export default function InterviewsClient({
   initialInterviews,
   initialShortlisted,
   token,
+  companyName,
 }: Props) {
   const {
     interviews,
@@ -48,6 +53,29 @@ export default function InterviewsClient({
     overdueCount,
     filtered,
   } = useInterviewsClient(initialInterviews, initialShortlisted, token);
+
+  // ── Evaluation flow ────────────────────────────────────────────────────────
+  // fetchData dioper sebagai onSuccess: begitu evaluasi (hire/reject/consider)
+  // berhasil tersimpan ke backend, list interview di-refetch supaya tombol
+  // "Evaluate" langsung berubah status tanpa perlu reload manual.
+  const flow = useEvaluationFlow(token, fetchData);
+
+  const handleEvaluate = (interview: Interview) => {
+    // candidate_email diambil dari field interview — pastikan backend
+    // menyertakan field ini. Fallback ke string kosong kalau belum ada.
+    const candidateEmail = (interview as Interview & { candidate_email?: string })
+      .candidate_email ?? "";
+    flow.start(interview, candidateEmail, companyName);
+  };
+
+  // Kandidat sudah dievaluasi "Hire" (application_status === "evaluated")
+  // tapi offer letter belum dikirim — misalnya HR sebelumnya membatalkan
+  // OfferLetterModal. Resume langsung ke step offer, skip form evaluasi.
+  const handleSendOffer = (interview: Interview) => {
+    const candidateEmail = (interview as Interview & { candidate_email?: string })
+      .candidate_email ?? "";
+    flow.resumeOffer(interview, candidateEmail, companyName);
+  };
 
   return (
     <>
@@ -143,8 +171,13 @@ export default function InterviewsClient({
           token={token}
           onUpdate={fetchData}
           filter={filter}
+          onEvaluate={handleEvaluate}
+          onSendOffer={handleSendOffer}
         />
       </FadeIn>
+
+      {/* ── Evaluation flow modal chain (Evaluate → Offer / Rejection) ── */}
+      <EvaluationFlowController flow={flow} companyName={companyName} />
     </>
   );
 }

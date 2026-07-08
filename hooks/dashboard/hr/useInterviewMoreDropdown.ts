@@ -10,7 +10,7 @@ export function useInterviewMoreDropdown() {
     if (open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
       setPos({
-        top: r.bottom + window.scrollY + 6,
+        top: r.bottom + 6,
         right: window.innerWidth - r.right,
       });
     }
@@ -18,6 +18,20 @@ export function useInterviewMoreDropdown() {
 
   useEffect(() => {
     if (!open) return;
+
+    // Recompute position on scroll/resize while open, so the dropdown
+    // stays anchored to its trigger button instead of drifting.
+    const reposition = () => {
+      if (!btnRef.current) return;
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({
+        top: r.bottom + 6,
+        right: window.innerWidth - r.right,
+      });
+    };
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+
     const h = (e: MouseEvent) => {
       if (
         !btnRef.current?.contains(e.target as Node) &&
@@ -26,7 +40,12 @@ export function useInterviewMoreDropdown() {
         setOpen(false);
     };
     document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
+
+    return () => {
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+      document.removeEventListener("mousedown", h);
+    };
   }, [open]);
 
   const toggle = () => setOpen((v) => !v);

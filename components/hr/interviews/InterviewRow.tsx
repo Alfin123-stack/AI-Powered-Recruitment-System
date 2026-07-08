@@ -7,6 +7,7 @@ import {
   Briefcase,
   Check,
   ChevronRight,
+  ClipboardList,
   Clock,
   Play,
   RefreshCw,
@@ -39,11 +40,18 @@ import {
 } from "@/lib/helpers/hr/interviews";
 import { roundConfig } from "@/lib/helpers/hr/dashboard";
 
+import EvaluationResultModal from "./EvaluationResultModal";
+
 interface InterviewRowProps {
   interview: Interview;
   token: string;
   onUpdate: () => void;
   index: number;
+  onEvaluate: (interview: Interview) => void;
+  /** Resume langsung ke step Offer Letter (skip form evaluasi) untuk
+   * kandidat yang application_status-nya sudah "evaluated" (Hire) tapi
+   * offer letter belum pernah dikirim. */
+  onSendOffer: (interview: Interview) => void;
 }
 
 export function InterviewRow({
@@ -51,12 +59,15 @@ export function InterviewRow({
   token,
   onUpdate,
   index,
+  onEvaluate,
+  onSendOffer,
 }: InterviewRowProps) {
   const router = useRouter();
   const [confirm, setConfirm] = useState<InterviewConfirmType | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [showReschedule, setShowReschedule] = useState(false);
   const [showMeeting, setShowMeeting] = useState(false);
+  const [showEvalResult, setShowEvalResult] = useState(false);
 
   const timePast = interviewIsTimePast(interview);
   const displayStatusKey: InterviewStatusKey =
@@ -66,10 +77,30 @@ export function InterviewRow({
   const st =
     INTERVIEW_STATUS_STYLE[displayStatusKey] ??
     INTERVIEW_STATUS_STYLE.scheduled;
-  const rc = interview.round ? roundConfig[interview.round] : null;
-  const accent =
-    INTERVIEW_ACCENT_CLASSES[index % INTERVIEW_ACCENT_CLASSES.length];
-  const isCancelled = interview.status === "cancelled";
+ const rc = interview.round ? roundConfig[interview.round] : null;
+const accent =
+  INTERVIEW_ACCENT_CLASSES[index % INTERVIEW_ACCENT_CLASSES.length];
+const isCancelled = interview.status === "cancelled";
+
+// Kandidat sudah pernah dievaluasi / sudah pernah dikirim offer
+// FIX: sebelumnya tidak mengecek "evaluated" — akibatnya begitu HR pilih
+// Hire lalu MEMBATALKAN form Offer Letter (tanpa submit), application_status
+// balik jadi "evaluated" tapi kondisi ini tetap false, jadi tombol
+// "Evaluate" muncul lagi dan bisa dipakai untuk membuat evaluasi baru.
+const isEvaluated =
+  interview.application_status === "evaluated" ||
+  interview.application_status === "offered" ||
+  interview.application_status === "hired" ||
+  interview.application_status === "rejected" ||
+  interview.offer_status === "pending" ||
+  interview.offer_status === "accepted" ||
+  interview.offer_status === "declined";
+
+// Kandidat sudah dievaluasi dengan hasil "Hire" tapi offer letter belum
+// pernah dikirim — kondisi spesifik yang butuh tombol "Send Offer Letter",
+// bukan "Evaluate" (evaluasi sudah final) dan bukan cuma badge
+// "Evaluation Completed" (masih ada aksi lanjutan yang harus dilakukan).
+const isAwaitingOffer = interview.application_status === "evaluated";
 
   const updateStatus = async (status: InterviewConfirmType) => {
     setConfirmLoading(true);
@@ -258,7 +289,7 @@ export function InterviewRow({
 
         {/* ── Actions Column ── */}
         <div className="flex items-center gap-[6px] p-4 shrink-0">
-          {interview.status === "done" && interview.recording_duration && (
+         {interview.status === "done" && !isEvaluated && interview.recording_duration && (
             <>
               <InterviewActionBtn
                 icon={Play}
@@ -277,14 +308,68 @@ export function InterviewRow({
               />
               <InterviewActionBtn
                 icon={Send}
-                label="Send Offer"
+                label="Evaluate & Offer"
                 colorClass="text-[#07100a]"
                 solidBgClass="bg-emerald-500"
                 solid
-                onClick={() => {}}
+                onClick={() => onEvaluate(interview)}
               />
             </>
           )}
+
+         {interview.status === "done" && !isEvaluated && !interview.recording_duration && (
+            <InterviewActionBtn
+              icon={ClipboardList}
+              label="Evaluate"
+              colorClass="text-[#07100a]"
+              solidBgClass="bg-emerald-500"
+              solid
+              onClick={() => onEvaluate(interview)}
+            />
+          )}
+
+          {/* Hire sudah dievaluasi tapi offer letter belum dikirim — beda
+             dari "Evaluation Completed" karena masih ada aksi lanjutan
+             yang wajib dilakukan HR (kirim offer letter). */}
+          {interview.status === "done" && isAwaitingOffer && (
+            <>
+              <InterviewActionBtn
+                icon={ClipboardList}
+                label="Result"
+                colorClass="text-emerald-400"
+                onClick={() => setShowEvalResult(true)}
+              />
+              <InterviewActionBtn
+                icon={Send}
+                label="Send Offer Letter"
+                colorClass="text-[#07100a]"
+                solidBgClass="bg-emerald-500"
+                solid
+                onClick={() => onSendOffer(interview)}
+              />
+            </>
+          )}
+
+          {interview.status === "done" && isEvaluated && !isAwaitingOffer && (
+  <button
+    type="button"
+    onClick={() => setShowEvalResult(true)}
+    title="Lihat hasil evaluasi"
+    aria-label="Lihat hasil evaluasi"
+    className="inline-flex items-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400 cursor-pointer transition-all hover:bg-emerald-500/20">
+    Evaluation Completed
+  </button>
+)}
+
+{showEvalResult && (
+  <EvaluationResultModal
+    applicationId={interview.application_id}
+    token={token}
+    candidateName={interview.candidate_name}
+    jobTitle={interview.job_title}
+    onClose={() => setShowEvalResult(false)}
+  />
+)}
 
           {interview.status === "scheduled" && !timePast && (
             <InterviewActionBtn

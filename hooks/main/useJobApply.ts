@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { Job } from "@/types/jobs";
 import { calcMatchScore } from "@/lib/helpers/candidate/matches";
@@ -27,10 +28,12 @@ export function useJobApply({
   const handleFile = (f: File) => {
     if (f.type !== "application/pdf" && !f.name.endsWith(".pdf")) {
       setErrorMsg("Only PDF files are supported");
+      toast.error("Only PDF files are supported");
       return;
     }
     if (f.size > 5 * 1024 * 1024) {
       setErrorMsg("Maximum file size is 5MB");
+      toast.error("Maximum file size is 5MB");
       return;
     }
     setErrorMsg("");
@@ -81,7 +84,11 @@ export function useJobApply({
   };
 
   const handleSubmit = async () => {
-    if (!file) return setErrorMsg("Please select a CV file first");
+    if (!file) {
+      setErrorMsg("Please select a CV file first");
+      toast.error("Please select a CV file first");
+      return;
+    }
     setStep("analyzing");
     setErrorMsg("");
 
@@ -147,10 +154,13 @@ export function useJobApply({
       }
 
       setStep("done");
+      toast.success(`Berhasil melamar untuk posisi "${job.title}"`);
       onSuccess();
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "An error occurred");
+      const message = err instanceof Error ? err.message : "An error occurred";
+      setErrorMsg(message);
       setStep("error");
+      toast.error(message);
     }
   };
 

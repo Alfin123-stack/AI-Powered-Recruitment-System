@@ -25,6 +25,28 @@ import type { UserRole } from "@/hooks/main/useUserRole";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+// Fallback badge used when `applicationStatus` doesn't have a matching
+// entry in STATUS_CONFIG_UI (e.g. a new status like "hired"/"accepted"
+// was added on the backend but the UI config wasn't updated yet).
+// This guarantees an applied candidate never sees "Apply Now" again.
+function resolveStatus(applicationStatus: string | null) {
+  if (!applicationStatus) return null;
+
+  const known = STATUS_CONFIG_UI[applicationStatus];
+  if (known) return known;
+
+  const label = applicationStatus
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return {
+    text: label,
+    color: "#10b981",
+    bg: "rgba(16,185,129,0.1)",
+    border: "rgba(16,185,129,0.3)",
+  };
+}
+
 // ── Share platforms config ───────────────────────────────────────────────────
 const SHARE_PLATFORMS = [
   { name: "LinkedIn", icon: Linkedin },
@@ -174,7 +196,7 @@ export default function JobDetailSidebar({
     window.open(links[platform], "_blank", "noopener,noreferrer,width=600,height=500");
   };
 
-  const status = applicationStatus ? STATUS_CONFIG_UI[applicationStatus] : null;
+  const status = resolveStatus(applicationStatus);
   const isHR = role === "hr";
 
   return (
@@ -209,16 +231,19 @@ export default function JobDetailSidebar({
                 Checking status...
               </span>
             </div>
-          ) : applied && status ? (
+          ) : applied ? (
             <div className="mb-[10px]">
               <div
                 className="w-full py-[13px] rounded-[11px] border flex items-center justify-center gap-2 mb-2"
-                style={{ background: status.bg, borderColor: status.border }}>
-                <CheckCircle2 size={15} style={{ color: status.color }} />
+                style={{
+                  background: status?.bg ?? "rgba(16,185,129,0.1)",
+                  borderColor: status?.border ?? "rgba(16,185,129,0.3)",
+                }}>
+                <CheckCircle2 size={15} style={{ color: status?.color ?? "#10b981" }} />
                 <span
                   className="font-bold text-[0.9rem]"
-                  style={{ color: status.color }}>
-                  {status.text}
+                  style={{ color: status?.color ?? "#10b981" }}>
+                  {status?.text ?? "Applied"}
                 </span>
               </div>
               <Link

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X, ChevronDown, SlidersHorizontal } from "lucide-react";
+import { Search, X, ChevronDown } from "lucide-react";
 import type { SortKey, DateFilter } from "@/types/candidates";
 
 interface CandidatesHeaderBarProps {
@@ -53,16 +53,6 @@ export function CandidatesHeaderBar({
           )}
         </div>
 
-        {/* Filter */}
-        <button
-          type="button"
-          title="Open advanced filter panel"
-          aria-label="Open filter panel"
-          className="flex items-center gap-2 px-3 py-[7px] rounded-[9px] text-[12px] font-semibold text-[#7a9585] bg-[#141f19] border border-[rgba(16,185,129,0.15)] hover:bg-[rgba(16,185,129,0.06)] transition-colors">
-          <SlidersHorizontal size={13} />
-          Filter
-        </button>
-
         {/* Sort */}
         <div className="relative">
           <select
@@ -75,6 +65,7 @@ export function CandidatesHeaderBar({
             <option value="score">Sort by AI Score</option>
             <option value="match">Sort by Match</option>
             <option value="applied_role">Sort by Role</option>
+            <option value="date">Sort by Applied Date</option>
           </select>
           <ChevronDown
             size={12}

@@ -23,11 +23,13 @@ import { useApplicationFilter } from "@/hooks/dashboard/candidate/useApplication
 interface ApplicationsClientProps {
   applications: Application[];
   interviews: Interview[];
+  token: string;
 }
 
 export default function ApplicationsClient({
   applications,
   interviews,
+  token,
 }: ApplicationsClientProps) {
   const {
     activeTab,
@@ -251,6 +253,7 @@ export default function ApplicationsClient({
           <ApplicationDetailModal
             app={selectedApp}
             interviews={interviews}
+            token={token}
             onClose={() => setSelectedApp(null)}
           />
         )}

@@ -15,6 +15,36 @@ import { Application } from "@/types/hr/dashboard";
 import { apiFetch } from "@/lib/api";
 import { getColor, getInitials } from "@/lib/utils";
 
+// ── Turunkan status tampilan dari 2 kolom backend (`status` +
+// `offer_status`), bukan cuma copy `status` mentah seperti sebelumnya. ──
+//
+// PENTING: "accepted" TIDAK PERNAH dikembalikan di sini secara sengaja.
+// Alasannya: di updateOfferStatus (applicationController.js), begitu
+// offer_status di-set "accepted", `status` langsung di-set "hired" di
+// baris yang sama — tidak ada jeda waktu di mana kandidat "accepted tapi
+// belum hired" untuk dibaca dari data. Jadi begitu status backend sudah
+// "hired", kita berhenti di situ; tidak perlu (dan tidak bisa) membedakan
+// lebih jauh menjadi "accepted".
+function deriveDisplayStatus(a: Application): CandidateStatus {
+  // hired & rejected adalah status akhir — offer_status tidak lagi relevan
+  // begitu sampai di sini.
+  if (a.status === "hired" || a.status === "rejected") {
+    return a.status;
+  }
+
+  if (a.offer_status === "declined") return "declined";
+
+  if (a.offer_status === "pending") {
+    const isExpired =
+      !!a.offer_expires_at && new Date(a.offer_expires_at) < new Date();
+    return isExpired ? "expired" : "offered";
+  }
+
+  // applied | review | shortlisted | offered (belum ada offer_status sama
+  // sekali, mis. baru dipindah manual ke "offered" tapi belum kirim link).
+  return a.status as CandidateStatus;
+}
+
 export function useCandidatesData() {
   const { token } = useDashboard();
   const [candidates, setCandidates] = useState<CandidateRaw[]>([]);
@@ -35,7 +65,12 @@ export function useCandidatesData() {
           skills: (a.extracted_skills ?? [])
             .slice(0, 6)
             .map((s) => (typeof s === "string" ? s : (s.name ?? ""))),
-          status: a.status,
+          status: deriveDisplayStatus(a),
+          // FIX: sebelumnya tidak di-mapping sama sekali — tombol "Kirim
+          // Onboarding Email" balik ke status awal setiap kali halaman
+          // di-refresh, walau backend sudah menyimpan true. Sekarang
+          // dibaca langsung dari response API.
+          onboarding_sent: a.onboarding_sent ?? false,
           appliedDate: new Date(a.created_at).toLocaleDateString("id-ID", {
             day: "numeric",
             month: "short",

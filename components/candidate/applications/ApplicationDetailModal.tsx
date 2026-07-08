@@ -1,8 +1,5 @@
 "use client";
 
-// ApplicationDetailModal.tsx — Client Component
-// CSR: modal interaktif dengan animasi, butuh browser event
-
 import { motion } from "framer-motion";
 import {
   Award,
@@ -20,20 +17,24 @@ import {
 
 import ApplicationsAIInsightBadge from "./ApplicationsAIInsightBadge";
 import ApplicationsLiveCountdown from "./ApplicationsLiveCountdown";
+
 import { Application, Interview } from "@/types/candidate/dashboard";
 import { IV_STATUS_MAP, STATUS_MAP } from "@/constants/shared";
 import { formatTime, getAIInsights, getDayLabel } from "@/lib/helpers/candidate/applications";
+import ApplicationsEvaluationSection from "./ApplicationsEvaluationSection";
 
 
 interface ApplicationDetailModalProps {
   app: Application;
   interviews: Interview[];
+  token: string;
   onClose: () => void;
 }
 
 export default function ApplicationDetailModal({
   app,
   interviews,
+  token,
   onClose,
 }: ApplicationDetailModalProps) {
   const st = STATUS_MAP[app.status] ?? { label: app.status, color: "#7a9585" };
@@ -331,6 +332,9 @@ export default function ApplicationDetailModal({
               </div>
             </div>
           )}
+
+          {/* ── Evaluation Result ── */}
+          <ApplicationsEvaluationSection applicationId={app.id} token={token} />
 
           {/* ── Footer ── */}
           <div className="flex items-center justify-between pt-2 border-t border-emerald-500/8">

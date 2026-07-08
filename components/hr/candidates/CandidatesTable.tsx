@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, MapPin, Calendar, Loader2, Search } from "lucide-react";
+import { Users, MapPin, Calendar, Loader2, Search, ArrowUp, ArrowDown } from "lucide-react";
 
 import { useCandidatesData } from "@/hooks/dashboard/hr/useCandidatesData";
 import { useCandidatesTable } from "@/hooks/dashboard/hr/useCandidatesTable";
@@ -9,20 +10,62 @@ import { getScoreColor, getScoreGradient } from "@/lib/helpers/candidate/dashboa
 import { CandidatesHeaderBar } from "./CandidatesHeaderBar";
 import { CandidatesFilterBar } from "./CandidatesFilterBar";
 import { CandidatesStageBadge } from "./CandidatesStageBadge";
-import { CandidatesSortTh } from "./CandidatesSortTh";
 import { CandidatesPagination } from "./CandidatesPagination";
 import { CandidatesActionDropdown } from "./CandidatesActionDropdown";
 import { CandidatesModal } from "./CandidatesModal";
 import CandidatesOpeningsSection from "./CandidatesOpeningsSection";
 import { ROWS_PER_PAGE as RPP } from "@/constants/candidates";
+import type { CandidateRaw, SortKey, SortDir } from "@/types/candidates";
+import OnboardingModal from "../dashboard/OnboardingModal";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SORT INDICATOR — read-only, TIDAK bisa diklik. Cuma menampilkan panah kecil
+// di header kolom yang lagi jadi acuan sort dari dropdown di
+// CandidatesHeaderBar. Tujuannya kasih konfirmasi visual "ini yang lagi
+// disortir" tanpa membuka kontrol sorting kedua di tabel (itu yang bikin HR
+// bingung sebelumnya — 2 tempat sorting yang bisa nggak sinkron).
+// ─────────────────────────────────────────────────────────────────────────────
+function SortIndicator({
+  columnKey,
+  activeKey,
+  dir,
+}: {
+  columnKey: SortKey;
+  activeKey: SortKey;
+  dir: SortDir;
+}) {
+  if (columnKey !== activeKey) return null;
+  const Icon = dir === "asc" ? ArrowUp : ArrowDown;
+  return <Icon size={10} className="text-[#10b981] inline-block ml-1" />;
+}
 
 export default function CandidatesTable({
   initialJob,
+  // TAMBAHAN: dibutuhkan OnboardingModal untuk isi nama perusahaan di email.
+  // Kalau komponen ini dirender dari halaman yang sudah punya data company
+  // (mis. lewat context/hook lain), sambungkan ke situ — sementara saya
+  // default-kan ke "Perusahaan" supaya tidak breaking kalau belum di-pass.
+  companyName = "Perusahaan",
 }: {
   initialJob?: string;
+  companyName?: string;
 }) {
   const { candidates, loading, jobMetas, getJobColor, updateStatus } =
     useCandidatesData();
+
+  // TAMBAHAN: candidate yang sedang dikirimi onboarding email.
+  const [onboardingCandidate, setOnboardingCandidate] =
+    useState<CandidateRaw | null>(null);
+  // TAMBAHAN: override lokal untuk onboarding_sent setelah kirim sukses —
+  // dipakai karena useCandidatesData belum tentu re-fetch otomatis. Kalau
+  // hook itu sudah punya cara sendiri untuk update/refetch candidate list,
+  // ini bisa dihapus dan diganti pemanggilan itu langsung.
+ const [onboardingSentOverrides, setOnboardingSentOverrides] = useState<Record<string, boolean>>({});
+
+  const withOnboardingOverride = (c: CandidateRaw): CandidateRaw => ({
+    ...c,
+    onboarding_sent: onboardingSentOverrides[c.id] ?? c.onboarding_sent,
+  });
 
   const {
     search,
@@ -63,9 +106,40 @@ export default function CandidatesTable({
       <AnimatePresence>
         {selectedCandidate && (
           <CandidatesModal
-            candidate={selectedCandidate}
+            candidate={withOnboardingOverride(selectedCandidate)}
             onClose={() => setSelectedCandidate(null)}
             onStatusChange={updateStatus}
+            onSendOnboarding={(c) => {
+              setSelectedCandidate(null);
+              setOnboardingCandidate(c);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* TAMBAHAN: Onboarding Modal */}
+      <AnimatePresence>
+        {onboardingCandidate && (
+          <OnboardingModal
+            applicationId={onboardingCandidate.id}
+            candidateName={onboardingCandidate.name}
+            candidateEmail={onboardingCandidate.email}
+            jobTitle={onboardingCandidate.job}
+            companyName={companyName}
+            onClose={() => setOnboardingCandidate(null)}
+            onSent={() => {
+              setOnboardingSentOverrides((prev) => ({
+                ...prev,
+                [onboardingCandidate.id]: true,
+              }));
+              // TAMBAHAN: dulu cuma set onboarding_sent lokal, status
+              // kandidat tidak pernah benar-benar pindah dari "hired".
+              // Sekarang sekalian diubah jadi "onboard" (persist ke
+              // backend lewat updateStatus, sama seperti aksi status
+              // manual lainnya).
+              updateStatus(onboardingCandidate.id, "onboard");
+              setOnboardingCandidate(null);
+            }}
           />
         )}
       </AnimatePresence>
@@ -92,16 +166,16 @@ export default function CandidatesTable({
 
         <CandidatesOpeningsSection jobMetas={jobMetas} />
 
-        <CandidatesHeaderBar
-          search={search}
-          onSearchChange={handleSearchChange}
-          sortKey={sortKey}
-          onSortChange={(k) => {
-            handleSort(k);
-          }}
-          dateFilter={dateFilter}
-          onDateFilterChange={setDateFilter}
-        />
+       <CandidatesHeaderBar
+  search={search}
+  onSearchChange={handleSearchChange}
+  sortKey={sortKey}
+  onSortChange={(k) => {
+    handleSort(k);
+  }}
+  dateFilter={dateFilter}
+  onDateFilterChange={setDateFilter}
+/>
 
         <CandidatesFilterBar
           jobMetas={jobMetas}
@@ -123,43 +197,51 @@ export default function CandidatesTable({
                 <th className="px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-left whitespace-nowrap w-10 text-[#7a9585]">
                   #
                 </th>
-                <CandidatesSortTh
-                  label="Applied Role"
-                  sortKey="applied_role"
-                  currentKey={sortKey}
-                  dir={sortDir}
-                  onSort={handleSort}
-                />
+                {/* Sorting dikontrol lewat dropdown di CandidatesHeaderBar.
+                    Header kolom di sini hanya label + indikator read-only
+                    (SortIndicator) — TIDAK bisa diklik, supaya cuma ada
+                    satu kontrol sorting di halaman ini. */}
+                <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
+                  Applied Role
+                  <SortIndicator
+                    columnKey="applied_role"
+                    activeKey={sortKey}
+                    dir={sortDir}
+                  />
+                </th>
                 <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
                   Location
                 </th>
-                <CandidatesSortTh
-                  label="Candidates"
-                  sortKey="name"
-                  currentKey={sortKey}
-                  dir={sortDir}
-                  onSort={handleSort}
-                />
+                <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
+                  Candidates
+                  <SortIndicator
+                    columnKey="name"
+                    activeKey={sortKey}
+                    dir={sortDir}
+                  />
+                </th>
                 <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
                   Contact
                 </th>
-                <CandidatesSortTh
-                  label="Applied Date"
-                  sortKey="date"
-                  currentKey={sortKey}
-                  dir={sortDir}
-                  onSort={handleSort}
-                />
+                <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
+                  Applied Date
+                  <SortIndicator
+                    columnKey="date"
+                    activeKey={sortKey}
+                    dir={sortDir}
+                  />
+                </th>
                 <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
                   Stage
                 </th>
-                <CandidatesSortTh
-                  label="AI Score"
-                  sortKey="score"
-                  currentKey={sortKey}
-                  dir={sortDir}
-                  onSort={handleSort}
-                />
+                <th className="text-left px-4 py-[11px] text-[10px] font-bold uppercase tracking-wider text-[#7a9585] whitespace-nowrap">
+                  AI Score
+                  <SortIndicator
+                    columnKey="score"
+                    activeKey={sortKey}
+                    dir={sortDir}
+                  />
+                </th>
                 <th className="px-4 py-[11px] w-10" />
               </tr>
             </thead>
@@ -183,7 +265,8 @@ export default function CandidatesTable({
                     </td>
                   </tr>
                 ) : (
-                  paginated.map((c, i) => {
+                  paginated.map((raw, i) => {
+                    const c = withOnboardingOverride(raw);
                     const rowNum = (page - 1) * RPP + i + 1;
                     const jobColor = getJobColor(c.job);
                     return (
@@ -282,6 +365,7 @@ export default function CandidatesTable({
                             candidate={c}
                             onStatusChange={updateStatus}
                             onView={() => setSelectedCandidate(c)}
+                            onSendOnboarding={setOnboardingCandidate}
                           />
                         </td>
                       </motion.tr>

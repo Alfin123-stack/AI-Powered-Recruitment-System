@@ -9,6 +9,7 @@ import type {
   DateFilter,
   CandidateRaw,
 } from "@/types/candidates";
+import { STATUS_TABS } from "@/constants/candidates";
 
 export function useCandidatesTable(
   candidates: CandidateRaw[],
@@ -60,10 +61,22 @@ export function useCandidatesTable(
       ? candidates
       : candidates.filter((c) => c.job === activeJob);
 
+  // FIX: dulu `c.status === activeStatus` — strict equality ke 1 key.
+  // Tab seperti "In Review" (review+shortlisted) atau "Hired"
+  // (hired+onboard) mewakili >1 status sekaligus (lihat STATUS_TABS di
+  // constants/candidates.ts), jadi harus dicek lewat membership ke
+  // `statuses[]` tab yang aktif, bukan disamakan langsung dengan
+  // activeStatus. Tanpa ini, kandidat "shortlisted"/"onboard" tidak akan
+  // ikut kefilter saat tab gabungan itu dipilih walau count di
+  // CandidatesFilterBar sudah benar menghitungnya.
+  const activeTabStatuses =
+    STATUS_TABS.find((t) => t.key === activeStatus)?.statuses ?? [];
+
   const filtered = useMemo(() => {
     return scoped
       .filter((c) => {
-        const statusMatch = activeStatus === "all" || c.status === activeStatus;
+        const statusMatch =
+          activeStatus === "all" || activeTabStatuses.includes(c.status);
         const q = search.toLowerCase();
         const queryMatch =
           !q ||
@@ -80,7 +93,7 @@ export function useCandidatesTable(
         else if (sortKey === "applied_role") cmp = a.job.localeCompare(b.job);
         return sortDir === "asc" ? -cmp : cmp;
       });
-  }, [scoped, activeStatus, search, sortKey, sortDir]);
+  }, [scoped, activeStatus, activeTabStatuses, search, sortKey, sortDir]);
 
   return {
     search,

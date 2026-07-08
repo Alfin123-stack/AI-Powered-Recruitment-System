@@ -10,17 +10,19 @@ import type {
   Interview,
   ShortlistedCandidate,
 } from "@/types/hr/interviews";
+import type { CompanyInfo } from "@/types/hr/dashboard";
 import { fetchWithToken } from "@/lib/fetchers/hr/dashboard";
 
 
 
 async function InterviewsData({ token }: { token: string }) {
-  const [interviews, shortlisted] = await Promise.all([
+  const [interviews, shortlisted, company] = await Promise.all([
     fetchWithToken<Interview[]>("/api/interviews", token),
     fetchWithToken<ShortlistedCandidate[]>(
       "/api/interviews/shortlisted",
       token,
     ),
+    fetchWithToken<CompanyInfo>("/api/company", token),
   ]);
 
   return (
@@ -28,6 +30,7 @@ async function InterviewsData({ token }: { token: string }) {
       initialInterviews={interviews ?? []}
       initialShortlisted={shortlisted ?? []}
       token={token}
+      companyName={company?.name ?? ""}
     />
   );
 }

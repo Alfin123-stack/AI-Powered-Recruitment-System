@@ -29,6 +29,7 @@ import {
   Star,
   XCircle,
   Briefcase,
+  Award,
 } from "lucide-react";
 import { getScoreColor, getScoreGradient } from "@/lib/helpers/hr/dashboard";
 
@@ -197,9 +198,18 @@ function TotalOverview({
   totalRejected: number;
   totalHired: number;
 }) {
+  // FIX: segmen kedua sebelumnya dilabeli "Interview" — salah. `inReview`
+  // dihitung di DashboardClient.tsx sebagai jumlah kandidat berstatus
+  // "review" (candidates.filter(c => c.status === "review").length), bukan
+  // jumlah interview yang terjadwal. Parahnya, statItems di bawah (baris
+  // "Interview") memang benar memakai `totalInterviews` (dari
+  // interviews.length) — jadi sebelumnya ada 2 angka BEDA yang sama-sama
+  // dilabeli "Interview" di satu panel yang sama. Label di sini diperbaiki
+  // jadi "In Review", konsisten dengan label yang sudah benar di
+  // HiringPipeline (baris 293) dan constants/candidates.ts STATUS_TABS.
   const donutSegments: DonutSegment[] = [
     { value: shortlisted, color: "#10b981", label: "Shortlisted" },
-    { value: inReview, color: "#06b6d4", label: "Interview" },
+    { value: inReview, color: "#06b6d4", label: "In Review" },
     { value: totalRejected, color: "#ef4444", label: "Rejected" },
     {
       value: Math.max(0, total - shortlisted - inReview - totalRejected),
@@ -279,16 +289,19 @@ function HiringPipeline({
   inReview,
   shortlisted,
   totalRejected,
+  totalHired,
 }: {
   total: number;
   inReview: number;
   shortlisted: number;
   totalRejected: number;
+  totalHired: number;
 }) {
   const stages: PipelineStage[] = [
     { label: "Applied", count: total, color: "#10b981", Icon: Inbox },
     { label: "In Review", count: inReview, color: "#06b6d4", Icon: Eye },
     { label: "Shortlisted", count: shortlisted, color: "#8b5cf6", Icon: Star },
+    { label: "Hired", count: totalHired, color: "#f59e0b", Icon: Award },
     {
       label: "Rejected",
       count: totalRejected,
@@ -302,6 +315,11 @@ function HiringPipeline({
       label: "Conversion",
       val: `${total ? Math.round((shortlisted / total) * 100) : 0}%`,
       color: "#10b981",
+    },
+    {
+      label: "Hire Rate",
+      val: `${total ? Math.round((totalHired / total) * 100) : 0}%`,
+      color: "#f59e0b",
     },
     {
       label: "Rejection",
@@ -350,7 +368,7 @@ function HiringPipeline({
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-white/[0.04]">
+      <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-white/[0.04]">
         {metrics.map((m) => (
           <div
             key={m.label}
@@ -797,6 +815,7 @@ export function AnalyticsSection({
           inReview={inReview}
           shortlisted={shortlisted}
           totalRejected={totalRejected}
+          totalHired={totalHired}
         />
       </div>
 

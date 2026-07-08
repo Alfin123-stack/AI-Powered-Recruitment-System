@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { toast } from "sonner";
 import {
   Calendar,
   Clock,
@@ -16,15 +16,24 @@ import {
   ChevronDown,
   User,
 } from "lucide-react";
-import { AnyInputEvent, ShortlistedCandidate } from "@/types/hr/interviews";
+import { ShortlistedCandidate } from "@/types/hr/interviews";
 import { InterviewField } from "./InterviewField";
 import { InterviewSection } from "./InterviewSection";
 import { InterviewModalShell } from "./InterviewModalShell";
 import { InterviewTypeToggle } from "./InterviewTypeToggle";
 
 import { getColor, getInitials } from "@/lib/utils";
-import { apiFetch } from "@/lib/api";
 import { inputCls, inputErrorCls } from "@/components/input";
+import { useInterviewSchedule } from "@/hooks/dashboard/hr/useInterviewSchedule";
+import RichTextEditor from "./RichTextEditor";
+
+
+const DATE_TIME_ICON_FIX =
+  "[&::-webkit-calendar-picker-indicator]:invert " +
+  "[&::-webkit-calendar-picker-indicator]:opacity-90 " +
+  "[&::-webkit-calendar-picker-indicator]:hover:opacity-100 " +
+  "[&::-webkit-calendar-picker-indicator]:cursor-pointer " +
+  "[&::-webkit-calendar-picker-indicator]:transition-opacity";
 
 export function InterviewScheduleModal({
   token,
@@ -37,68 +46,15 @@ export function InterviewScheduleModal({
   onDone: () => void;
   onClose: () => void;
 }) {
-  const [form, setForm] = useState({
-    application_id: "",
-    date: "",
-    time: "",
-    type: "online",
-    location: "",
-    notes: "",
-    round: "First Interview",
-    duration: "60",
-    interviewer: "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
+  const { form, errors, loading, set, setForm, handleSubmit } =
+    useInterviewSchedule({ token, onDone });
 
-  const set = (key: string) => (e: AnyInputEvent) => {
-    setForm((p) => ({ ...p, [key]: e.target.value }));
-    setErrors((p) => ({ ...p, [key]: "" }));
-  };
-
-  const validate = () => {
-    const errs: Record<string, string> = {};
-    if (!form.application_id)
-      errs.application_id = "Pilih kandidat terlebih dahulu";
-    if (!form.date) errs.date = "Tanggal wajib diisi";
-    if (!form.time) errs.time = "Jam wajib diisi";
-    return errs;
-  };
-
-  const handleSubmit = async () => {
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
+  const onSubmit = async () => {
+    if (candidates.length === 0) {
+      toast.error("Tidak ada kandidat shortlisted yang tersedia");
       return;
     }
-    setLoading(true);
-    try {
-      const scheduled_at = new Date(
-        `${form.date}T${form.time}:00`,
-      ).toISOString();
-      await apiFetch("/api/interviews", token, {
-        method: "POST",
-        body: JSON.stringify({
-          application_id: form.application_id,
-          scheduled_at,
-          type: form.type,
-          location: form.location || null,
-          notes: form.notes || null,
-          round: form.round,
-          duration_minutes: parseInt(form.duration),
-          interviewer_name: form.interviewer || null,
-        }),
-      });
-      onDone();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrors({ submit: err.message });
-      } else {
-        setErrors({ submit: "Terjadi kesalahan" });
-      }
-    } finally {
-      setLoading(false);
-    }
+    await handleSubmit();
   };
 
   const byJob = candidates.reduce<Record<string, ShortlistedCandidate[]>>(
@@ -227,7 +183,8 @@ export function InterviewScheduleModal({
             value={form.date}
             onChange={set("date")}
             min={new Date().toISOString().split("T")[0]}
-            className={errors.date ? inputErrorCls : inputCls}
+            style={{ colorScheme: "dark" }}
+            className={`${errors.date ? inputErrorCls : inputCls} ${DATE_TIME_ICON_FIX}`}
           />
         </InterviewField>
         <InterviewField
@@ -240,7 +197,8 @@ export function InterviewScheduleModal({
             type="time"
             value={form.time}
             onChange={set("time")}
-            className={errors.time ? inputErrorCls : inputCls}
+            style={{ colorScheme: "dark" }}
+            className={`${errors.time ? inputErrorCls : inputCls} ${DATE_TIME_ICON_FIX}`}
           />
         </InterviewField>
       </div>
@@ -292,12 +250,13 @@ export function InterviewScheduleModal({
         label="Catatan"
         icon={<FileText size={11} />}
         hint="Opsional — persiapan, topik, dan hal yang perlu dibawa">
-        <textarea
+        <RichTextEditor
           value={form.notes}
-          onChange={set("notes")}
-          rows={3}
+          onChange={(html) =>
+            setForm((p) => ({ ...p, notes: html }))
+          }
           placeholder="Persiapan yang perlu dibawa, topik yang akan dibahas, dll..."
-          className={`${inputCls} resize-none`}
+          minHeight={70}
         />
       </InterviewField>
 
@@ -314,7 +273,7 @@ export function InterviewScheduleModal({
           Batal
         </button>
         <button
-          onClick={handleSubmit}
+          onClick={onSubmit}
           disabled={loading || candidates.length === 0}
           className="flex-1 py-[10px] rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black text-[0.82rem] font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
           {loading && <Loader2 size={14} className="animate-spin" />}

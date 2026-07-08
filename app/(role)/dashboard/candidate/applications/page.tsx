@@ -25,7 +25,7 @@ async function ApplicationsContent({ accessToken }: { accessToken: string }) {
         applications={applications}
         interviews={interviews}
       />
-      <ApplicationsClient applications={applications} interviews={interviews} />
+      <ApplicationsClient applications={applications} interviews={interviews} token={accessToken} />
     </>
   );
 }
