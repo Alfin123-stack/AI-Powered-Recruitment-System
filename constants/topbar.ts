@@ -1,7 +1,5 @@
 import { NotifType } from "@/types/main/notifications";
 
-
-
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export const POPUP_LIMIT = 4;
@@ -34,6 +32,22 @@ export const NOTIF_TYPE_CFG: Record<
     emoji: "📅",
     label: "Interview",
     labelColor: "text-sky-400",
+  },
+  offer_letter: {
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+    dotColor: "#fbbf24",
+    emoji: "📨",
+    label: "Offer",
+    labelColor: "text-amber-400",
+  },
+  rejection: {
+    bg: "bg-rose-500/10",
+    border: "border-rose-500/20",
+    dotColor: "#fb7185",
+    emoji: "❌",
+    label: "Rejected",
+    labelColor: "text-rose-400",
   },
   general: {
     bg: "bg-violet-500/10",

@@ -111,7 +111,14 @@ export async function generateOfferLetterPdf(data: OfferLetterPdfData): Promise<
   // ── Mutable "cursor" state — current page + vertical position ───────────
   // pdf-lib has no built-in flow layout, so we track this by hand and spin
   // up a new page whenever the next block wouldn't fit above the footer.
-  let page: PDFPage;
+  // FIX: "Variable 'page' is used before being assigned" — TypeScript's
+  // control-flow analysis can't see that `addPage()` (called right below,
+  // synchronously, before any read of `page`) always assigns it first; the
+  // assignment happens inside a closure, which TS doesn't trace through.
+  // A definite assignment assertion (`!`) tells TS "trust me, this is set
+  // before use" instead of widening the type to `PDFPage | undefined`
+  // everywhere and forcing null checks on every single `page.draw...` call.
+  let page!: PDFPage;
   let y = 0;
   const pages: PDFPage[] = [];
 

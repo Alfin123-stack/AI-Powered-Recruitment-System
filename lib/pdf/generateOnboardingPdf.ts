@@ -89,7 +89,14 @@ export async function generateOnboardingPdf(data: OnboardingPdfData): Promise<Bu
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-  let page: PDFPage;
+  // FIX: "Variable 'page' is used before being assigned" — assignment-nya
+  // kejadian di dalam closure addPage() sehingga TypeScript control-flow
+  // analysis tidak bisa membuktikan `page` sudah pasti ke-set sebelum
+  // dipakai (sama persis dengan kasus di generateOfferLetterPdf.ts).
+  // Definite assignment assertion (`!`) memberi tahu TS itu aman, tanpa
+  // perlu mengubah tipe jadi `PDFPage | undefined` dan nambah null check
+  // di setiap pemanggilan `page.draw...`.
+  let page!: PDFPage;
   let y = 0;
   const pages: PDFPage[] = [];
 

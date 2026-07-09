@@ -34,7 +34,7 @@ import {
   showStatusToast,
   getRecommendationDisplay,
   type ConfirmableStatus,
-} from "@/lib/helpers/hr/dashboardStatus";
+} from "./dashboardStatus";
 import { DashboardStatusConfirmModal } from "./DashboardStatusConfirmModal";
 
 export function DashboardCandidateModal({

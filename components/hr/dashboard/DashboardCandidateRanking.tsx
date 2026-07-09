@@ -6,9 +6,8 @@ import { Users, Search, ChevronDown, X, Target, Brain } from "lucide-react";
 import type { CandidateUI, JobGroup } from "@/types/hr/dashboard";
 import type { CandidateStatus } from "@/types/candidates";
 import { STATUS_FILTER_OPTIONS } from "@/constants/hr/dashboard";
-import { showOnboardingSentToast } from "@/lib/helpers/hr/dashboardStatus";
-// NOTE: sesuaikan path ini kalau OnboardingModal.tsx ditaruh di lokasi lain.
-import OnboardingModal from "../OnboardingModal";
+import { showOnboardingSentToast } from "./dashboardStatus";
+import OnboardingModal from "./OnboardingModal";
 import { DashboardCandidateModal } from "./DashboardCandidateModal";
 import { DashboardJobGroupTable } from "./DashboardJobGroupTable";
 

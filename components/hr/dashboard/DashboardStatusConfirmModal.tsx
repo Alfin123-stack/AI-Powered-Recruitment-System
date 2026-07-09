@@ -2,8 +2,8 @@
 
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import type { ConfirmableStatus } from "@/lib/helpers/hr/dashboardStatus";
-import { STATUS_CONFIRM_INFO } from "@/lib/helpers/hr/dashboardStatus";
+import type { ConfirmableStatus } from "./dashboardStatus";
+import { STATUS_CONFIRM_INFO } from "./dashboardStatus";
 
 // Dipasang di DashboardCandidateModal (3 aksi: Shortlist/Review/Tolak) dan
 // DashboardJobGroupTable (2 quick-action icon: Shortlist/Reject; tidak ada

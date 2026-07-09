@@ -7,7 +7,11 @@ import { StatCards } from "./DashboardStatCards";
 import { AIInsightPanel } from "./DashboardAIInsightPanel";
 import { AnalyticsSection } from "./DashboardAnalyticsSection";
 import { DashboardSidebar } from "./DashboardSidebar";
-import { CandidateRanking } from "./DashboardCandidateRanking";
+// FIX: nama export komponen ini sudah diganti jadi DashboardCandidateRanking
+// waktu dipecah dari CandidateRanking.tsx lama — import lama `CandidateRanking`
+// bikin build gagal ("Export CandidateRanking doesn't exist in target module").
+import { DashboardCandidateRanking } from "./DashboardCandidateRanking";
+
 import {
   Interview,
   JobGroup,
@@ -58,7 +62,7 @@ export function DashboardClient({
   // sekarang bertipe CandidateStatus (bukan string bebas). Diketatkan jadi
   // CandidateStatus, sinkron dengan signature updateStatus di
   // useCandidatesData.ts dan prop onStatusChange yang diteruskan ke
-  // CandidateRanking di bawah.
+  // DashboardCandidateRanking di bawah.
   const updateStatus = async (id: string, status: CandidateStatus) => {
     // Simpan status lama untuk rollback kalau request ke backend gagal
     const prevCandidates = candidates;
@@ -199,14 +203,14 @@ export function DashboardClient({
         {/* ── CANDIDATE RANKING ── */}
         <FadeIn delay={0.18}>
           <div data-tour="hr-candidate-ranking">
-            <CandidateRanking
+            <DashboardCandidateRanking
               jobGroups={jobGroups}
               total={total}
               onStatusChange={updateStatus}
-              // TAMBAHAN: dibutuhkan OnboardingModal untuk isi nama perusahaan
-              // di email onboarding.
+              // Dibutuhkan OnboardingModal untuk isi nama perusahaan di
+              // email onboarding.
               companyName={company?.name ?? "Perusahaan"}
-              // TAMBAHAN: setelah onboarding email terkirim, tandai
+              // Setelah onboarding email terkirim, tandai
               // onboarding_sent=true di state lokal secara optimistic —
               // mengikuti pola optimistic update yang sama dengan
               // updateStatus di atas. Kalau backend PUT
