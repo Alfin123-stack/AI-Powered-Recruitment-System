@@ -15,16 +15,6 @@ interface NotifListProps {
   unreadCount: number;
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
-  /**
-   * FIX: was missing entirely — OfferNotifCard (rendered via
-   * NotificationsCard for type "offer_letter") needs this to send
-   * `Authorization: Bearer ${token}` when the candidate clicks
-   * Accept/Decline from inside the dashboard. Without it, the request
-   * went out with an empty Bearer token and silently failed auth.
-   */
-  token?: string;
-  /** Called when a candidate accepts/declines an offer from the dashboard card. */
-  onOfferResponded?: (id: string, status: "accepted" | "declined") => void;
 }
 
 export default function NotificationsList({
@@ -33,8 +23,6 @@ export default function NotificationsList({
   unreadCount,
   onMarkRead,
   onDelete,
-  token,
-  onOfferResponded,
 }: NotifListProps) {
   // Filter
   const filtered = notifs.filter((n) => {
@@ -105,8 +93,6 @@ export default function NotificationsList({
                   onMarkRead={onMarkRead}
                   onDelete={onDelete}
                   index={i}
-                  token={token}
-                  onOfferResponded={onOfferResponded}
                 />
               ))}
             </AnimatePresence>

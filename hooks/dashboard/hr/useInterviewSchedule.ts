@@ -69,13 +69,25 @@ export function useInterviewSchedule({
       // terpisah — kalau ini gagal, interview-nya sendiri sudah kepakai
       // (POST di atas sukses), jadi tidak boleh bikin seluruh submit
       // dianggap gagal / toast error ke HR. Cukup dicatat di console.
+      //
+      // FIX: skipStatusNotification: true ditambahkan — POST /api/interviews
+      // di atas SUDAH mengirim notifikasi "Interview Dijadwalkan 📅" sendiri
+      // (lengkap dengan tanggal/jam/tipe, lihat interviewController.js).
+      // Tanpa flag ini, PUT /status di bawah akan mengirim notifikasi KEDUA
+      // untuk kejadian yang sama (notifMap.interview di
+      // applicationController.js) — kandidat dapat 2 notifikasi untuk 1 aksi
+      // HR. Status "interview" tetap tersimpan seperti biasa; yang di-skip
+      // cuma notifikasi generiknya.
       try {
         await apiFetch(
           `/api/applications/${form.application_id}/status`,
           token,
           {
             method: "PUT",
-            body: JSON.stringify({ status: "interview" }),
+            body: JSON.stringify({
+              status: "interview",
+              skipStatusNotification: true,
+            }),
           },
         );
       } catch (statusErr) {

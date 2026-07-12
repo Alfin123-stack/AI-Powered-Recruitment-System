@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCheck, Clock } from "lucide-react";
+import { CheckCheck, Clock, Trash2 } from "lucide-react";
 import { timeAgo } from "../../lib/helpers/main/notifications";
 import type { Notif } from "../../types/main/notifications";
 import { TYPE_CONFIG } from "@/constants/main/notifications";
@@ -12,23 +12,19 @@ interface NotifCardProps {
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
   index: number;
-  /** Required for offer_letter notifs so Accept/Decline can call the backend */
-  token?: string;
-  /** Called when candidate responds to an offer (accept/decline) */
-  onOfferResponded?: (id: string, status: "accepted" | "declined") => void;
 }
 
 export default function NotificationsCard({
   notif,
   onMarkRead,
-  onDelete: _onDelete,
+  onDelete,
   index,
-  token,
-  onOfferResponded,
 }: NotifCardProps) {
   // ── Special rendering for offer letters ──────────────────────────────────────
-  // Offer letters need Accept/Decline buttons + salary/start date details,
-  // which don't fit the generic notif card layout below.
+  // Offer letters are display-only now — accept/decline happens via the
+  // link sent to the candidate's email, not from this card. Kept as a
+  // distinct render path since salary/start-date/HR-notes styling still
+  // doesn't fit the generic notif card layout below.
   if (notif.type === "offer_letter") {
     return (
       <motion.div
@@ -45,14 +41,7 @@ export default function NotificationsCard({
         onMouseEnter={() => {
           if (!notif.read) onMarkRead(notif.id);
         }}>
-        <OfferNotifCard
-          notif={notif}
-          token={token ?? ""}
-          onResponded={(id, status) => {
-            onMarkRead(id);
-            onOfferResponded?.(id, status);
-          }}
-        />
+        <OfferNotifCard notif={notif} onDelete={onDelete} />
       </motion.div>
     );
   }
@@ -115,17 +104,23 @@ export default function NotificationsCard({
                 {notif.title}
               </p>
 
-              {/* Mark read button — only shown on hover for unread */}
-              {!notif.read && (
-                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              {/* Mark read + delete buttons — only shown on hover */}
+              <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                {!notif.read && (
                   <button
                     onClick={() => onMarkRead(notif.id)}
                     title="Mark as read"
                     className={`w-6 h-6 rounded-md flex items-center justify-center cursor-pointer ${cfg.iconBg} ${cfg.iconColor} transition-opacity hover:opacity-70`}>
                     <CheckCheck size={11} />
                   </button>
-                </div>
-              )}
+                )}
+                <button
+                  onClick={() => onDelete(notif.id)}
+                  title="Hapus notifikasi"
+                  className="w-6 h-6 rounded-md flex items-center justify-center cursor-pointer bg-white/[0.04] text-[#5d7a6a] hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                  <Trash2 size={11} />
+                </button>
+              </div>
             </div>
 
             <p className="text-[0.74rem] leading-relaxed mb-2.5 text-[#3e5a4c] line-clamp-2">

@@ -31,6 +31,10 @@ export async function fetchNotificationsServer(
 
 // ─── Client-side API calls (mutations) ────────────────────────────────────────
 // These are called from Client Components for user actions.
+// Consumer: hooks/main/useNotifications.ts — this hook is the single source
+// of truth for notification fetch/mutation logic on the client. Do NOT
+// re-implement inline fetch() calls elsewhere; always call these helpers so
+// there is exactly one place that knows the endpoint shape and headers.
 
 export async function apiMarkRead(
   id: string,
@@ -40,6 +44,7 @@ export async function apiMarkRead(
     const res = await fetch(`${API}/api/notifications/${id}/read`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
     });
     return res.ok;
   } catch {
@@ -52,6 +57,7 @@ export async function apiMarkAllRead(token: string): Promise<boolean> {
     const res = await fetch(`${API}/api/notifications/read-all`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
     });
     return res.ok;
   } catch {
@@ -67,6 +73,24 @@ export async function apiDeleteNotif(
     const res = await fetch(`${API}/api/notifications/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Delete every notification for the current user. Backend route:
+// DELETE /api/notifications/all. Consumer: useNotifications.ts →
+// handleDeleteAll (not wired into any UI button yet, kept ready for a
+// future "Clear all" action on NotificationsHeading.tsx).
+export async function apiDeleteAllNotifs(token: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API}/api/notifications/all`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
     });
     return res.ok;
   } catch {

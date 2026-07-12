@@ -26,6 +26,18 @@ export function normalizeNotif(n: Record<string, unknown>): Notif {
         : typeof n.is_read === "boolean"
           ? n.is_read
           : false,
+    // FIX: metadata was previously dropped entirely — OfferNotifCard.tsx
+    // reads notif.metadata (salary, start_date, notes, expires_at,
+    // offer_status, application_id) to render offer letter details and
+    // the accepted/declined/expired badge. Without this, every offer
+    // notification normalized through this function lost all of that
+    // data and always fell back to showing a bare "pending" state with
+    // no salary/date/notes/countdown, regardless of what the backend
+    // actually sent.
+    metadata:
+      n.metadata && typeof n.metadata === "object"
+        ? (n.metadata as Notif["metadata"])
+        : undefined,
   };
 }
 

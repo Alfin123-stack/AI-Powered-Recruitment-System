@@ -38,6 +38,10 @@ export default function NotificationsClient({
 }: NotificationsClientProps) {
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
 
+  // NOTE: `token` is still needed here — useNotifications uses it for
+  // refresh/mark-read/delete requests. It's just no longer forwarded
+  // down to NotifList/NotifCard/OfferNotifCard, since offer_letter cards
+  // are display-only now (accept/decline happens via the email link).
   const {
     notifs,
     unreadCount,
@@ -90,18 +94,6 @@ export default function NotificationsClient({
         unreadCount={unreadCount}
         onMarkRead={handleMarkRead}
         onDelete={handleDelete}
-        // FIX: token was never forwarded past this point before, so
-        // OfferNotifCard's Accept/Decline buttons always sent an empty
-        // Bearer token and failed auth. See NotificationsList.tsx /
-        // NotificationsCard.tsx for the rest of the chain.
-        token={token}
-        onOfferResponded={(id, status) => {
-          // Offer already marked read via NotificationsCard's onMarkRead
-          // call. Nothing else required here right now, but this is the
-          // hook point if you later want to e.g. refetch stats/counters
-          // immediately after an accept/decline instead of waiting for
-          // the next natural refresh.
-        }}
       />
     </div>
   );
