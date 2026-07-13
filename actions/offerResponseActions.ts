@@ -1,6 +1,7 @@
 "use server";
 
 import { API } from "@/lib/api";
+import { respondToOfferInputSchema, formatZodError } from "@/lib/validators/actionSchemas";
 
 import type { ActionResult } from "./offerActions";
 
@@ -23,19 +24,24 @@ export async function respondToOfferAction(
   token: string,
   offerStatus: "accepted" | "declined",
 ): Promise<ActionResult> {
-  if (!applicationId || !token) {
-    return { success: false, error: "This link is missing required information." };
+  // ── Validasi input (Zod) ───────────────────────────────────────────────────
+  // FIX (security): halaman ini PUBLIC (diakses tanpa login lewat link
+  // email), jadi validasi input di sini lebih penting lagi dibanding
+  // action lain yang minimal sudah dilindungi getServerSession().
+  const parsed = respondToOfferInputSchema.safeParse({ applicationId, token, offerStatus });
+  if (!parsed.success) {
+    return { success: false, error: formatZodError(parsed.error) };
   }
 
   try {
-    const res = await fetch(`${API}/api/applications/${applicationId}/offer`, {
+    const res = await fetch(`${API}/api/applications/${parsed.data.applicationId}/offer`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       // No Bearer token here on purpose — the candidate clicking this link
       // from their email isn't necessarily logged in. The signed `token`
       // (HMAC, scoped to this applicationId + expiry) is what the backend's
       // offerAuthMiddleware verifies instead.
-      body: JSON.stringify({ offer_status: offerStatus, token }),
+      body: JSON.stringify({ offer_status: parsed.data.offerStatus, token: parsed.data.token }),
       cache: "no-store",
     });
 

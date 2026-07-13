@@ -5,6 +5,7 @@ import { buildOfferEmailHtml, buildOfferEmailText } from "@/lib/email/templates/
 import { getServerSession } from "@/lib/auth/getServerSession";
 import { API } from "@/lib/api";
 import { generateOfferLetterPdf } from "@/lib/pdf/generateOfferLetterPdf";
+import { sendOfferInputSchema, formatZodError } from "@/lib/validators/actionSchemas";
 
 export interface SendOfferInput {
   applicationId: string;
@@ -37,6 +38,16 @@ export async function sendOfferLetterAction(
   if (!session) return { success: false, error: "Unauthorized" };
   const token = session.access_token;
 
+  // ── Validasi input (Zod) ───────────────────────────────────────────────────
+  // FIX (security): Server Action ini pada dasarnya endpoint HTTP juga --
+  // bisa dipanggil langsung tanpa lewat UI form. Sebelumnya tidak ada
+  // validasi sama sekali di sini (beda dengan backend Express yang sudah
+  // pakai Zod).
+  const parsed = sendOfferInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: `Data tidak valid: ${formatZodError(parsed.error)}` };
+  }
+
   const {
     applicationId,
     candidateName,
@@ -51,7 +62,7 @@ export async function sendOfferLetterAction(
     contractType,
     reportingManager,
     benefits,
-  } = input;
+  } = parsed.data;
 
   // Guard against silently sending "undefined" into the email template —
   // if the caller (HR form) forgot to pass one of these, fall back to a

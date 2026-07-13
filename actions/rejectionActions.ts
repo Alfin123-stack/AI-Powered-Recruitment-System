@@ -5,6 +5,7 @@ import { buildRejectionEmailHtml, buildRejectionEmailText } from "@/lib/email/te
 import { getServerSession } from "@/lib/auth/getServerSession";
 import { API } from "@/lib/api";
 import type { ActionResult } from "./offerActions";
+import { sendRejectionInputSchema, formatZodError } from "@/lib/validators/actionSchemas";
 
 export interface SendRejectionInput {
   applicationId: string;
@@ -23,7 +24,13 @@ export async function sendRejectionAction(
   if (!session) return { success: false, error: "Unauthorized" };
   const token = session.access_token;
 
-  const { applicationId, candidateName, candidateEmail, jobTitle, companyName, feedback } = input;
+  // ── Validasi input (Zod) ───────────────────────────────────────────────────
+  const parsed = sendRejectionInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: `Data tidak valid: ${formatZodError(parsed.error)}` };
+  }
+
+  const { applicationId, candidateName, candidateEmail, jobTitle, companyName, feedback } = parsed.data;
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const dashboardUrl = `${baseUrl}/dashboard/candidate`;

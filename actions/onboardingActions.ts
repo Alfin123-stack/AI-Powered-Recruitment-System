@@ -22,6 +22,7 @@ import {
   buildOnboardingConfirmationEmailHtml,
   buildOnboardingConfirmationEmailText,
 } from "@/lib/email/templates/onboarding-confirmation";
+import { sendOnboardingInputSchema, formatZodError } from "@/lib/validators/actionSchemas";
 
 export interface SendOnboardingInput {
   applicationId: string;
@@ -50,6 +51,12 @@ export async function sendOnboardingEmailAction(
   if (!session) return { success: false, error: "Unauthorized" };
   const token = session.access_token;
 
+  // ── Validasi input (Zod) ───────────────────────────────────────────────────
+  const parsed = sendOnboardingInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: `Data tidak valid: ${formatZodError(parsed.error)}` };
+  }
+
   const {
     applicationId,
     candidateName,
@@ -67,7 +74,7 @@ export async function sendOnboardingEmailAction(
     dressCode,
     firstDayAgenda,
     additionalNotes,
-  } = input;
+  } = parsed.data;
 
   // additionalNotes doesn't have its own slot in the onboarding template —
   // simplest integration is to tack it onto the agenda list as a final
