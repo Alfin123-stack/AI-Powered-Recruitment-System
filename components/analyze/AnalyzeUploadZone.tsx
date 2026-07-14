@@ -2,7 +2,9 @@
 
 import { useState, useRef } from "react";
 import { Upload, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { validateCvFile } from "@/lib/validators/fileValidation";
 
 type Props = {
   onFileSelect: (f: File) => void;
@@ -13,11 +15,25 @@ export default function UploadZone({ onFileSelect, isLoading }: Props) {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // FIX (validasi client-side): sebelumnya cuma cek extension .pdf lewat
+  // .endsWith() -- tidak ada cek ukuran sama sekali walau copy UI di bawah
+  // sudah janji "Max. 5MB". File terlalu besar bisa bikin browser hang pas
+  // parsing PDF-nya. Sekarang divalidasi & user dikasih tau alasan gagal
+  // lewat toast (sebelumnya silent fail / cuma console.error).
+  const handleFile = (f: File | undefined) => {
+    if (!f) return;
+    const result = validateCvFile(f);
+    if (!result.valid) {
+      toast.error(result.error);
+      return;
+    }
+    onFileSelect(f);
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    const f = e.dataTransfer.files[0];
-    if (f?.name.endsWith(".pdf")) onFileSelect(f);
+    handleFile(e.dataTransfer.files[0]);
   };
 
   return (
@@ -43,8 +59,8 @@ export default function UploadZone({ onFileSelect, isLoading }: Props) {
         accept=".pdf"
         className="hidden"
         onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) onFileSelect(f);
+          handleFile(e.target.files?.[0]);
+          e.target.value = ""; // reset -- supaya pilih file yang sama 2x tetap trigger onChange
         }}
       />
       <div

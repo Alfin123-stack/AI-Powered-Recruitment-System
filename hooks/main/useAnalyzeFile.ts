@@ -2,6 +2,7 @@
 // Mengelola seluruh alur analisis: extract PDF → hit AI API → persist ke DB
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { extractTextFromPDF } from "@/lib/helpers/main/analyze";
 import { persistAnalysis } from "@/lib/api/analysis";
@@ -48,7 +49,15 @@ export function useAnalyzeFile(
         // User tetap lihat hasil meski persist gagal
       }
     } catch (err) {
+      // FIX (UX): sebelumnya cuma console.error -- user tidak tahu kenapa
+      // tidak ada yang terjadi setelah upload (misal file .pdf tapi
+      // sebenarnya korup/bukan PDF asli, jadi gagal di-parse pdfjs-dist).
       console.error("Analisis gagal:", err);
+      const message =
+        err instanceof Error && err.message === "Analisis gagal"
+          ? "Analisis gagal, coba lagi dalam beberapa saat."
+          : "Gagal membaca file. Pastikan file PDF tidak korup lalu coba lagi.";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
