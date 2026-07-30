@@ -21,6 +21,27 @@ type AuthMode = "login" | "register";
 
 const GOOGLE_STEP = 3;
 
+// ─── Auth error message helper (di dalam file ini, tidak perlu import terpisah) ──
+
+function getAuthErrorMessage(err: unknown): string {
+  // Network / fetch gagal total (server tidak terjangkau, offline, dsb)
+  if (err instanceof TypeError && err.message === "Failed to fetch") {
+    return "Tidak dapat terhubung ke server. Periksa koneksi internet Anda dan coba lagi.";
+  }
+
+  const message = err instanceof Error ? err.message : "";
+
+  const map: Record<string, string> = {
+    "Invalid login credentials": "Email atau password yang Anda masukkan salah.",
+    "Email not confirmed": "Email Anda belum diverifikasi. Silakan cek inbox Anda.",
+    "User already registered": "Email ini sudah terdaftar. Silakan masuk atau gunakan email lain.",
+    "Password should be at least 6 characters": "Password minimal harus 6 karakter.",
+    "Too many requests": "Terlalu banyak percobaan. Silakan coba lagi beberapa saat lagi.",
+  };
+
+  return map[message] ?? "Terjadi kesalahan. Silakan coba lagi.";
+}
+
 export function useAuthForm(mode: AuthMode) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -112,23 +133,27 @@ export function useAuthForm(mode: AuthMode) {
       clearAll();
       setLoading(true);
 
-      const { data, error: authError } = await supabase.auth.signInWithPassword(
-        { email, password }
-      );
+      try {
+        const { data, error: authError } = await supabase.auth.signInWithPassword(
+          { email, password }
+        );
 
-      setLoading(false);
+        if (authError) {
+          setError(getAuthErrorMessage(authError));
+          return;
+        }
 
-      if (authError) {
-        setError(authError.message);
-        return;
+        toast.success("Welcome back!", {
+          description: "You have successfully signed in.",
+        });
+
+        const userRole = data.session?.user?.user_metadata?.role;
+        router.push(userRole === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
+      } catch (err) {
+        setError(getAuthErrorMessage(err));
+      } finally {
+        setLoading(false);
       }
-
-      toast.success("Welcome back!", {
-        description: "You have successfully signed in.",
-      });
-
-      const userRole = data.session?.user?.user_metadata?.role;
-      router.push(userRole === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
     },
     [email, password, router, setFieldErrors, clearAll]
   );
@@ -146,63 +171,64 @@ export function useAuthForm(mode: AuthMode) {
       setError("");
       setLoading(true);
 
-      if (isGoogleProvider) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+      try {
+        if (isGoogleProvider) {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
-        if (!user) {
-          setError("Session not found. Please try signing in again.");
-          setLoading(false);
+          if (!user) {
+            setError("Sesi tidak ditemukan. Silakan coba masuk kembali.");
+            return;
+          }
+
+          const { error: upsertError } = await supabase.from("users").upsert(
+            {
+              id: user.id,
+              email: user.email,
+              full_name:
+                user.user_metadata?.full_name ??
+                user.user_metadata?.name ??
+                user.email,
+              role,
+            },
+            { onConflict: "id" }
+          );
+
+          if (upsertError) {
+            setError(getAuthErrorMessage(upsertError));
+            return;
+          }
+
+          toast.success("Account setup complete!", {
+            description: "Welcome to RecruitAI!",
+          });
+
+          router.push(role === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
           return;
         }
 
-        const { error: upsertError } = await supabase.from("users").upsert(
-          {
-            id: user.id,
-            email: user.email,
-            full_name:
-              user.user_metadata?.full_name ??
-              user.user_metadata?.name ??
-              user.email,
-            role,
-          },
-          { onConflict: "id" }
-        );
-
-        setLoading(false);
-
-        if (upsertError) {
-          setError(upsertError.message);
-          return;
-        }
-
-        toast.success("Account setup complete!", {
-          description: "Welcome to RecruitAI!",
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName, role } },
         });
 
-        router.push(role === "hr" ? "/dashboard/hr" : "/dashboard/candidate");
-        return;
+        if (signUpError) {
+          setError(getAuthErrorMessage(signUpError));
+          return;
+        }
+
+        toast.success("Account created!", {
+          description: "Please check your email to verify your account.",
+        });
+
+        router.push("/login?registered=1");
+      } catch (err) {
+        setError(getAuthErrorMessage(err));
+      } finally {
+        setLoading(false);
       }
-
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName, role } },
-      });
-
-      setLoading(false);
-
-      if (signUpError) {
-        setError(signUpError.message);
-        return;
-      }
-
-      toast.success("Account created!", {
-        description: "Please check your email to verify your account.",
-      });
-
-      router.push("/login?registered=1");
     },
     [step, validateRegisterStep, setFieldErrors, email, password, fullName, role, router, isGoogleProvider]
   );
