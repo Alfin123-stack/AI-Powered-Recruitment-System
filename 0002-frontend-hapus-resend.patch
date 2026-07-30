@@ -1,0 +1,128 @@
+From fef00e6c47e2c5b7186f083e4518db0a2bb56f6c Mon Sep 17 00:00:00 2001
+From: jghjj <dev@recruitai.local>
+Date: Mon, 13 Jul 2026 03:17:21 +0000
+Subject: [PATCH] chore: hapus resend (unused, sudah migrasi ke Gmail
+ SMTP/nodemailer)
+
+resend tidak diimpor di file manapun -- proyek sudah migrasi ke Gmail
+SMTP via nodemailer (lib/email/gmail.ts). Menghapus dependency mati ini
+mengurangi ukuran bundle & attack surface, walau resend sendiri tidak
+membawa CVE aktif.
+
+Tested: tsc --noEmit tetap bersih.
+---
+ package-lock.json | 50 -----------------------------------------------
+ package.json      |  1 -
+ 2 files changed, 51 deletions(-)
+
+diff --git a/package-lock.json b/package-lock.json
+index 68e3481..e2ce89d 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -32,7 +32,6 @@
+         "react-hook-form": "^7.71.2",
+         "react-markdown": "^10.1.0",
+         "recharts": "^3.8.1",
+-        "resend": "^6.16.0",
+         "sonner": "^2.0.7",
+         "tailwind-merge": "^3.5.0",
+         "zod": "^4.3.6"
+@@ -3832,12 +3831,6 @@
+         "url": "https://github.com/sponsors/sindresorhus"
+       }
+     },
+-    "node_modules/@stablelib/base64": {
+-      "version": "1.0.1",
+-      "resolved": "https://registry.npmjs.org/@stablelib/base64/-/base64-1.0.1.tgz",
+-      "integrity": "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==",
+-      "license": "MIT"
+-    },
+     "node_modules/@standard-schema/spec": {
+       "version": "1.1.0",
+       "resolved": "https://registry.npmjs.org/@standard-schema/spec/-/spec-1.1.0.tgz",
+@@ -8088,12 +8081,6 @@
+         "pako": "^2.1.0"
+       }
+     },
+-    "node_modules/fast-sha256": {
+-      "version": "1.3.0",
+-      "resolved": "https://registry.npmjs.org/fast-sha256/-/fast-sha256-1.3.0.tgz",
+-      "integrity": "sha512-n11RGP/lrWEFI/bWdygLxhI+pVeo1ZYIVwvvPkW7azl/rOy+F3HYRZ2K5zeE9mmkhQppyv9sQFx0JM9UabnpPQ==",
+-      "license": "Unlicense"
+-    },
+     "node_modules/fast-uri": {
+       "version": "3.1.3",
+       "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.3.tgz",
+@@ -11849,12 +11836,6 @@
+         "node": ">= 0.4"
+       }
+     },
+-    "node_modules/postal-mime": {
+-      "version": "2.7.4",
+-      "resolved": "https://registry.npmjs.org/postal-mime/-/postal-mime-2.7.4.tgz",
+-      "integrity": "sha512-0WdnFQYUrPGGTFu1uOqD2s7omwua8xaeYGdO6rb88oD5yJ/4pPHDA4sdWqfD8wQVfCny563n/HQS7zTFft+f/g==",
+-      "license": "MIT-0"
+-    },
+     "node_modules/postcss": {
+       "version": "8.5.18",
+       "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.18.tgz",
+@@ -12647,27 +12628,6 @@
+       "integrity": "sha512-K/BG6eIky/SBpzfHZv/dd+9JBFiS4SWV7FIujVyJRux6e45+73RaUHXLmIR1f7WOMaQ0U1km6qwklRQxpJJY0w==",
+       "license": "MIT"
+     },
+-    "node_modules/resend": {
+-      "version": "6.16.0",
+-      "resolved": "https://registry.npmjs.org/resend/-/resend-6.16.0.tgz",
+-      "integrity": "sha512-SaKISwHtxvAxneF84Njgnzg+zdngUu1vOT/paRU1De9QF+zXQR3GnwJHSh+mpJPjUhsGD4WxYi5CfKkXMkDqwg==",
+-      "license": "MIT",
+-      "dependencies": {
+-        "postal-mime": "2.7.4",
+-        "standardwebhooks": "1.0.0"
+-      },
+-      "engines": {
+-        "node": ">=20"
+-      },
+-      "peerDependencies": {
+-        "@react-email/render": "*"
+-      },
+-      "peerDependenciesMeta": {
+-        "@react-email/render": {
+-          "optional": true
+-        }
+-      }
+-    },
+     "node_modules/resolve": {
+       "version": "1.22.11",
+       "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.22.11.tgz",
+@@ -13368,16 +13328,6 @@
+         "node": ">=0.1.14"
+       }
+     },
+-    "node_modules/standardwebhooks": {
+-      "version": "1.0.0",
+-      "resolved": "https://registry.npmjs.org/standardwebhooks/-/standardwebhooks-1.0.0.tgz",
+-      "integrity": "sha512-BbHGOQK9olHPMvQNHWul6MYlrRTAOKn03rOe4A8O3CLWhNf4YHBqq2HJKKC+sfqpxiBY52pNeesD6jIiLDz8jg==",
+-      "license": "MIT",
+-      "dependencies": {
+-        "@stablelib/base64": "^1.0.0",
+-        "fast-sha256": "^1.3.0"
+-      }
+-    },
+     "node_modules/statuses": {
+       "version": "2.0.2",
+       "resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.2.tgz",
+diff --git a/package.json b/package.json
+index ed1c51b..4ba62e8 100644
+--- a/package.json
++++ b/package.json
+@@ -33,7 +33,6 @@
+     "react-hook-form": "^7.71.2",
+     "react-markdown": "^10.1.0",
+     "recharts": "^3.8.1",
+-    "resend": "^6.16.0",
+     "sonner": "^2.0.7",
+     "tailwind-merge": "^3.5.0",
+     "zod": "^4.3.6"
+-- 
+2.43.0
+

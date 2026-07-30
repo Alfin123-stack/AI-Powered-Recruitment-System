@@ -1,0 +1,276 @@
+From 80ce25cef0953a450a0fbcaf463b9762ad86f202 Mon Sep 17 00:00:00 2001
+From: jghjj <dev@recruitai.local>
+Date: Tue, 14 Jul 2026 04:54:42 +0000
+Subject: [PATCH] fix: validasi file CV (size + type) yang sebelumnya tidak ada
+ + hapus react-dropzone (unused)
+
+UI sudah janji 'Max. 5MB' tapi tidak ada satupun kode yang mengecek itu
+-- cuma cek extension .pdf lewat .endsWith(), tanpa cek ukuran, dan
+kegagalan extract PDF cuma di-console.error tanpa feedback ke user.
+
+- lib/validators/fileValidation.ts: validateCvFile() -- cek type/extension,
+  file kosong, dan batas 5MB. Ini validasi client-side untuk UX (gagal
+  cepat sebelum parsing PDF yang berat); pertahanan sebenarnya tetap di
+  backend (/api/ai/analyze sudah membatasi panjang teks + di-rate-limit
+  dari Fase 3/4 sebelumnya).
+- components/analyze/AnalyzeUploadZone.tsx: wiring validasi ke drag-drop
+  DAN klik-pilih-file (sebelumnya klik-pilih-file malah tidak divalidasi
+  sama sekali, cuma drag-drop yang ada cek .endsWith()). Reset input value
+  setelah pilih file supaya pilih file yang sama 2x tetap trigger onChange.
+- hooks/main/useAnalyzeFile.ts: tampilkan toast.error ke user kalau
+  analisis/extract gagal (sebelumnya silent, cuma console.error).
+- react-dropzone dihapus dari dependencies -- tidak dipakai di kode
+  manapun (upload sebenarnya custom drag-drop + <input type=file> biasa).
+
+Tested: tsc --noEmit bersih, eslint bersih, validateCvFile() dites
+langsung dengan 4 skenario (file bukan PDF, PDF valid, PDF kelebihan
+ukuran, file kosong) -- semua sesuai ekspektasi.
+---
+ components/analyze/AnalyzeUploadZone.tsx | 24 ++++++++++---
+ hooks/main/useAnalyzeFile.ts             |  9 +++++
+ lib/validators/fileValidation.ts         | 35 +++++++++++++++++++
+ package-lock.json                        | 43 +++---------------------
+ package.json                             |  1 -
+ 5 files changed, 68 insertions(+), 44 deletions(-)
+ create mode 100644 lib/validators/fileValidation.ts
+
+diff --git a/components/analyze/AnalyzeUploadZone.tsx b/components/analyze/AnalyzeUploadZone.tsx
+index 811df69..bc73ea8 100644
+--- a/components/analyze/AnalyzeUploadZone.tsx
++++ b/components/analyze/AnalyzeUploadZone.tsx
+@@ -2,7 +2,9 @@
+ 
+ import { useState, useRef } from "react";
+ import { Upload, Loader2 } from "lucide-react";
++import { toast } from "sonner";
+ import { Button } from "@/components/ui/button";
++import { validateCvFile } from "@/lib/validators/fileValidation";
+ 
+ type Props = {
+   onFileSelect: (f: File) => void;
+@@ -13,11 +15,25 @@ export default function UploadZone({ onFileSelect, isLoading }: Props) {
+   const [dragging, setDragging] = useState(false);
+   const inputRef = useRef<HTMLInputElement>(null);
+ 
++  // FIX (validasi client-side): sebelumnya cuma cek extension .pdf lewat
++  // .endsWith() -- tidak ada cek ukuran sama sekali walau copy UI di bawah
++  // sudah janji "Max. 5MB". File terlalu besar bisa bikin browser hang pas
++  // parsing PDF-nya. Sekarang divalidasi & user dikasih tau alasan gagal
++  // lewat toast (sebelumnya silent fail / cuma console.error).
++  const handleFile = (f: File | undefined) => {
++    if (!f) return;
++    const result = validateCvFile(f);
++    if (!result.valid) {
++      toast.error(result.error);
++      return;
++    }
++    onFileSelect(f);
++  };
++
+   const handleDrop = (e: React.DragEvent) => {
+     e.preventDefault();
+     setDragging(false);
+-    const f = e.dataTransfer.files[0];
+-    if (f?.name.endsWith(".pdf")) onFileSelect(f);
++    handleFile(e.dataTransfer.files[0]);
+   };
+ 
+   return (
+@@ -43,8 +59,8 @@ export default function UploadZone({ onFileSelect, isLoading }: Props) {
+         accept=".pdf"
+         className="hidden"
+         onChange={(e) => {
+-          const f = e.target.files?.[0];
+-          if (f) onFileSelect(f);
++          handleFile(e.target.files?.[0]);
++          e.target.value = ""; // reset -- supaya pilih file yang sama 2x tetap trigger onChange
+         }}
+       />
+       <div
+diff --git a/hooks/main/useAnalyzeFile.ts b/hooks/main/useAnalyzeFile.ts
+index 9c67fde..ce3698a 100644
+--- a/hooks/main/useAnalyzeFile.ts
++++ b/hooks/main/useAnalyzeFile.ts
+@@ -2,6 +2,7 @@
+ // Mengelola seluruh alur analisis: extract PDF → hit AI API → persist ke DB
+ 
+ import { useState } from "react";
++import { toast } from "sonner";
+ import { supabase } from "@/lib/supabase";
+ import { extractTextFromPDF } from "@/lib/helpers/main/analyze";
+ import { persistAnalysis } from "@/lib/api/analysis";
+@@ -48,7 +49,15 @@ export function useAnalyzeFile(
+         // User tetap lihat hasil meski persist gagal
+       }
+     } catch (err) {
++      // FIX (UX): sebelumnya cuma console.error -- user tidak tahu kenapa
++      // tidak ada yang terjadi setelah upload (misal file .pdf tapi
++      // sebenarnya korup/bukan PDF asli, jadi gagal di-parse pdfjs-dist).
+       console.error("Analisis gagal:", err);
++      const message =
++        err instanceof Error && err.message === "Analisis gagal"
++          ? "Analisis gagal, coba lagi dalam beberapa saat."
++          : "Gagal membaca file. Pastikan file PDF tidak korup lalu coba lagi.";
++      toast.error(message);
+     } finally {
+       setIsLoading(false);
+     }
+diff --git a/lib/validators/fileValidation.ts b/lib/validators/fileValidation.ts
+new file mode 100644
+index 0000000..d927d64
+--- /dev/null
++++ b/lib/validators/fileValidation.ts
+@@ -0,0 +1,35 @@
++// Validasi file CV di client SEBELUM diproses (parsing PDF & extract text
++// itu berat, mending gagal cepat sebelum browser buang waktu/memori buat
++// file yang jelas salah).
++//
++// CATATAN: ini validasi client-side untuk UX (kasih feedback cepat ke
++// user), BUKAN satu-satunya lapisan keamanan. Pertahanan sebenarnya ada di
++// backend: /api/ai/analyze membatasi panjang teks yang diterima (maks
++// 15.000 karakter) dan di-rate-limit -- jadi walau validasi client ini
++// di-bypass (misal panggil langsung tanpa lewat UI), backend tetap aman.
++
++export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB, sesuai copy UI "Max. 5MB"
++
++export interface FileValidationResult {
++  valid: boolean;
++  error?: string;
++}
++
++export function validateCvFile(file: File): FileValidationResult {
++  const looksLikePdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
++
++  if (!looksLikePdf) {
++    return { valid: false, error: "File harus berformat PDF." };
++  }
++
++  if (file.size === 0) {
++    return { valid: false, error: "File kosong, coba pilih file lain." };
++  }
++
++  if (file.size > MAX_FILE_SIZE_BYTES) {
++    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
++    return { valid: false, error: `Ukuran file ${sizeMb}MB, maksimal 5MB.` };
++  }
++
++  return { valid: true };
++}
+diff --git a/package-lock.json b/package-lock.json
+index e2ce89d..e570107 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -28,7 +28,6 @@
+         "radix-ui": "^1.4.3",
+         "react": "19.2.3",
+         "react-dom": "19.2.3",
+-        "react-dropzone": "^15.0.0",
+         "react-hook-form": "^7.71.2",
+         "react-markdown": "^10.1.0",
+         "recharts": "^3.8.1",
+@@ -5936,15 +5935,6 @@
+         "node": ">= 0.4"
+       }
+     },
+-    "node_modules/attr-accept": {
+-      "version": "2.2.5",
+-      "resolved": "https://registry.npmjs.org/attr-accept/-/attr-accept-2.2.5.tgz",
+-      "integrity": "sha512-0bDNnY/u6pPwHDMoF0FieU354oBi0a8rD9FcsLwzcGWbc8KS8KPIi7y+s13OlVY+gMWc/9xEMUgNE6Qm8ZllYQ==",
+-      "license": "MIT",
+-      "engines": {
+-        "node": ">=4"
+-      }
+-    },
+     "node_modules/available-typed-arrays": {
+       "version": "1.0.7",
+       "resolved": "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.7.tgz",
+@@ -8167,18 +8157,6 @@
+         "node": ">=16.0.0"
+       }
+     },
+-    "node_modules/file-selector": {
+-      "version": "2.1.2",
+-      "resolved": "https://registry.npmjs.org/file-selector/-/file-selector-2.1.2.tgz",
+-      "integrity": "sha512-QgXo+mXTe8ljeqUFaX3QVHc5osSItJ/Km+xpocx0aSqWGMSCf6qYs/VnzZgS864Pjn5iceMRFigeAV7AfTlaig==",
+-      "license": "MIT",
+-      "dependencies": {
+-        "tslib": "^2.7.0"
+-      },
+-      "engines": {
+-        "node": ">= 12"
+-      }
+-    },
+     "node_modules/fill-range": {
+       "version": "7.1.1",
+       "resolved": "https://registry.npmjs.org/fill-range/-/fill-range-7.1.1.tgz",
+@@ -9683,6 +9661,7 @@
+       "version": "4.0.0",
+       "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz",
+       "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==",
++      "dev": true,
+       "license": "MIT"
+     },
+     "node_modules/js-yaml": {
+@@ -10223,6 +10202,7 @@
+       "version": "1.4.0",
+       "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz",
+       "integrity": "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==",
++      "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "js-tokens": "^3.0.0 || ^4.0.0"
+@@ -11313,6 +11293,7 @@
+       "version": "4.1.1",
+       "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
+       "integrity": "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==",
++      "dev": true,
+       "license": "MIT",
+       "engines": {
+         "node": ">=0.10.0"
+@@ -11946,6 +11927,7 @@
+       "version": "15.8.1",
+       "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz",
+       "integrity": "sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==",
++      "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "loose-envify": "^1.4.0",
+@@ -12298,23 +12280,6 @@
+         "react": "^19.2.3"
+       }
+     },
+-    "node_modules/react-dropzone": {
+-      "version": "15.0.0",
+-      "resolved": "https://registry.npmjs.org/react-dropzone/-/react-dropzone-15.0.0.tgz",
+-      "integrity": "sha512-lGjYV/EoqEjEWPnmiSvH4v5IoIAwQM2W4Z1C0Q/Pw2xD0eVzKPS359BQTUMum+1fa0kH2nrKjuavmTPOGhpLPg==",
+-      "license": "MIT",
+-      "dependencies": {
+-        "attr-accept": "^2.2.4",
+-        "file-selector": "^2.1.0",
+-        "prop-types": "^15.8.1"
+-      },
+-      "engines": {
+-        "node": ">= 10.13"
+-      },
+-      "peerDependencies": {
+-        "react": ">= 16.8 || 18.0.0"
+-      }
+-    },
+     "node_modules/react-hook-form": {
+       "version": "7.71.2",
+       "resolved": "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.71.2.tgz",
+diff --git a/package.json b/package.json
+index 4ba62e8..c2de30f 100644
+--- a/package.json
++++ b/package.json
+@@ -29,7 +29,6 @@
+     "radix-ui": "^1.4.3",
+     "react": "19.2.3",
+     "react-dom": "19.2.3",
+-    "react-dropzone": "^15.0.0",
+     "react-hook-form": "^7.71.2",
+     "react-markdown": "^10.1.0",
+     "recharts": "^3.8.1",
+-- 
+2.43.0
+
