@@ -7,7 +7,7 @@ export async function fetchSavedJobs(accessToken: string): Promise<SavedJob[]> {
   try {
     const res = await fetch(`${API}/api/saved-jobs`, {
       headers: { Authorization: `Bearer ${accessToken}` },
-      next: { tags: ["saved-jobs"], revalidate: 60 },
+      cache: "no-store",
     });
     if (!res.ok) return [];
     const data: SavedJobRaw[] = await res.json();

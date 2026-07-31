@@ -1,15 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDashboard } from "@/context/DashboardContext";
 import { FilterValue, SavedJob, SortOption } from "@/types/candidate/saved";
 import { isDeadlineSoon, isExpired } from "@/lib/helpers/candidate/saved";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+// Guard ringan: kalau backend pernah ngirim skills null/undefined (data lama
+// sebelum kolom `skills jsonb default '[]'` ke-backfill), jangan sampai
+// `.length`/`.slice` di SavedJobsCard throw dan bikin seluruh list gagal
+// render. Tidak menyentuh `color` — itu tanggung jawab fetchSavedJobs (SSR).
+function normalize(job: SavedJob): SavedJob {
+  return {
+    ...job,
+    skills: Array.isArray(job.skills) ? job.skills : [],
+  };
+}
+
 export function useSavedJobs(initialJobs: SavedJob[]) {
   const { token } = useDashboard();
-  const [savedJobs, setSavedJobs] = useState<SavedJob[]>(initialJobs);
+  const router = useRouter();
+
+  const [savedJobs, setSavedJobs] = useState<SavedJob[]>(
+    initialJobs.map(normalize),
+  );
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterValue>("all");
@@ -18,13 +34,23 @@ export function useSavedJobs(initialJobs: SavedJob[]) {
   const handleUnsave = async (jobId: string): Promise<void> => {
     setRemovingId(jobId);
     try {
-      await fetch(`${API}/api/saved-jobs/${jobId}`, {
+      const res = await fetch(`${API}/api/saved-jobs/${jobId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!res.ok) {
+        throw new Error(`Gagal menghapus saved job (status ${res.status})`);
+      }
+
+      // Optimistic update biar langsung ilang dari UI...
       setSavedJobs((prev) => prev.filter((j) => j.id !== jobId));
-    } catch {
-      // silent
+      // ...lalu revalidate server component supaya cache tag "saved-jobs"
+      // (fetchSavedJobs, revalidate: 60) ke-refresh dan initialJobs di
+      // request berikutnya konsisten sama DB.
+      router.refresh();
+    } catch (err) {
+      console.error("[useSavedJobs] unsave error:", err);
     } finally {
       setRemovingId(null);
     }

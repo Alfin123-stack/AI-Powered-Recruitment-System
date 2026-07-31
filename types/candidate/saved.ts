@@ -16,7 +16,11 @@ export type SavedJob = {
   created_at: string;
   resume_score?: number;
   matching_score?: number;
-  companies: { name: string; logo_url: string | null; company_size: string };
+  companies: {
+    name: string;
+    logo_url: string | null;
+    company_size: string | null;
+  };
   color: string;
 };
 
